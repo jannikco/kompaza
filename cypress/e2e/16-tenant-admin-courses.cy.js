@@ -2,6 +2,11 @@ describe('Tenant Admin Courses', () => {
 
   const base = 'https://testcompany.kompaza.com'
 
+  // Clear any stale sessions from previous runs
+  before(() => {
+    Cypress.session.clearAllSavedSessions()
+  })
+
   beforeEach(() => {
     cy.tenantAdminLogin()
   })
@@ -17,7 +22,6 @@ describe('Tenant Admin Courses', () => {
     cy.visit(`${base}/admin/kurser/opret`)
     cy.get('input[name="title"]').should('be.visible')
     cy.get('input[name="slug"]').should('be.visible')
-    // Pricing type is radio buttons (sr-only), check they exist
     cy.get('input[name="pricing_type"]').should('have.length', 3)
     cy.get('select[name="status"]').should('be.visible')
   })
@@ -25,12 +29,14 @@ describe('Tenant Admin Courses', () => {
   // Create a free course (pricing_type defaults to 'free')
   it('creates a free course', () => {
     cy.visit(`${base}/admin/kurser/opret`)
+    cy.url().should('include', '/admin/kurser/opret')
     cy.get('input[name="title"]').type('Cypress Test Course')
     cy.get('input[name="slug"]').clear().type('cypress-test-course')
     cy.get('input[name="subtitle"]').type('A test course created by Cypress')
-    // pricing_type defaults to 'free', no need to change
     cy.get('select[name="status"]').select('published')
-    cy.get('form').submit()
+    // Click the submit button instead of form.submit()
+    cy.contains('button', 'Create Course').click()
+    cy.url().should('not.include', '/login')
     cy.url().should('include', '/admin/kurser')
   })
 
@@ -58,11 +64,12 @@ describe('Tenant Admin Courses', () => {
       .closest('tr')
       .find('a:contains("Edit")')
       .click()
-    // Click "Add Module" to toggle the form
+    // Click "Add Module" button to show the form
     cy.contains('button', 'Add Module').click()
-    // Fill module title (in the module form, not the course form)
+    // Wait for the form to appear, then fill it
+    cy.get('form[action="/admin/kurser/modul/gem"]').should('be.visible')
     cy.get('form[action="/admin/kurser/modul/gem"] input[name="title"]').type('Module 1: Introduction')
-    cy.get('form[action="/admin/kurser/modul/gem"]').submit()
+    cy.get('form[action="/admin/kurser/modul/gem"]').find('button[type="submit"]').click()
     // Should redirect back to edit page with module visible
     cy.contains('Module 1: Introduction').should('be.visible')
   })
@@ -74,7 +81,6 @@ describe('Tenant Admin Courses', () => {
       .closest('tr')
       .find('a:contains("Edit")')
       .click()
-    // Click "Add Lesson" link in the first module
     cy.get('a:contains("Add Lesson")').first().click()
     cy.get('input[name="title"]').should('be.visible')
     cy.get('input[name="lesson_type"]').should('exist')
@@ -89,11 +95,10 @@ describe('Tenant Admin Courses', () => {
       .click()
     cy.get('a:contains("Add Lesson")').first().click()
     cy.get('input[name="title"]').type('Lesson 1: Welcome')
-    // Select text lesson type (sr-only radio, click parent label)
     cy.get('input[name="lesson_type"][value="text"]').check({ force: true })
-    // Enable preview
     cy.get('input[name="is_preview"]').check({ force: true })
-    cy.get('form').submit()
+    cy.contains('button', 'Create Lesson').click()
+    cy.url().should('not.include', '/login')
     cy.url().should('include', '/admin/kurser')
   })
 
@@ -110,13 +115,14 @@ describe('Tenant Admin Courses', () => {
   // Create a paid course
   it('creates a paid course', () => {
     cy.visit(`${base}/admin/kurser/opret`)
+    cy.url().should('include', '/admin/kurser/opret')
     cy.get('input[name="title"]').type('Cypress Paid Course')
     cy.get('input[name="slug"]').clear().type('cypress-paid-course')
-    // Select one_time pricing via radio (sr-only, force check)
     cy.get('input[name="pricing_type"][value="one_time"]').check({ force: true })
     cy.get('input[name="price_dkk"]').clear().type('299')
     cy.get('select[name="status"]').select('published')
-    cy.get('form').submit()
+    cy.contains('button', 'Create Course').click()
+    cy.url().should('not.include', '/login')
     cy.url().should('include', '/admin/kurser')
   })
 

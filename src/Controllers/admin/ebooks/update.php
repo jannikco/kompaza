@@ -2,22 +2,22 @@
 
 use App\Models\Ebook;
 
-if (!isPost()) redirect('/admin/ebooks');
+if (!isPost()) redirect('/admin/eboger');
 
 if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
     flashMessage('error', 'Ugyldig CSRF-token. Prøv igen.');
-    redirect('/admin/ebooks');
+    redirect('/admin/eboger');
 }
 
 $id = $_POST['id'] ?? null;
 $tenantId = currentTenantId();
 
-if (!$id) redirect('/admin/ebooks');
+if (!$id) redirect('/admin/eboger');
 
 $ebook = Ebook::find($id, $tenantId);
 if (!$ebook) {
     flashMessage('error', 'E-bog ikke fundet.');
-    redirect('/admin/ebooks');
+    redirect('/admin/eboger');
 }
 
 $data = [
@@ -40,7 +40,7 @@ if (!empty($_FILES['pdf_file']['name']) && $_FILES['pdf_file']['error'] === UPLO
     $ext = strtolower(pathinfo($pdfOriginalName, PATHINFO_EXTENSION));
     if ($ext !== 'pdf') {
         flashMessage('error', 'Kun PDF-filer er tilladt.');
-        redirect('/admin/ebooks/edit?id=' . $id);
+        redirect('/admin/eboger/edit?id=' . $id);
     }
     // Delete old PDF
     if ($ebook['pdf_filename']) {
@@ -59,7 +59,7 @@ if (!empty($_FILES['cover_image']['name']) && $_FILES['cover_image']['error'] ==
     $ext = strtolower(pathinfo($imgOriginal, PATHINFO_EXTENSION));
     if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
         flashMessage('error', 'Kun billeder (jpg, png, webp, gif) er tilladt.');
-        redirect('/admin/ebooks/edit?id=' . $id);
+        redirect('/admin/eboger/edit?id=' . $id);
     }
     // Delete old image
     if ($ebook['cover_image_path']) {
@@ -76,4 +76,4 @@ Ebook::update($id, $data);
 
 logAudit('ebook_updated', 'ebook', $id);
 flashMessage('success', 'E-bog opdateret.');
-redirect('/admin/ebooks');
+redirect('/admin/eboger');

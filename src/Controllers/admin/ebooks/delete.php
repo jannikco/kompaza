@@ -2,22 +2,22 @@
 
 use App\Models\Ebook;
 
-if (!isPost()) redirect('/admin/ebooks');
+if (!isPost()) redirect('/admin/eboger');
 
 if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
     flashMessage('error', 'Ugyldig CSRF-token. Prøv igen.');
-    redirect('/admin/ebooks');
+    redirect('/admin/eboger');
 }
 
 $id = $_POST['id'] ?? null;
 $tenantId = currentTenantId();
 
-if (!$id) redirect('/admin/ebooks');
+if (!$id) redirect('/admin/eboger');
 
 $ebook = Ebook::find($id, $tenantId);
 if (!$ebook) {
     flashMessage('error', 'E-bog ikke fundet.');
-    redirect('/admin/ebooks');
+    redirect('/admin/eboger');
 }
 
 // Delete associated files
@@ -34,4 +34,4 @@ Ebook::delete($id, $tenantId);
 
 logAudit('ebook_deleted', 'ebook', $id);
 flashMessage('success', 'E-bog slettet.');
-redirect('/admin/ebooks');
+redirect('/admin/eboger');

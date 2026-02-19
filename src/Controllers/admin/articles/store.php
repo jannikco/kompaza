@@ -2,11 +2,11 @@
 
 use App\Models\Article;
 
-if (!isPost()) redirect('/admin/articles');
+if (!isPost()) redirect('/admin/artikler');
 
 if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
     flashMessage('error', 'Ugyldig CSRF-token. Prøv igen.');
-    redirect('/admin/articles/create');
+    redirect('/admin/artikler/create');
 }
 
 $tenantId = currentTenantId();
@@ -17,7 +17,7 @@ $status = sanitize($_POST['status'] ?? 'draft');
 
 if (!$title) {
     flashMessage('error', 'Titel er påkrævet.');
-    redirect('/admin/articles/create');
+    redirect('/admin/artikler/create');
 }
 
 // Handle featured image upload
@@ -27,7 +27,7 @@ if (!empty($_FILES['featured_image']['name']) && $_FILES['featured_image']['erro
     $ext = strtolower(pathinfo($imgOriginal, PATHINFO_EXTENSION));
     if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
         flashMessage('error', 'Kun billeder (jpg, png, webp, gif) er tilladt.');
-        redirect('/admin/articles/create');
+        redirect('/admin/artikler/create');
     }
     $imgFilename = generateUniqueId('art_') . '.' . $ext;
     $uploadPath = tenantUploadPath('articles');
@@ -58,4 +58,4 @@ $id = Article::create([
 
 logAudit('article_created', 'article', $id);
 flashMessage('success', 'Artikel oprettet.');
-redirect('/admin/articles');
+redirect('/admin/artikler');

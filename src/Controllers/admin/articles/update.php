@@ -2,22 +2,22 @@
 
 use App\Models\Article;
 
-if (!isPost()) redirect('/admin/articles');
+if (!isPost()) redirect('/admin/artikler');
 
 if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
     flashMessage('error', 'Ugyldig CSRF-token. Prøv igen.');
-    redirect('/admin/articles');
+    redirect('/admin/artikler');
 }
 
 $id = $_POST['id'] ?? null;
 $tenantId = currentTenantId();
 
-if (!$id) redirect('/admin/articles');
+if (!$id) redirect('/admin/artikler');
 
 $article = Article::find($id, $tenantId);
 if (!$article) {
     flashMessage('error', 'Artikel ikke fundet.');
-    redirect('/admin/articles');
+    redirect('/admin/artikler');
 }
 
 $status = sanitize($_POST['status'] ?? 'draft');
@@ -47,7 +47,7 @@ if (!empty($_FILES['featured_image']['name']) && $_FILES['featured_image']['erro
     $ext = strtolower(pathinfo($imgOriginal, PATHINFO_EXTENSION));
     if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
         flashMessage('error', 'Kun billeder (jpg, png, webp, gif) er tilladt.');
-        redirect('/admin/articles/edit?id=' . $id);
+        redirect('/admin/artikler/edit?id=' . $id);
     }
     // Delete old image
     if ($article['featured_image']) {
@@ -64,4 +64,4 @@ Article::update($id, $data);
 
 logAudit('article_updated', 'article', $id);
 flashMessage('success', 'Artikel opdateret.');
-redirect('/admin/articles');
+redirect('/admin/artikler');

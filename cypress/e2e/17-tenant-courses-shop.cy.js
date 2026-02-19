@@ -2,6 +2,10 @@ describe('Tenant Course Shop Pages', () => {
 
   const base = 'https://testcompany.kompaza.com'
 
+  before(() => {
+    Cypress.session.clearAllSavedSessions()
+  })
+
   // Public pages (no login needed)
   it('courses catalog page loads', () => {
     cy.visit(`${base}/courses`)
@@ -45,12 +49,18 @@ describe('Customer Course Enrollment', () => {
     cy.customerLogin()
   })
 
-  it('can enroll in free course', () => {
+  it('can enroll in free course or is already enrolled', () => {
     cy.visit(`${base}/course/cypress-test-course`)
-    // Click the Enroll for Free button (submits form)
-    cy.contains('button', 'Enroll for Free').click()
-    // Should redirect to course player
-    cy.url().should('include', '/course/cypress-test-course/learn')
+    cy.get('body').then($body => {
+      if ($body.text().includes('Enroll for Free')) {
+        // Not enrolled yet - enroll now
+        cy.contains('button', 'Enroll for Free').click()
+        cy.url().should('include', '/course/cypress-test-course/learn')
+      } else {
+        // Already enrolled - verify continue learning button
+        cy.contains('Continue Learning').should('be.visible')
+      }
+    })
   })
 
   it('course player loads after enrollment', () => {

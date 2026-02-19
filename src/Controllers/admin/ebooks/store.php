@@ -2,11 +2,11 @@
 
 use App\Models\Ebook;
 
-if (!isPost()) redirect('/admin/ebooks');
+if (!isPost()) redirect('/admin/eboger');
 
 if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
     flashMessage('error', 'Ugyldig CSRF-token. Prøv igen.');
-    redirect('/admin/ebooks/create');
+    redirect('/admin/eboger/create');
 }
 
 $tenantId = currentTenantId();
@@ -16,7 +16,7 @@ $slug = sanitize($_POST['slug'] ?? '') ?: slugify($title);
 
 if (!$title) {
     flashMessage('error', 'Titel er påkrævet.');
-    redirect('/admin/ebooks/create');
+    redirect('/admin/eboger/create');
 }
 
 // Handle PDF upload
@@ -27,7 +27,7 @@ if (!empty($_FILES['pdf_file']['name']) && $_FILES['pdf_file']['error'] === UPLO
     $ext = strtolower(pathinfo($pdfOriginalName, PATHINFO_EXTENSION));
     if ($ext !== 'pdf') {
         flashMessage('error', 'Kun PDF-filer er tilladt.');
-        redirect('/admin/ebooks/create');
+        redirect('/admin/eboger/create');
     }
     $pdfFilename = generateUniqueId('ebook_') . '.pdf';
     $storagePath = tenantStoragePath();
@@ -41,7 +41,7 @@ if (!empty($_FILES['cover_image']['name']) && $_FILES['cover_image']['error'] ==
     $ext = strtolower(pathinfo($imgOriginal, PATHINFO_EXTENSION));
     if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
         flashMessage('error', 'Kun billeder (jpg, png, webp, gif) er tilladt.');
-        redirect('/admin/ebooks/create');
+        redirect('/admin/eboger/create');
     }
     $imgFilename = generateUniqueId('ebook_cover_') . '.' . $ext;
     $uploadPath = tenantUploadPath('ebooks');
@@ -69,4 +69,4 @@ $id = Ebook::create([
 
 logAudit('ebook_created', 'ebook', $id);
 flashMessage('success', 'E-bog oprettet.');
-redirect('/admin/ebooks');
+redirect('/admin/eboger');
