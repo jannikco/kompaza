@@ -21,7 +21,7 @@ if (empty($email) || empty($password)) {
 }
 
 // Rate limit check
-if (!checkRateLimit(getClientIp(), 'superadmin_login', 5, 900)) {
+if (!checkRateLimit(getClientIp(), 'superadmin_login', 100, 900)) {
     flashMessage('error', 'Too many login attempts. Please try again later.');
     redirect('/login');
 }
