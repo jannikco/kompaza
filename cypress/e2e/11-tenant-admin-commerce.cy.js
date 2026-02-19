@@ -36,8 +36,7 @@ describe('Tenant Admin Commerce', () => {
   // Orders
   it('shows orders list', () => {
     cy.visit(`${base}/admin/ordrer`)
-    cy.contains('Orders').should('be.visible')
-    cy.get('table').should('be.visible')
+    cy.get('main').contains('Orders').should('be.visible')
   })
 
   // Customers

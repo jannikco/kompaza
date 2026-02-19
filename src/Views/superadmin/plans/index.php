@@ -8,6 +8,10 @@ ob_start();
 <div class="bg-gray-800 rounded-xl border border-gray-700">
     <div class="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
         <h3 class="text-lg font-semibold text-white">All Plans</h3>
+        <a href="/plans/create" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Create Plan
+        </a>
     </div>
     <div class="overflow-x-auto">
         <table class="w-full">
@@ -19,12 +23,13 @@ ob_start();
                     <th class="text-left px-6 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider">Yearly Price</th>
                     <th class="text-left px-6 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
                     <th class="text-left px-6 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider">Limits</th>
+                    <th class="text-right px-6 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-700">
                 <?php if (empty($plans)): ?>
                 <tr>
-                    <td colspan="6" class="px-6 py-8 text-center text-gray-500">No plans configured yet.</td>
+                    <td colspan="7" class="px-6 py-8 text-center text-gray-500">No plans configured yet.</td>
                 </tr>
                 <?php else: ?>
                 <?php foreach ($plans as $plan): ?>
@@ -64,6 +69,9 @@ ob_start();
                             <div class="text-gray-500">Unlimited</div>
                             <?php endif; ?>
                         </div>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="/plans/edit?id=<?= $plan['id'] ?>" class="text-indigo-400 hover:text-indigo-300 text-sm font-medium">Edit</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>

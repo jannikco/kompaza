@@ -27,7 +27,7 @@ describe('Tenant Admin System Pages', () => {
   // Settings
   it('shows settings page', () => {
     cy.visit(`${base}/admin/indstillinger`)
-    cy.contains('Settings').should('be.visible')
+    cy.get('main').contains('Settings').should('be.visible')
   })
 
   // All sidebar navigation links

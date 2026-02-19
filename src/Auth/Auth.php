@@ -163,24 +163,6 @@ class Auth {
         $user = User::find($tokenData['user_id']);
         if ($user && $user['status'] === 'active') {
             self::$currentUser = $user;
-
-            // Rotate token
-            $newToken = bin2hex(random_bytes(32));
-            $expires = time() + (180 * 24 * 60 * 60);
-
-            $stmt = $db->prepare("
-                UPDATE remember_tokens
-                SET token = ?, expires_at = FROM_UNIXTIME(?)
-                WHERE user_id = ? AND token = ?
-            ");
-            $stmt->execute([
-                hash('sha256', $newToken),
-                $expires,
-                $user['id'],
-                hash('sha256', $token)
-            ]);
-
-            setcookie('remember_token', $newToken, $expires, '/', '', true, true);
         }
     }
 }
