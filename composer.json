@@ -1,0 +1,17 @@
+{
+    "name": "kompaza/platform",
+    "description": "Kompaza - Multi-Tenant SaaS Platform",
+    "type": "project",
+    "require": {
+        "php": ">=8.2",
+        "vlucas/phpdotenv": "^5.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        },
+        "files": [
+            "src/Config/functions.php"
+        ]
+    }
+}

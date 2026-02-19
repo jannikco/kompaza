@@ -1,0 +1,74 @@
+/* Kompaza - Custom styles */
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+}
+
+/* Alpine.js cloak */
+[x-cloak] {
+    display: none !important;
+}
+
+/* TinyMCE dark mode override */
+.tox .tox-edit-area__iframe {
+    background-color: #374151 !important;
+}
+
+.tox-tinymce {
+    border-color: #4b5563 !important;
+    border-radius: 0.5rem !important;
+}
+
+/* Table hover for dark theme */
+.admin-table tbody tr:hover {
+    background-color: rgba(75, 85, 99, 0.3);
+}
+
+/* Gradient text helper */
+.gradient-text {
+    background: linear-gradient(135deg, #6366f1, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Loading spinner */
+.spinner {
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #6366f1;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Sidebar fixed positioning for admin */
+@media (min-width: 1024px) {
+    aside.fixed {
+        position: fixed;
+    }
+}

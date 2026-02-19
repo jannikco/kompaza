@@ -1,0 +1,13 @@
+/vendor/
+/storage/logs/*
+/storage/pdfs/*
+!/storage/logs/.gitkeep
+!/storage/pdfs/.gitkeep
+.env
+.DS_Store
+*.log
+composer.lock
+public/uploads/*
+!public/uploads/.gitkeep
+/node_modules/
+package-lock.json

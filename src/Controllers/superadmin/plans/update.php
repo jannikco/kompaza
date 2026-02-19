@@ -1,0 +1,33 @@
+<?php
+
+use App\Models\Plan;
+
+if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
+    flashMessage('error', 'Invalid CSRF token.');
+    redirect('/plans');
+}
+
+$id = (int)($_POST['id'] ?? 0);
+$plan = Plan::find($id);
+if (!$plan) {
+    flashMessage('error', 'Plan not found.');
+    redirect('/plans');
+}
+
+Plan::update($id, [
+    'name' => sanitize($_POST['name'] ?? ''),
+    'slug' => sanitize($_POST['slug'] ?? '') ?: slugify($_POST['name'] ?? ''),
+    'price_monthly_dkk' => (float)($_POST['price_monthly_dkk'] ?? 0),
+    'price_yearly_dkk' => !empty($_POST['price_yearly_dkk']) ? (float)$_POST['price_yearly_dkk'] : null,
+    'max_customers' => !empty($_POST['max_customers']) ? (int)$_POST['max_customers'] : null,
+    'max_leads' => !empty($_POST['max_leads']) ? (int)$_POST['max_leads'] : null,
+    'max_campaigns' => !empty($_POST['max_campaigns']) ? (int)$_POST['max_campaigns'] : null,
+    'max_products' => !empty($_POST['max_products']) ? (int)$_POST['max_products'] : null,
+    'max_lead_magnets' => !empty($_POST['max_lead_magnets']) ? (int)$_POST['max_lead_magnets'] : null,
+    'is_active' => isset($_POST['is_active']) ? 1 : 0,
+    'sort_order' => (int)($_POST['sort_order'] ?? 0),
+]);
+
+logAudit('plan_updated', 'plan', $id);
+flashMessage('success', 'Plan updated successfully.');
+redirect('/plans');
