@@ -28,11 +28,16 @@ if (!checkRateLimit($ip, 'customer_login', 10, 900)) {
 }
 
 if (Auth::attempt($email, $password, $tenantId)) {
-    logAudit('customer_login', 'user', Auth::id());
+    logAudit('user_login', 'user', Auth::id());
 
     // Check for saved redirect
-    $redirectTo = $_COOKIE['kz_redirect'] ?? '/konto';
+    $redirectTo = $_COOKIE['kz_redirect'] ?? null;
     setcookie('kz_redirect', '', time() - 3600, '/', '', true, true);
+
+    // Default redirect based on role
+    if (!$redirectTo) {
+        $redirectTo = Auth::isTenantAdmin() ? '/admin' : '/konto';
+    }
 
     redirect($redirectTo);
 } else {
