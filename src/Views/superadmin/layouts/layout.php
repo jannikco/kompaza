@@ -16,7 +16,7 @@
     <div x-show="mobileMenuOpen" x-cloak class="fixed inset-0 bg-black/50 z-40 lg:hidden" @click="mobileMenuOpen = false"></div>
 
     <!-- Sidebar -->
-    <aside :class="mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-gray-800 border-r border-gray-700 transform transition-transform lg:translate-x-0 lg:static lg:z-auto flex flex-col">
+    <aside :class="mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-gray-800 border-r border-gray-700 transform transition-transform lg:translate-x-0 flex flex-col">
         <!-- Logo -->
         <div class="flex items-center h-16 px-6 border-b border-gray-700">
             <a href="/" class="text-xl font-bold text-white">Kompaza Admin</a>
