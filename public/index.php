@@ -143,6 +143,8 @@ if ($routingMode === 'tenant') {
             '/konto/ordrer' => 'shop/account/orders',
             '/konto/downloads' => 'shop/account/downloads',
             '/konto/indstillinger' => 'shop/account/settings',
+            '/konto/kurser' => 'shop/account/courses',
+            '/courses' => 'shop/courses',
         ],
         'POST' => [
             '/login' => 'shop/login-submit',
@@ -188,6 +190,12 @@ if ($routingMode === 'tenant') {
             '/admin/brugere' => 'admin/users/index',
             '/admin/brugere/opret' => 'admin/users/create',
             '/admin/brugere/rediger' => 'admin/users/edit',
+            '/admin/kurser' => 'admin/courses/index',
+            '/admin/kurser/opret' => 'admin/courses/create',
+            '/admin/kurser/rediger' => 'admin/courses/edit',
+            '/admin/kurser/lektion/opret' => 'admin/courses/lesson-create',
+            '/admin/kurser/lektion' => 'admin/courses/lesson-edit',
+            '/admin/kurser/tilmeldinger' => 'admin/courses/enrollments',
         ],
         'POST' => [
             '/admin/lead-magnets/gem' => 'admin/lead-magnets/store',
@@ -215,6 +223,19 @@ if ($routingMode === 'tenant') {
             '/admin/brugere/gem' => 'admin/users/store',
             '/admin/brugere/opdater' => 'admin/users/update',
             '/admin/brugere/slet' => 'admin/users/delete',
+            '/admin/kurser/gem' => 'admin/courses/store',
+            '/admin/kurser/opdater' => 'admin/courses/update',
+            '/admin/kurser/slet' => 'admin/courses/delete',
+            '/admin/kurser/modul/gem' => 'admin/courses/module-store',
+            '/admin/kurser/modul/opdater' => 'admin/courses/module-update',
+            '/admin/kurser/modul/slet' => 'admin/courses/module-delete',
+            '/admin/kurser/modul/sorter' => 'admin/courses/module-reorder',
+            '/admin/kurser/lektion/gem' => 'admin/courses/lesson-store',
+            '/admin/kurser/lektion/opdater' => 'admin/courses/lesson-update',
+            '/admin/kurser/lektion/slet' => 'admin/courses/lesson-delete',
+            '/admin/kurser/lektion/sorter' => 'admin/courses/lesson-reorder',
+            '/admin/kurser/tilmeld' => 'admin/courses/enroll',
+            '/admin/kurser/afmeld' => 'admin/courses/unenroll',
         ],
     ];
 
@@ -267,6 +288,37 @@ if ($routingMode === 'tenant') {
             $controller = 'shop/account/order-detail';
             $dynamicParams['id'] = $matches[1];
         }
+        // Course: detail page /course/{slug}
+        elseif ($method === 'GET' && preg_match('#^/course/([a-z0-9\-]+)$#', $request, $matches)) {
+            $controller = 'shop/course';
+            $dynamicParams['slug'] = $matches[1];
+        }
+        // Course: player /course/{slug}/learn
+        elseif ($method === 'GET' && preg_match('#^/course/([a-z0-9\-]+)/learn$#', $request, $matches)) {
+            $controller = 'shop/course-player';
+            $dynamicParams['slug'] = $matches[1];
+        }
+        // Course: player with lesson /course/{slug}/learn/{lesson_id}
+        elseif ($method === 'GET' && preg_match('#^/course/([a-z0-9\-]+)/learn/(\d+)$#', $request, $matches)) {
+            $controller = 'shop/course-player';
+            $dynamicParams['slug'] = $matches[1];
+            $dynamicParams['lesson_id'] = $matches[2];
+        }
+        // Course: buy
+        elseif ($method === 'POST' && preg_match('#^/course/([a-z0-9\-]+)/buy$#', $request, $matches)) {
+            $controller = 'shop/course-buy';
+            $dynamicParams['slug'] = $matches[1];
+        }
+        // Course: subscribe
+        elseif ($method === 'POST' && preg_match('#^/course/([a-z0-9\-]+)/subscribe$#', $request, $matches)) {
+            $controller = 'shop/course-subscribe';
+            $dynamicParams['slug'] = $matches[1];
+        }
+        // Course: enroll free
+        elseif ($method === 'POST' && preg_match('#^/course/([a-z0-9\-]+)/enroll-free$#', $request, $matches)) {
+            $controller = 'shop/course-enroll-free';
+            $dynamicParams['slug'] = $matches[1];
+        }
         // Cart actions (AJAX)
         elseif ($method === 'POST' && $request === '/api/cart/add') {
             $controller = 'api/cart-add';
@@ -282,6 +334,36 @@ if ($routingMode === 'tenant') {
             Auth::requireTenantAdmin();
             $controller = 'api/leadshark/validate-cookie';
         }
+        // Course API endpoints
+        elseif ($method === 'POST' && $request === '/api/courses/upload-chunk') {
+            Auth::requireTenantAdmin();
+            $controller = 'api/courses/upload-chunk';
+        }
+        elseif ($method === 'POST' && $request === '/api/courses/finalize-upload') {
+            Auth::requireTenantAdmin();
+            $controller = 'api/courses/finalize-upload';
+        }
+        elseif ($method === 'GET' && $request === '/api/courses/video-status') {
+            Auth::requireTenantAdmin();
+            $controller = 'api/courses/video-status';
+        }
+        elseif ($method === 'POST' && $request === '/api/courses/reorder-modules') {
+            Auth::requireTenantAdmin();
+            $controller = 'api/courses/reorder-modules';
+        }
+        elseif ($method === 'POST' && $request === '/api/courses/reorder-lessons') {
+            Auth::requireTenantAdmin();
+            $controller = 'api/courses/reorder-lessons';
+        }
+        elseif ($method === 'POST' && $request === '/api/courses/mark-complete') {
+            $controller = 'api/courses/mark-complete';
+        }
+        elseif ($method === 'POST' && $request === '/api/courses/save-position') {
+            $controller = 'api/courses/save-position';
+        }
+        elseif ($method === 'GET' && $request === '/api/courses/video-url') {
+            $controller = 'api/courses/video-url';
+        }
         // Stripe webhook
         elseif ($method === 'POST' && $request === '/api/webhooks/stripe') {
             $controller = 'api/webhooks/stripe';
@@ -295,6 +377,7 @@ if ($routingMode === 'tenant') {
             $slug = $dynamicParams['slug'] ?? null;
             $token = $dynamicParams['token'] ?? null;
             $id = $dynamicParams['id'] ?? null;
+            $lesson_id = $dynamicParams['lesson_id'] ?? null;
             require $controllerPath;
         } else {
             http_response_code(404);

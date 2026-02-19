@@ -93,10 +93,10 @@ ob_start();
                     placeholder="e.g., 45">
             </div>
             <div>
-                <label for="price" class="block text-sm font-medium text-gray-300 mb-2">Price (DKK)</label>
+                <label for="price_dkk" class="block text-sm font-medium text-gray-300 mb-2">Price (DKK)</label>
                 <div class="relative">
-                    <input type="number" name="price" id="price" min="0" step="0.01"
-                        value="<?= h($ebook['price'] ?? '0') ?>"
+                    <input type="number" name="price_dkk" id="price_dkk" min="0" step="0.01"
+                        value="<?= h($ebook['price_dkk'] ?? '0') ?>"
                         class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent pr-16"
                         placeholder="0.00">
                     <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-400">DKK</span>

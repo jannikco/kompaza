@@ -33,6 +33,14 @@ define('STRIPE_PUBLISHABLE_KEY', $_ENV['STRIPE_PUBLISHABLE_KEY'] ?? '');
 define('STRIPE_SECRET_KEY', $_ENV['STRIPE_SECRET_KEY'] ?? '');
 define('STRIPE_WEBHOOK_SECRET', $_ENV['STRIPE_WEBHOOK_SECRET'] ?? '');
 
+// S3 / Linode Object Storage
+define('S3_ENDPOINT', $_ENV['S3_ENDPOINT'] ?? 'https://eu-central-1.linodeobjects.com');
+define('S3_REGION', $_ENV['S3_REGION'] ?? 'eu-central-1');
+define('S3_ACCESS_KEY_ID', $_ENV['S3_ACCESS_KEY_ID'] ?? '');
+define('S3_SECRET_ACCESS_KEY', $_ENV['S3_SECRET_ACCESS_KEY'] ?? '');
+define('S3_BUCKET_NAME', $_ENV['S3_BUCKET_NAME'] ?? 'kompaza-media');
+define('S3_PUBLIC_DOMAIN', $_ENV['S3_PUBLIC_DOMAIN'] ?? 'kompaza-media.eu-central-1.linodeobjects.com');
+
 // Security configuration
 define('CSRF_TOKEN_NAME', $_ENV['CSRF_TOKEN_NAME'] ?? 'csrf_token');
 

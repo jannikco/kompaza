@@ -13,7 +13,8 @@ $tenantId = currentTenantId();
 
 $name = sanitize($_POST['name'] ?? '');
 $description = sanitize($_POST['description'] ?? '');
-$linkedinSearchUrl = sanitize($_POST['linkedin_search_url'] ?? '');
+$searchUrl = sanitize($_POST['search_url'] ?? '');
+$linkedinAccountId = !empty($_POST['linkedin_account_id']) ? (int)$_POST['linkedin_account_id'] : null;
 $status = sanitize($_POST['status'] ?? 'draft');
 
 if (empty($name)) {
@@ -25,16 +26,17 @@ $campaignId = Campaign::create([
     'tenant_id' => $tenantId,
     'name' => $name,
     'description' => $description,
-    'linkedin_search_url' => $linkedinSearchUrl,
+    'linkedin_account_id' => $linkedinAccountId,
+    'search_url' => $searchUrl,
     'status' => $status,
 ]);
 
-// Save campaign steps if provided
+// Save sequence steps if provided
 $steps = $_POST['steps'] ?? [];
 if (!empty($steps) && is_array($steps)) {
     $db = \App\Database\Database::getConnection();
     $stmt = $db->prepare("
-        INSERT INTO leadshark_campaign_steps (campaign_id, step_order, step_type, message_template, delay_days, delay_hours, step_condition, created_at)
+        INSERT INTO leadshark_sequence_steps (campaign_id, step_number, action_type, message_template, delay_days, delay_hours, condition_type, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
     ");
     foreach ($steps as $index => $step) {

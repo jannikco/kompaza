@@ -27,19 +27,16 @@ class Campaign {
     public static function create($data) {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            INSERT INTO leadshark_campaigns (tenant_id, name, description, linkedin_search_url, status, target_count, leads_collected, leads_contacted, leads_responded, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+            INSERT INTO leadshark_campaigns (tenant_id, name, description, linkedin_account_id, search_url, status, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, NOW())
         ");
         $stmt->execute([
             $data['tenant_id'],
             $data['name'],
             $data['description'] ?? null,
-            $data['linkedin_search_url'] ?? null,
+            $data['linkedin_account_id'] ?? null,
+            $data['search_url'] ?? null,
             $data['status'] ?? 'draft',
-            $data['target_count'] ?? 0,
-            $data['leads_collected'] ?? 0,
-            $data['leads_contacted'] ?? 0,
-            $data['leads_responded'] ?? 0,
         ]);
         return $db->lastInsertId();
     }
@@ -74,9 +71,9 @@ class Campaign {
         $db = Database::getConnection();
         $stmt = $db->prepare("
             UPDATE leadshark_campaigns SET
-                leads_collected = (SELECT COUNT(*) FROM linkedin_leads WHERE campaign_id = ?),
-                leads_contacted = (SELECT COUNT(*) FROM linkedin_leads WHERE campaign_id = ? AND status IN ('contacted', 'responded', 'converted')),
-                leads_responded = (SELECT COUNT(*) FROM linkedin_leads WHERE campaign_id = ? AND status IN ('responded', 'converted'))
+                leads_found = (SELECT COUNT(*) FROM linkedin_leads WHERE campaign_id = ?),
+                connections_sent = (SELECT COUNT(*) FROM linkedin_leads WHERE campaign_id = ? AND connection_status IN ('pending', 'accepted')),
+                replies_received = (SELECT COUNT(*) FROM linkedin_leads WHERE campaign_id = ? AND last_replied_at IS NOT NULL)
             WHERE id = ?
         ");
         return $stmt->execute([$id, $id, $id, $id]);

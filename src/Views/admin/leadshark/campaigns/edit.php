@@ -53,10 +53,10 @@
                 </select>
             </div>
             <div class="md:col-span-2">
-                <label for="linkedin_search_url" class="block text-sm font-medium text-gray-300 mb-2">LinkedIn Search URL</label>
-                <input type="url" name="linkedin_search_url" id="linkedin_search_url"
+                <label for="search_url" class="block text-sm font-medium text-gray-300 mb-2">LinkedIn Search URL</label>
+                <input type="url" name="search_url" id="search_url"
                     class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    value="<?= h($campaign['linkedin_search_url'] ?? '') ?>"
+                    value="<?= h($campaign['search_url'] ?? '') ?>"
                     placeholder="https://www.linkedin.com/search/results/people/?keywords=...">
                 <p class="text-xs text-gray-500 mt-1">Paste the full LinkedIn search URL to define your target audience.</p>
             </div>
@@ -68,20 +68,20 @@
         <h3 class="text-lg font-semibold text-white mb-4">Campaign Statistics</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="bg-gray-900 rounded-lg p-4 text-center">
-                <p class="text-2xl font-bold text-white"><?= number_format($campaign['leads_collected'] ?? 0) ?></p>
-                <p class="text-xs text-gray-400 mt-1">Leads Collected</p>
+                <p class="text-2xl font-bold text-white"><?= number_format($campaign['leads_found'] ?? 0) ?></p>
+                <p class="text-xs text-gray-400 mt-1">Leads Found</p>
             </div>
             <div class="bg-gray-900 rounded-lg p-4 text-center">
-                <p class="text-2xl font-bold text-white"><?= number_format($campaign['leads_contacted'] ?? 0) ?></p>
-                <p class="text-xs text-gray-400 mt-1">Contacted</p>
+                <p class="text-2xl font-bold text-white"><?= number_format($campaign['connections_sent'] ?? 0) ?></p>
+                <p class="text-xs text-gray-400 mt-1">Connections Sent</p>
             </div>
             <div class="bg-gray-900 rounded-lg p-4 text-center">
-                <p class="text-2xl font-bold text-white"><?= number_format($campaign['leads_responded'] ?? 0) ?></p>
-                <p class="text-xs text-gray-400 mt-1">Responded</p>
+                <p class="text-2xl font-bold text-white"><?= number_format($campaign['replies_received'] ?? 0) ?></p>
+                <p class="text-xs text-gray-400 mt-1">Replied</p>
             </div>
             <div class="bg-gray-900 rounded-lg p-4 text-center">
-                <p class="text-2xl font-bold text-white"><?= number_format($campaign['target_count'] ?? 0) ?></p>
-                <p class="text-xs text-gray-400 mt-1">Target Count</p>
+                <p class="text-2xl font-bold text-white"><?= number_format($campaign['connections_accepted'] ?? 0) ?></p>
+                <p class="text-xs text-gray-400 mt-1">Accepted</p>
             </div>
         </div>
     </div>

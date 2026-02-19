@@ -28,6 +28,16 @@ ob_start();
                 <p class="text-sm text-gray-500 mt-1">View and track your orders</p>
             </a>
 
+            <?php if (tenantFeature('courses')): ?>
+            <a href="/konto/kurser" class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow duration-300 group">
+                <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                </div>
+                <h3 class="font-semibold text-gray-900 group-hover:text-brand transition">My Courses</h3>
+                <p class="text-sm text-gray-500 mt-1">Continue learning</p>
+            </a>
+            <?php endif; ?>
+
             <a href="/products" class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow duration-300 group">
                 <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center mb-4">
                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>

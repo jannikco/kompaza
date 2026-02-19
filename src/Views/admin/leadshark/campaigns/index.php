@@ -61,9 +61,9 @@
                         <td class="px-6 py-4 text-sm text-gray-300">
                             <?= h($linkedinAccount['linkedin_name'] ?? 'Not connected') ?>
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-300 text-center"><?= number_format($campaign['leads_collected'] ?? 0) ?></td>
-                        <td class="px-6 py-4 text-sm text-gray-300 text-center"><?= number_format($campaign['leads_contacted'] ?? 0) ?></td>
-                        <td class="px-6 py-4 text-sm text-gray-300 text-center"><?= number_format($campaign['leads_responded'] ?? 0) ?></td>
+                        <td class="px-6 py-4 text-sm text-gray-300 text-center"><?= number_format($campaign['leads_found'] ?? 0) ?></td>
+                        <td class="px-6 py-4 text-sm text-gray-300 text-center"><?= number_format($campaign['connections_sent'] ?? 0) ?></td>
+                        <td class="px-6 py-4 text-sm text-gray-300 text-center"><?= number_format($campaign['replies_received'] ?? 0) ?></td>
                         <td class="px-6 py-4 text-sm text-gray-400"><?= formatDate($campaign['created_at']) ?></td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end space-x-2">

@@ -55,8 +55,8 @@
                 </select>
             </div>
             <div class="md:col-span-2">
-                <label for="linkedin_search_url" class="block text-sm font-medium text-gray-300 mb-2">LinkedIn Search URL</label>
-                <input type="url" name="linkedin_search_url" id="linkedin_search_url"
+                <label for="search_url" class="block text-sm font-medium text-gray-300 mb-2">LinkedIn Search URL</label>
+                <input type="url" name="search_url" id="search_url"
                     class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="https://www.linkedin.com/search/results/people/?keywords=...">
                 <p class="text-xs text-gray-500 mt-1">Paste the full LinkedIn search URL to define your target audience. Use LinkedIn Sales Navigator or standard search.</p>
