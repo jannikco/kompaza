@@ -19,7 +19,9 @@
     <aside :class="mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-gray-800 border-r border-gray-700 transform transition-transform lg:translate-x-0 flex flex-col">
         <!-- Logo -->
         <div class="flex items-center h-16 px-6 border-b border-gray-700">
-            <a href="/" class="text-xl font-bold text-white">Kompaza Admin</a>
+            <a href="/" class="inline-block bg-white rounded-lg px-3 py-1.5">
+                <img src="/images/kompaza-logo.png" alt="Kompaza Admin" class="h-7">
+            </a>
         </div>
 
         <!-- Navigation -->

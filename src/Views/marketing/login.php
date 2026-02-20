@@ -5,7 +5,7 @@
         <!-- Logo & Title -->
         <div class="text-center mb-8">
             <a href="/" class="inline-block mb-6">
-                <img src="/images/kompaza-logo.svg" alt="Kompaza" class="h-16">
+                <img src="/images/kompaza-logo.png" alt="Kompaza" class="h-16">
             </a>
             <h1 class="text-2xl font-bold text-gray-900 mb-2">Welcome back</h1>
             <p class="text-gray-500 text-sm">Find your workspace and log in</p>

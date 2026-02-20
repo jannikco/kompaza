@@ -56,7 +56,7 @@
             <div class="flex items-center justify-between h-16 lg:h-18">
                 <!-- Logo -->
                 <a href="/" class="inline-block">
-                    <img src="/images/kompaza-logo.svg" alt="Kompaza" class="h-10">
+                    <img src="/images/kompaza-logo.png" alt="Kompaza" class="h-10">
                 </a>
 
                 <!-- Desktop Navigation -->
@@ -127,8 +127,8 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
                 <!-- Brand -->
                 <div class="md:col-span-1">
-                    <a href="/" class="inline-block mb-4">
-                        <img src="/images/kompaza-logo.svg" alt="Kompaza" class="h-10 brightness-0 invert">
+                    <a href="/" class="inline-block mb-4 bg-white rounded-lg px-3 py-2">
+                        <img src="/images/kompaza-logo.png" alt="Kompaza" class="h-8">
                     </a>
                     <p class="text-gray-400 text-sm leading-relaxed">
                         The all-in-one platform for content marketing, lead generation, and LinkedIn automation.

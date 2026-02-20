@@ -20,13 +20,8 @@
     <nav class="bg-white border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center h-16">
-                <a href="/" class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-lg hero-gradient flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                    </div>
-                    <span class="text-xl font-bold text-gray-900">Kompaza</span>
+                <a href="/" class="inline-block">
+                    <img src="/images/kompaza-logo.png" alt="Kompaza" class="h-10">
                 </a>
             </div>
         </div>

@@ -15,7 +15,9 @@
     <div class="w-full max-w-md px-6">
         <!-- Logo -->
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-white">Kompaza</h1>
+            <div class="inline-block bg-white rounded-xl px-5 py-3 mb-2">
+                <img src="/images/kompaza-logo.png" alt="Kompaza" class="h-12">
+            </div>
             <p class="text-gray-400 mt-2">Superadmin Panel</p>
         </div>
 
