@@ -58,7 +58,7 @@ ob_start();
             <label class="block text-sm font-medium text-gray-300 mb-1.5">Current Image</label>
             <div class="flex items-start space-x-4">
                 <div class="w-32 h-32 rounded-lg overflow-hidden bg-gray-700 flex-shrink-0">
-                    <img src="<?= h($product['image_path']) ?>" alt="<?= h($product['name']) ?>" class="w-full h-full object-cover">
+                    <img src="<?= h(imageUrl($product['image_path'])) ?>" alt="<?= h($product['name']) ?>" class="w-full h-full object-cover">
                 </div>
                 <div class="flex items-center pt-2">
                     <label class="flex items-center">

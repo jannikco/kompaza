@@ -2,8 +2,8 @@
 $tenant = $tenant ?? currentTenant();
 $primaryColor = $tenant['primary_color'] ?? '#3b82f6';
 $companyName = $tenant['company_name'] ?? $tenant['name'] ?? 'Store';
-$logoUrl = $tenant['logo_url'] ?? null;
-$faviconUrl = $tenant['favicon_url'] ?? null;
+$logoUrl = imageUrl($tenant['logo_url'] ?? '') ?: null;
+$faviconUrl = imageUrl($tenant['favicon_url'] ?? '') ?: null;
 $customCss = $tenant['custom_css'] ?? null;
 $tenantId = $tenant['id'] ?? null;
 $currency = $tenant['currency'] ?? 'DKK';

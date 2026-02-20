@@ -45,7 +45,7 @@ ob_start();
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 w-16 h-10 rounded-lg overflow-hidden bg-gray-700">
                                     <?php if (!empty($course['cover_image_path'])): ?>
-                                        <img src="<?= h($course['cover_image_path']) ?>" alt="" class="w-16 h-10 object-cover">
+                                        <img src="<?= h(imageUrl($course['cover_image_path'])) ?>" alt="" class="w-16 h-10 object-cover">
                                     <?php else: ?>
                                         <div class="w-16 h-10 flex items-center justify-center">
                                             <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>

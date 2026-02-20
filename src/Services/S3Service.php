@@ -8,7 +8,6 @@ class S3Service {
     private string $accessKeyId;
     private string $secretAccessKey;
     private string $bucket;
-    private string $publicDomain;
 
     public function __construct() {
         $this->endpoint = S3_ENDPOINT;
@@ -16,18 +15,13 @@ class S3Service {
         $this->accessKeyId = S3_ACCESS_KEY_ID;
         $this->secretAccessKey = S3_SECRET_ACCESS_KEY;
         $this->bucket = S3_BUCKET_NAME;
-        $this->publicDomain = S3_PUBLIC_DOMAIN;
     }
 
     public static function isConfigured(): bool {
         return !empty(S3_ACCESS_KEY_ID) && !empty(S3_SECRET_ACCESS_KEY) && !empty(S3_BUCKET_NAME);
     }
 
-    public function getPublicUrl(string $key): string {
-        return 'https://' . $this->publicDomain . '/' . ltrim($key, '/');
-    }
-
-    public function putObject(string $key, string $filePath, string $contentType, string $acl = ''): bool {
+    public function putObject(string $key, string $filePath, string $contentType): bool {
         $body = file_get_contents($filePath);
         $bodyHash = hash('sha256', $body);
         $date = gmdate('Ymd\THis\Z');
@@ -43,9 +37,6 @@ class S3Service {
             'content-type' => $contentType,
             'content-length' => strlen($body),
         ];
-        if ($acl !== '') {
-            $headers['x-amz-acl'] = $acl;
-        }
 
         $authorization = $this->buildAuthorizationHeader('PUT', $uri, '', $headers, $bodyHash, $date, $dateShort);
         $headers['authorization'] = $authorization;
@@ -72,7 +63,7 @@ class S3Service {
         return $httpCode >= 200 && $httpCode < 300;
     }
 
-    public function putObjectStream(string $key, string $filePath, string $contentType, string $acl = ''): bool {
+    public function putObjectStream(string $key, string $filePath, string $contentType): bool {
         $fileSize = filesize($filePath);
         $bodyHash = 'UNSIGNED-PAYLOAD';
         $date = gmdate('Ymd\THis\Z');
@@ -88,9 +79,6 @@ class S3Service {
             'content-type' => $contentType,
             'content-length' => $fileSize,
         ];
-        if ($acl !== '') {
-            $headers['x-amz-acl'] = $acl;
-        }
 
         $authorization = $this->buildAuthorizationHeader('PUT', $uri, '', $headers, $bodyHash, $date, $dateShort);
         $headers['authorization'] = $authorization;

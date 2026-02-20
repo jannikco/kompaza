@@ -58,7 +58,7 @@ ob_start();
                 <label for="cover_image" class="block text-sm font-medium text-gray-300 mb-2">Cover Image</label>
                 <?php if (!empty($ebook['cover_image'])): ?>
                     <div class="mb-3 flex items-center space-x-3">
-                        <img src="<?= h($ebook['cover_image']) ?>" alt="Current cover" class="h-20 w-auto rounded-lg border border-gray-600">
+                        <img src="<?= h(imageUrl($ebook['cover_image'])) ?>" alt="Current cover" class="h-20 w-auto rounded-lg border border-gray-600">
                         <span class="text-sm text-gray-400">Current cover</span>
                     </div>
                 <?php endif; ?>

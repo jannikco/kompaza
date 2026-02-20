@@ -12,7 +12,7 @@ ob_start();
             <div class="lg:col-span-2">
                 <?php if (!empty($course['cover_image_path'])): ?>
                     <div class="aspect-video rounded-xl overflow-hidden mb-8">
-                        <img src="<?= h($course['cover_image_path']) ?>" alt="<?= h($course['title']) ?>" class="w-full h-full object-cover">
+                        <img src="<?= h(imageUrl($course['cover_image_path'])) ?>" alt="<?= h($course['title']) ?>" class="w-full h-full object-cover">
                     </div>
                 <?php endif; ?>
 
@@ -35,7 +35,7 @@ ob_start();
                 <?php if (!empty($course['instructor_name'])): ?>
                 <div class="flex items-center space-x-3 mt-6 p-4 bg-gray-50 rounded-xl">
                     <?php if (!empty($course['instructor_image_path'])): ?>
-                        <img src="<?= h($course['instructor_image_path']) ?>" class="w-12 h-12 rounded-full object-cover">
+                        <img src="<?= h(imageUrl($course['instructor_image_path'])) ?>" class="w-12 h-12 rounded-full object-cover">
                     <?php else: ?>
                         <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center">
                             <span class="text-brand font-bold text-lg"><?= h(mb_substr($course['instructor_name'], 0, 1)) ?></span>

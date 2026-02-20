@@ -24,7 +24,7 @@ ob_start();
             <div>
                 <?php if (!empty($ebook['cover_image_path'])): ?>
                     <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-                        <img src="<?= h($ebook['cover_image_path']) ?>" alt="<?= h($ebook['title']) ?>"
+                        <img src="<?= h(imageUrl($ebook['cover_image_path'])) ?>" alt="<?= h($ebook['title']) ?>"
                              class="w-full h-auto object-cover">
                     </div>
                 <?php else: ?>

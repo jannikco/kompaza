@@ -274,8 +274,8 @@ function uploadPublicFile($tmpFile, $category, $prefix, $ext) {
         $key = "tenants/{$tenantId}/{$category}/{$filename}";
         $contentType = mime_content_type($tmpFile) ?: 'application/octet-stream';
         $s3 = new \App\Services\S3Service();
-        if ($s3->putObject($key, $tmpFile, $contentType, 'public-read')) {
-            return $s3->getPublicUrl($key);
+        if ($s3->putObject($key, $tmpFile, $contentType)) {
+            return $key;
         }
     }
 
@@ -283,6 +283,20 @@ function uploadPublicFile($tmpFile, $category, $prefix, $ext) {
     $uploadPath = tenantUploadPath($category);
     move_uploaded_file($tmpFile, $uploadPath . '/' . $filename);
     return '/uploads/' . $tenantId . '/' . $category . '/' . $filename;
+}
+
+function imageUrl($pathOrKey, $expiresInSeconds = 604800) {
+    if (!$pathOrKey) return '';
+    // Old local paths — serve as-is
+    if (str_starts_with($pathOrKey, '/uploads/')) return $pathOrKey;
+    // Already a full URL (legacy) — return as-is
+    if (str_starts_with($pathOrKey, 'http')) return $pathOrKey;
+    // S3 key — generate presigned URL (7-day default)
+    if (\App\Services\S3Service::isConfigured()) {
+        $s3 = new \App\Services\S3Service();
+        return $s3->getPresignedUrl($pathOrKey, $expiresInSeconds);
+    }
+    return '';
 }
 
 function uploadPrivateFile($tmpFile, $category, $prefix, $ext) {

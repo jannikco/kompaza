@@ -63,7 +63,7 @@ ob_start();
         <h3 class="text-lg font-semibold text-white mb-4">Cover Image</h3>
         <?php if (!empty($course['cover_image_path'])): ?>
             <div class="mb-4">
-                <img src="<?= h($course['cover_image_path']) ?>" alt="" class="w-48 h-auto rounded-lg">
+                <img src="<?= h(imageUrl($course['cover_image_path'])) ?>" alt="" class="w-48 h-auto rounded-lg">
             </div>
         <?php endif; ?>
         <input type="file" name="cover_image" accept="image/*"
@@ -137,7 +137,7 @@ ob_start();
             <div>
                 <label class="block text-sm font-medium text-gray-300 mb-1.5">Photo</label>
                 <?php if (!empty($course['instructor_image_path'])): ?>
-                    <img src="<?= h($course['instructor_image_path']) ?>" class="w-10 h-10 rounded-full mb-2">
+                    <img src="<?= h(imageUrl($course['instructor_image_path'])) ?>" class="w-10 h-10 rounded-full mb-2">
                 <?php endif; ?>
                 <input type="file" name="instructor_image" accept="image/*"
                        class="w-full text-sm text-gray-400 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:bg-indigo-600 file:text-white hover:file:bg-indigo-700">

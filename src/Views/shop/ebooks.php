@@ -29,7 +29,7 @@ ob_start();
                     <a href="/ebook/<?= h($ebook['slug']) ?>" class="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
                         <?php if (!empty($ebook['cover_image_path'])): ?>
                             <div class="aspect-[3/4] overflow-hidden bg-gray-100">
-                                <img src="<?= h($ebook['cover_image_path']) ?>" alt="<?= h($ebook['title']) ?>"
+                                <img src="<?= h(imageUrl($ebook['cover_image_path'])) ?>" alt="<?= h($ebook['title']) ?>"
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                             </div>
                         <?php else: ?>

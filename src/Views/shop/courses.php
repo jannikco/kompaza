@@ -22,7 +22,7 @@ ob_start();
                 <a href="/course/<?= h($course['slug']) ?>" class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
                     <div class="aspect-video bg-gray-100 overflow-hidden">
                         <?php if (!empty($course['cover_image_path'])): ?>
-                            <img src="<?= h($course['cover_image_path']) ?>" alt="<?= h($course['title']) ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            <img src="<?= h(imageUrl($course['cover_image_path'])) ?>" alt="<?= h($course['title']) ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         <?php else: ?>
                             <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100">
                                 <svg class="w-12 h-12 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>

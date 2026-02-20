@@ -34,7 +34,7 @@ ob_start();
 
                 <?php if (!empty($leadMagnet['hero_image_path'])): ?>
                     <div class="mt-8 lg:hidden">
-                        <img src="<?= h($leadMagnet['hero_image_path']) ?>" alt="<?= h($leadMagnet['title']) ?>"
+                        <img src="<?= h(imageUrl($leadMagnet['hero_image_path'])) ?>" alt="<?= h($leadMagnet['title']) ?>"
                              class="rounded-xl shadow-2xl max-w-sm mx-auto">
                     </div>
                 <?php endif; ?>
@@ -44,7 +44,7 @@ ob_start();
             <div class="flex flex-col items-center">
                 <?php if (!empty($leadMagnet['hero_image_path'])): ?>
                     <div class="hidden lg:block mb-8">
-                        <img src="<?= h($leadMagnet['hero_image_path']) ?>" alt="<?= h($leadMagnet['title']) ?>"
+                        <img src="<?= h(imageUrl($leadMagnet['hero_image_path'])) ?>" alt="<?= h($leadMagnet['title']) ?>"
                              class="rounded-xl shadow-2xl max-w-md">
                     </div>
                 <?php endif; ?>

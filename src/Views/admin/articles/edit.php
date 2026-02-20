@@ -56,7 +56,7 @@ ob_start();
                 <label for="featured_image" class="block text-sm font-medium text-gray-300 mb-2">Featured Image</label>
                 <?php if (!empty($article['featured_image'])): ?>
                     <div class="mb-3 flex items-center space-x-3">
-                        <img src="<?= h($article['featured_image']) ?>" alt="Current featured image" class="h-16 w-auto rounded-lg border border-gray-600">
+                        <img src="<?= h(imageUrl($article['featured_image'])) ?>" alt="Current featured image" class="h-16 w-auto rounded-lg border border-gray-600">
                         <span class="text-sm text-gray-400">Current image</span>
                     </div>
                 <?php endif; ?>

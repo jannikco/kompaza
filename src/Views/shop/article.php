@@ -48,7 +48,7 @@ ob_start();
             <!-- Featured Image -->
             <?php if (!empty($article['featured_image'])): ?>
                 <div class="mb-10 rounded-xl overflow-hidden border border-gray-200">
-                    <img src="<?= h($article['featured_image']) ?>" alt="<?= h($article['title']) ?>"
+                    <img src="<?= h(imageUrl($article['featured_image'])) ?>" alt="<?= h($article['title']) ?>"
                          class="w-full h-auto object-cover">
                 </div>
             <?php endif; ?>
@@ -105,7 +105,7 @@ ob_start();
                         <a href="/blog/<?= h($related['slug']) ?>" class="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
                             <?php if (!empty($related['featured_image'])): ?>
                                 <div class="aspect-video overflow-hidden">
-                                    <img src="<?= h($related['featured_image']) ?>" alt="<?= h($related['title']) ?>"
+                                    <img src="<?= h(imageUrl($related['featured_image'])) ?>" alt="<?= h($related['title']) ?>"
                                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                 </div>
                             <?php else: ?>

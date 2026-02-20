@@ -31,7 +31,7 @@ ob_start();
                         <a href="/product/<?= h($product['slug']) ?>" class="block">
                             <?php if (!empty($product['image_path'])): ?>
                                 <div class="aspect-square overflow-hidden bg-gray-50">
-                                    <img src="<?= h($product['image_path']) ?>" alt="<?= h($product['name']) ?>"
+                                    <img src="<?= h(imageUrl($product['image_path'])) ?>" alt="<?= h($product['name']) ?>"
                                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                 </div>
                             <?php else: ?>
@@ -60,7 +60,7 @@ ob_start();
                                     adding = true;
                                     let cart = JSON.parse(localStorage.getItem('kz_cart_<?= (int)$tenant['id'] ?>') || '[]');
                                     let idx = cart.findIndex(i => i.id === <?= (int)$product['id'] ?>);
-                                    if (idx >= 0) { cart[idx].qty++; } else { cart.push({ id: <?= (int)$product['id'] ?>, name: <?= json_encode($product['name']) ?>, price: <?= (float)$product['price_dkk'] ?>, image: <?= json_encode($product['image_path'] ?? '') ?>, qty: 1 }); }
+                                    if (idx >= 0) { cart[idx].qty++; } else { cart.push({ id: <?= (int)$product['id'] ?>, name: <?= json_encode($product['name']) ?>, price: <?= (float)$product['price_dkk'] ?>, image: <?= json_encode(imageUrl($product['image_path'] ?? '')) ?>, qty: 1 }); }
                                     localStorage.setItem('kz_cart_<?= (int)$tenant['id'] ?>', JSON.stringify(cart));
                                     window.dispatchEvent(new Event('cart-updated'));
                                     adding = false; added = true;

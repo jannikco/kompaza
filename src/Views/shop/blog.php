@@ -29,7 +29,7 @@ ob_start();
                     <a href="/blog/<?= h($article['slug']) ?>" class="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
                         <?php if (!empty($article['featured_image'])): ?>
                             <div class="aspect-video overflow-hidden">
-                                <img src="<?= h($article['featured_image']) ?>" alt="<?= h($article['title']) ?>"
+                                <img src="<?= h(imageUrl($article['featured_image'])) ?>" alt="<?= h($article['title']) ?>"
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                             </div>
                         <?php else: ?>

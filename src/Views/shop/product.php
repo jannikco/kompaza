@@ -28,12 +28,12 @@ ob_start();
             qty: 1,
             adding: false,
             added: false,
-            activeImage: '<?= h($product['image_path'] ?? '') ?>',
+            activeImage: '<?= h(imageUrl($product['image_path'] ?? '')) ?>',
             addToCart() {
                 this.adding = true;
                 let cart = JSON.parse(localStorage.getItem('kz_cart_<?= (int)$tenant['id'] ?>') || '[]');
                 let idx = cart.findIndex(i => i.id === <?= (int)$product['id'] ?>);
-                if (idx >= 0) { cart[idx].qty += this.qty; } else { cart.push({ id: <?= (int)$product['id'] ?>, name: <?= json_encode($product['name']) ?>, price: <?= (float)$product['price_dkk'] ?>, image: <?= json_encode($product['image_path'] ?? '') ?>, qty: this.qty }); }
+                if (idx >= 0) { cart[idx].qty += this.qty; } else { cart.push({ id: <?= (int)$product['id'] ?>, name: <?= json_encode($product['name']) ?>, price: <?= (float)$product['price_dkk'] ?>, image: <?= json_encode(imageUrl($product['image_path'] ?? '')) ?>, qty: this.qty }); }
                 localStorage.setItem('kz_cart_<?= (int)$tenant['id'] ?>', JSON.stringify(cart));
                 window.dispatchEvent(new Event('cart-updated'));
                 this.adding = false;
@@ -57,17 +57,17 @@ ob_start();
                 <?php if (!empty($gallery)): ?>
                     <div class="grid grid-cols-4 gap-3">
                         <?php if (!empty($product['image_path'])): ?>
-                            <button @click="activeImage = '<?= h($product['image_path']) ?>'"
+                            <button @click="activeImage = '<?= h(imageUrl($product['image_path'])) ?>'"
                                     class="rounded-lg border-2 overflow-hidden aspect-square"
-                                    :class="activeImage === '<?= h($product['image_path']) ?>' ? 'border-brand' : 'border-gray-200 hover:border-gray-300'">
-                                <img src="<?= h($product['image_path']) ?>" class="w-full h-full object-cover" alt="">
+                                    :class="activeImage === '<?= h(imageUrl($product['image_path'])) ?>' ? 'border-brand' : 'border-gray-200 hover:border-gray-300'">
+                                <img src="<?= h(imageUrl($product['image_path'])) ?>" class="w-full h-full object-cover" alt="">
                             </button>
                         <?php endif; ?>
                         <?php foreach ($gallery as $img): ?>
-                            <button @click="activeImage = '<?= h($img) ?>'"
+                            <button @click="activeImage = '<?= h(imageUrl($img)) ?>'"
                                     class="rounded-lg border-2 overflow-hidden aspect-square"
-                                    :class="activeImage === '<?= h($img) ?>' ? 'border-brand' : 'border-gray-200 hover:border-gray-300'">
-                                <img src="<?= h($img) ?>" class="w-full h-full object-cover" alt="">
+                                    :class="activeImage === '<?= h(imageUrl($img)) ?>' ? 'border-brand' : 'border-gray-200 hover:border-gray-300'">
+                                <img src="<?= h(imageUrl($img)) ?>" class="w-full h-full object-cover" alt="">
                             </button>
                         <?php endforeach; ?>
                     </div>
