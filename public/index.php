@@ -329,6 +329,23 @@ if ($routingMode === 'tenant') {
             $controller = 'shop/account/order-detail';
             $dynamicParams['id'] = $matches[1];
         }
+        // Quiz: take quiz (must be before /course/{slug} pattern)
+        elseif ($method === 'GET' && $request === '/course/quiz') {
+            $controller = 'shop/course-quiz';
+        }
+        // Quiz: submit answers
+        elseif ($method === 'POST' && $request === '/course/quiz/submit') {
+            $controller = 'shop/course-quiz-submit';
+        }
+        // Certificate: public verify
+        elseif ($method === 'GET' && preg_match('#^/certificate/verify/([A-Z0-9\-]+)$#', $request, $matches)) {
+            $controller = 'shop/certificate-verify';
+            $dynamicParams['slug'] = $matches[1];
+        }
+        // Lesson attachment download
+        elseif ($method === 'GET' && $request === '/lesson/attachment/download') {
+            $controller = 'shop/lesson-attachment-download';
+        }
         // Course: detail page /course/{slug}
         elseif ($method === 'GET' && preg_match('#^/course/([a-z0-9\-]+)$#', $request, $matches)) {
             $controller = 'shop/course';
@@ -345,6 +362,11 @@ if ($routingMode === 'tenant') {
             $dynamicParams['slug'] = $matches[1];
             $dynamicParams['lesson_id'] = $matches[2];
         }
+        // Course: certificate (must be after /course/quiz but uses slug pattern)
+        elseif ($method === 'GET' && preg_match('#^/course/([a-z0-9\-]+)/certificate$#', $request, $matches)) {
+            $controller = 'shop/certificate-generate';
+            $dynamicParams['slug'] = $matches[1];
+        }
         // Course: buy
         elseif ($method === 'POST' && preg_match('#^/course/([a-z0-9\-]+)/buy$#', $request, $matches)) {
             $controller = 'shop/course-buy';
@@ -359,28 +381,6 @@ if ($routingMode === 'tenant') {
         elseif ($method === 'POST' && preg_match('#^/course/([a-z0-9\-]+)/enroll-free$#', $request, $matches)) {
             $controller = 'shop/course-enroll-free';
             $dynamicParams['slug'] = $matches[1];
-        }
-        // Quiz: take quiz
-        elseif ($method === 'GET' && $request === '/course/quiz') {
-            $controller = 'shop/course-quiz';
-        }
-        // Quiz: submit answers
-        elseif ($method === 'POST' && $request === '/course/quiz/submit') {
-            $controller = 'shop/course-quiz-submit';
-        }
-        // Certificate: generate
-        elseif ($method === 'GET' && preg_match('#^/course/([a-z0-9\-]+)/certificate$#', $request, $matches)) {
-            $controller = 'shop/certificate-generate';
-            $dynamicParams['slug'] = $matches[1];
-        }
-        // Certificate: public verify
-        elseif ($method === 'GET' && preg_match('#^/certificate/verify/([A-Z0-9\-]+)$#', $request, $matches)) {
-            $controller = 'shop/certificate-verify';
-            $dynamicParams['slug'] = $matches[1];
-        }
-        // Lesson attachment download
-        elseif ($method === 'GET' && $request === '/lesson/attachment/download') {
-            $controller = 'shop/lesson-attachment-download';
         }
         // Cart actions (AJAX)
         elseif ($method === 'POST' && $request === '/api/cart/add') {
