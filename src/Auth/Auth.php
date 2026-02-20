@@ -79,6 +79,10 @@ class Auth {
         return self::$currentUser['role'] ?? null;
     }
 
+    public static function admin(): ?array {
+        return self::$currentUser;
+    }
+
     public static function isSuperAdmin(): bool {
         return self::$currentUser !== null && self::$currentUser['role'] === 'superadmin';
     }
