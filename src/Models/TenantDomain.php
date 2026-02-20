@@ -14,7 +14,7 @@ class TenantDomain {
 
     public static function allByTenant($tenantId) {
         $db = Database::getConnection();
-        $stmt = $db->prepare("SELECT * FROM tenant_domains WHERE tenant_id = ? ORDER BY is_primary DESC, created_at ASC");
+        $stmt = $db->prepare("SELECT * FROM tenant_domains WHERE tenant_id = ? ORDER BY created_at ASC");
         $stmt->execute([$tenantId]);
         return $stmt->fetchAll();
     }
@@ -22,15 +22,13 @@ class TenantDomain {
     public static function create($data) {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            INSERT INTO tenant_domains (tenant_id, domain, is_primary, is_verified, verified_at, created_at)
-            VALUES (?, ?, ?, ?, ?, NOW())
+            INSERT INTO tenant_domains (tenant_id, domain, ssl_status, created_at)
+            VALUES (?, ?, ?, NOW())
         ");
         $stmt->execute([
             $data['tenant_id'],
             $data['domain'],
-            $data['is_primary'] ?? 0,
-            $data['is_verified'] ?? 0,
-            $data['verified_at'] ?? null,
+            $data['ssl_status'] ?? 'pending',
         ]);
         return $db->lastInsertId();
     }
