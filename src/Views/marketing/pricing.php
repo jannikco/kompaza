@@ -44,7 +44,6 @@
         <?php else: ?>
             <div class="grid grid-cols-1 md:grid-cols-<?= count($plans) ?> gap-8 max-w-5xl mx-auto items-start">
                 <?php foreach ($plans as $index => $plan):
-                    $features = json_decode($plan['features_json'] ?? '{}', true) ?: [];
                     $isPopular = ($plan['slug'] === 'growth');
                     $monthlyPrice = (int)$plan['price_monthly_usd'];
                     $yearlyPrice = $plan['price_yearly_usd'] ? (int)$plan['price_yearly_usd'] : null;
@@ -104,94 +103,63 @@
                             </a>
 
                             <!-- Features list -->
+                            <?php
+                                $planFeatures = [
+                                    'starter' => [
+                                        ['label' => '5 Products', 'included' => true],
+                                        ['label' => '100 Contacts', 'included' => true],
+                                        ['label' => '1 Website', 'included' => true],
+                                        ['label' => 'Blog & articles', 'included' => true],
+                                        ['label' => 'Lead magnets & landing pages', 'included' => true],
+                                        ['label' => 'E-book publishing', 'included' => true],
+                                        ['label' => 'Email marketing', 'included' => true],
+                                        ['label' => 'Online courses', 'included' => false],
+                                        ['label' => 'LinkedIn automation', 'included' => false],
+                                        ['label' => 'Payment processing', 'included' => false],
+                                    ],
+                                    'growth' => [
+                                        ['label' => '100 Products', 'included' => true],
+                                        ['label' => '500 Contacts', 'included' => true],
+                                        ['label' => '1 Website', 'included' => true],
+                                        ['label' => 'Online courses', 'included' => true],
+                                        ['label' => 'Blog & articles', 'included' => true],
+                                        ['label' => 'Lead magnets & landing pages', 'included' => true],
+                                        ['label' => 'E-book publishing', 'included' => true],
+                                        ['label' => 'Email marketing', 'included' => true],
+                                        ['label' => 'LinkedIn automation', 'included' => true],
+                                        ['label' => 'Payment processing', 'included' => true],
+                                    ],
+                                    'enterprise' => [
+                                        ['label' => 'Unlimited products', 'included' => true],
+                                        ['label' => 'Unlimited contacts', 'included' => true],
+                                        ['label' => '1 Website', 'included' => true],
+                                        ['label' => 'Online courses', 'included' => true],
+                                        ['label' => 'Blog & articles', 'included' => true],
+                                        ['label' => 'Lead magnets & landing pages', 'included' => true],
+                                        ['label' => 'E-book publishing', 'included' => true],
+                                        ['label' => 'Email marketing', 'included' => true],
+                                        ['label' => 'LinkedIn automation', 'included' => true],
+                                        ['label' => 'Payment processing', 'included' => true],
+                                        ['label' => 'Custom domain', 'included' => true],
+                                        ['label' => 'Priority support', 'included' => true],
+                                    ],
+                                ];
+                                $currentFeatures = $planFeatures[$plan['slug']] ?? $planFeatures['starter'];
+                            ?>
                             <div class="mt-8 pt-8 border-t border-gray-100">
                                 <p class="text-sm font-semibold text-gray-900 mb-4">What's included:</p>
                                 <ul class="space-y-3">
-                                    <!-- Limits -->
-                                    <li class="flex items-start text-sm">
-                                        <svg class="w-5 h-5 text-indigo-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                        <span class="text-gray-600"><?= $plan['max_customers'] ? number_format($plan['max_customers']) . ' customers' : 'Unlimited customers' ?></span>
-                                    </li>
-                                    <li class="flex items-start text-sm">
-                                        <svg class="w-5 h-5 text-indigo-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                        <span class="text-gray-600"><?= $plan['max_lead_magnets'] ? $plan['max_lead_magnets'] . ' lead magnets' : 'Unlimited lead magnets' ?></span>
-                                    </li>
-                                    <li class="flex items-start text-sm">
-                                        <svg class="w-5 h-5 text-indigo-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                        <span class="text-gray-600"><?= $plan['max_products'] ? $plan['max_products'] . ' products' : 'Unlimited products' ?></span>
-                                    </li>
-
-                                    <!-- Feature flags -->
-                                    <?php if (!empty($features['blog'])): ?>
+                                    <?php foreach ($currentFeatures as $feature): ?>
                                         <li class="flex items-start text-sm">
-                                            <svg class="w-5 h-5 text-indigo-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                            <span class="text-gray-600">Blog &amp; articles</span>
+                                            <?php if ($feature['included']): ?>
+                                                <svg class="w-5 h-5 text-indigo-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                                <span class="text-gray-600"><?= h($feature['label']) ?></span>
+                                            <?php else: ?>
+                                                <svg class="w-5 h-5 text-gray-300 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                                <span class="text-gray-400"><?= h($feature['label']) ?></span>
+                                            <?php endif; ?>
                                         </li>
-                                    <?php endif; ?>
-                                    <?php if (!empty($features['ebooks'])): ?>
-                                        <li class="flex items-start text-sm">
-                                            <svg class="w-5 h-5 text-indigo-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                            <span class="text-gray-600">E-book publishing</span>
-                                        </li>
-                                    <?php endif; ?>
-                                    <?php if (!empty($features['orders'])): ?>
-                                        <li class="flex items-start text-sm">
-                                            <svg class="w-5 h-5 text-indigo-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                            <span class="text-gray-600">Order management &amp; Stripe</span>
-                                        </li>
-                                    <?php else: ?>
-                                        <li class="flex items-start text-sm">
-                                            <svg class="w-5 h-5 text-gray-300 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
-                                            <span class="text-gray-400">Order management &amp; Stripe</span>
-                                        </li>
-                                    <?php endif; ?>
-                                    <?php if (!empty($features['leadshark'])): ?>
-                                        <li class="flex items-start text-sm">
-                                            <svg class="w-5 h-5 text-indigo-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                            <span class="text-gray-600">LeadShark LinkedIn automation</span>
-                                        </li>
-                                    <?php else: ?>
-                                        <li class="flex items-start text-sm">
-                                            <svg class="w-5 h-5 text-gray-300 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
-                                            <span class="text-gray-400">LeadShark LinkedIn automation</span>
-                                        </li>
-                                    <?php endif; ?>
-                                    <?php if (!empty($features['custom_domain'])): ?>
-                                        <li class="flex items-start text-sm">
-                                            <svg class="w-5 h-5 text-indigo-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                            <span class="text-gray-600">Custom domain</span>
-                                        </li>
-                                    <?php endif; ?>
-                                    <?php if (!empty($features['priority_support'])): ?>
-                                        <li class="flex items-start text-sm">
-                                            <svg class="w-5 h-5 text-indigo-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                            <span class="text-gray-600">Priority support</span>
-                                        </li>
-                                    <?php endif; ?>
-
-                                    <?php if ($plan['max_leads']): ?>
-                                        <li class="flex items-start text-sm">
-                                            <svg class="w-5 h-5 text-indigo-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                            <span class="text-gray-600"><?= number_format($plan['max_leads']) ?> LinkedIn leads</span>
-                                        </li>
-                                    <?php elseif ($plan['max_leads'] === null && !empty($features['leadshark'])): ?>
-                                        <li class="flex items-start text-sm">
-                                            <svg class="w-5 h-5 text-indigo-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                            <span class="text-gray-600">Unlimited LinkedIn leads</span>
-                                        </li>
-                                    <?php endif; ?>
-
-                                    <?php if ($plan['max_campaigns']): ?>
-                                        <li class="flex items-start text-sm">
-                                            <svg class="w-5 h-5 text-indigo-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                            <span class="text-gray-600"><?= $plan['max_campaigns'] ?> campaigns</span>
-                                        </li>
-                                    <?php elseif ($plan['max_campaigns'] === null && !empty($features['leadshark'])): ?>
-                                        <li class="flex items-start text-sm">
-                                            <svg class="w-5 h-5 text-indigo-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                            <span class="text-gray-600">Unlimited campaigns</span>
-                                        </li>
-                                    <?php endif; ?>
+                                    <?php endforeach; ?>
                                 </ul>
                             </div>
                         </div>
