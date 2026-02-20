@@ -21,14 +21,14 @@ class Plan {
 
     public static function allActive() {
         $db = Database::getConnection();
-        $stmt = $db->prepare("SELECT * FROM plans WHERE is_active = 1 ORDER BY sort_order, price_monthly_dkk");
+        $stmt = $db->prepare("SELECT * FROM plans WHERE is_active = 1 ORDER BY sort_order, price_monthly_usd");
         $stmt->execute();
         return $stmt->fetchAll();
     }
 
     public static function all() {
         $db = Database::getConnection();
-        $stmt = $db->prepare("SELECT * FROM plans ORDER BY sort_order, price_monthly_dkk");
+        $stmt = $db->prepare("SELECT * FROM plans ORDER BY sort_order, price_monthly_usd");
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -36,14 +36,14 @@ class Plan {
     public static function create($data) {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            INSERT INTO plans (name, slug, price_monthly_dkk, price_yearly_dkk, max_customers, max_leads, max_campaigns, max_products, max_lead_magnets, features_json, is_active, sort_order)
+            INSERT INTO plans (name, slug, price_monthly_usd, price_yearly_usd, max_customers, max_leads, max_campaigns, max_products, max_lead_magnets, features_json, is_active, sort_order)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->execute([
             $data['name'],
             $data['slug'],
-            $data['price_monthly_dkk'],
-            $data['price_yearly_dkk'] ?? null,
+            $data['price_monthly_usd'],
+            $data['price_yearly_usd'] ?? null,
             $data['max_customers'] ?? null,
             $data['max_leads'] ?? null,
             $data['max_campaigns'] ?? null,

@@ -23,12 +23,12 @@ ob_start();
                 <input type="text" name="slug" value="<?= h($plan['slug']) ?>" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Monthly Price (DKK)</label>
-                <input type="number" name="price_monthly_dkk" step="0.01" value="<?= h($plan['price_monthly_dkk']) ?>" required class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2">
+                <label class="block text-sm font-medium text-gray-300 mb-1">Monthly Price (USD)</label>
+                <input type="number" name="price_monthly_usd" step="0.01" value="<?= h($plan['price_monthly_usd']) ?>" required class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Yearly Price (DKK)</label>
-                <input type="number" name="price_yearly_dkk" step="0.01" value="<?= h($plan['price_yearly_dkk'] ?? '') ?>" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2">
+                <label class="block text-sm font-medium text-gray-300 mb-1">Yearly Price (USD)</label>
+                <input type="number" name="price_yearly_usd" step="0.01" value="<?= h($plan['price_yearly_usd'] ?? '') ?>" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2">
             </div>
         </div>
         <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider pt-4">Limits</h3>

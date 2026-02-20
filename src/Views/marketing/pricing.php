@@ -46,8 +46,8 @@
                 <?php foreach ($plans as $index => $plan):
                     $features = json_decode($plan['features_json'] ?? '{}', true) ?: [];
                     $isPopular = ($plan['slug'] === 'growth');
-                    $monthlyPrice = (int)$plan['price_monthly_dkk'];
-                    $yearlyPrice = $plan['price_yearly_dkk'] ? (int)$plan['price_yearly_dkk'] : null;
+                    $monthlyPrice = (int)$plan['price_monthly_usd'];
+                    $yearlyPrice = $plan['price_yearly_usd'] ? (int)$plan['price_yearly_usd'] : null;
                     $yearlyMonthly = $yearlyPrice ? round($yearlyPrice / 12) : null;
                 ?>
                     <div class="relative bg-white rounded-2xl border <?= $isPopular ? 'border-indigo-300 shadow-xl shadow-indigo-100/50 ring-2 ring-indigo-500' : 'border-gray-200 shadow-sm' ?> overflow-hidden">
@@ -63,8 +63,8 @@
                             <!-- Monthly price -->
                             <div x-show="!annual">
                                 <div class="flex items-baseline mb-1">
-                                    <span class="text-4xl font-extrabold text-gray-900"><?= number_format($monthlyPrice, 0, ',', '.') ?></span>
-                                    <span class="text-gray-500 ml-2 text-sm">DKK/month</span>
+                                    <span class="text-4xl font-extrabold text-gray-900">$<?= number_format($monthlyPrice) ?></span>
+                                    <span class="text-gray-500 ml-2 text-sm">/month</span>
                                 </div>
                             </div>
 
@@ -72,10 +72,10 @@
                             <div x-show="annual" x-cloak>
                                 <?php if ($yearlyMonthly): ?>
                                     <div class="flex items-baseline mb-1">
-                                        <span class="text-4xl font-extrabold text-gray-900"><?= number_format($yearlyMonthly, 0, ',', '.') ?></span>
-                                        <span class="text-gray-500 ml-2 text-sm">DKK/month</span>
+                                        <span class="text-4xl font-extrabold text-gray-900">$<?= number_format($yearlyMonthly) ?></span>
+                                        <span class="text-gray-500 ml-2 text-sm">/month</span>
                                     </div>
-                                    <p class="text-sm text-gray-400 mb-1">Billed as <?= number_format((int)$yearlyPrice, 0, ',', '.') ?> DKK/year</p>
+                                    <p class="text-sm text-gray-400 mb-1">Billed as $<?= number_format((int)$yearlyPrice) ?>/year</p>
                                 <?php else: ?>
                                     <div class="flex items-baseline mb-1">
                                         <span class="text-4xl font-extrabold text-gray-900">Custom</span>

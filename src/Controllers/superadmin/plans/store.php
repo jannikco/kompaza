@@ -9,8 +9,8 @@ if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
 
 $name = sanitize($_POST['name'] ?? '');
 $slug = sanitize($_POST['slug'] ?? '') ?: slugify($name);
-$priceMonthly = (float)($_POST['price_monthly_dkk'] ?? 0);
-$priceYearly = !empty($_POST['price_yearly_dkk']) ? (float)$_POST['price_yearly_dkk'] : null;
+$priceMonthly = (float)($_POST['price_monthly_usd'] ?? 0);
+$priceYearly = !empty($_POST['price_yearly_usd']) ? (float)$_POST['price_yearly_usd'] : null;
 
 if (!$name || !$slug) {
     flashMessage('error', 'Name and slug are required.');
@@ -20,8 +20,8 @@ if (!$name || !$slug) {
 Plan::create([
     'name' => $name,
     'slug' => $slug,
-    'price_monthly_dkk' => $priceMonthly,
-    'price_yearly_dkk' => $priceYearly,
+    'price_monthly_usd' => $priceMonthly,
+    'price_yearly_usd' => $priceYearly,
     'max_customers' => !empty($_POST['max_customers']) ? (int)$_POST['max_customers'] : null,
     'max_leads' => !empty($_POST['max_leads']) ? (int)$_POST['max_leads'] : null,
     'max_campaigns' => !empty($_POST['max_campaigns']) ? (int)$_POST['max_campaigns'] : null,

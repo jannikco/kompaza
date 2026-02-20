@@ -39,10 +39,10 @@ ob_start();
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-300"><?= h($plan['slug']) ?></td>
                     <td class="px-6 py-4 text-sm text-gray-300">
-                        <?= $plan['price_monthly_dkk'] ? formatMoney($plan['price_monthly_dkk']) : 'Free' ?>
+                        <?= $plan['price_monthly_usd'] ? '$' . number_format($plan['price_monthly_usd'], 2) : 'Free' ?>
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-300">
-                        <?= $plan['price_yearly_dkk'] ? formatMoney($plan['price_yearly_dkk']) : '-' ?>
+                        <?= $plan['price_yearly_usd'] ? '$' . number_format($plan['price_yearly_usd'], 2) : '-' ?>
                     </td>
                     <td class="px-6 py-4">
                         <?php if ($plan['is_active']): ?>

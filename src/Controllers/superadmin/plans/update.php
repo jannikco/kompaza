@@ -17,8 +17,8 @@ if (!$plan) {
 Plan::update($id, [
     'name' => sanitize($_POST['name'] ?? ''),
     'slug' => sanitize($_POST['slug'] ?? '') ?: slugify($_POST['name'] ?? ''),
-    'price_monthly_dkk' => (float)($_POST['price_monthly_dkk'] ?? 0),
-    'price_yearly_dkk' => !empty($_POST['price_yearly_dkk']) ? (float)$_POST['price_yearly_dkk'] : null,
+    'price_monthly_usd' => (float)($_POST['price_monthly_usd'] ?? 0),
+    'price_yearly_usd' => !empty($_POST['price_yearly_usd']) ? (float)$_POST['price_yearly_usd'] : null,
     'max_customers' => !empty($_POST['max_customers']) ? (int)$_POST['max_customers'] : null,
     'max_leads' => !empty($_POST['max_leads']) ? (int)$_POST['max_leads'] : null,
     'max_campaigns' => !empty($_POST['max_campaigns']) ? (int)$_POST['max_campaigns'] : null,

@@ -81,8 +81,8 @@ CREATE TABLE IF NOT EXISTS plans (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     slug VARCHAR(100) NOT NULL UNIQUE,
-    price_monthly_dkk DECIMAL(10,2) NOT NULL DEFAULT 0,
-    price_yearly_dkk DECIMAL(10,2) DEFAULT NULL,
+    price_monthly_usd DECIMAL(10,2) NOT NULL DEFAULT 0,
+    price_yearly_usd DECIMAL(10,2) DEFAULT NULL,
     max_customers INT UNSIGNED DEFAULT NULL,
     max_leads INT UNSIGNED DEFAULT NULL,
     max_campaigns INT UNSIGNED DEFAULT NULL,
@@ -753,10 +753,10 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- SEED DATA: Default plans
 -- ============================================
 
-INSERT INTO plans (name, slug, price_monthly_dkk, price_yearly_dkk, max_customers, max_leads, max_campaigns, max_products, max_lead_magnets, features_json, sort_order) VALUES
-('Starter', 'starter', 299.00, 2990.00, 100, 500, 2, 20, 5, '{"blog": true, "ebooks": true, "lead_magnets": true, "orders": false, "leadshark": false}', 1),
-('Growth', 'growth', 599.00, 5990.00, 500, 2000, 10, 100, 20, '{"blog": true, "ebooks": true, "lead_magnets": true, "orders": true, "leadshark": true}', 2),
-('Enterprise', 'enterprise', 1299.00, 12990.00, NULL, NULL, NULL, NULL, NULL, '{"blog": true, "ebooks": true, "lead_magnets": true, "orders": true, "leadshark": true, "custom_domain": true, "priority_support": true}', 3);
+INSERT INTO plans (name, slug, price_monthly_usd, price_yearly_usd, max_customers, max_leads, max_campaigns, max_products, max_lead_magnets, features_json, sort_order) VALUES
+('Starter', 'starter', 79.00, 780.00, 100, 500, 2, 20, 5, '{"blog": true, "ebooks": true, "lead_magnets": true, "orders": false, "leadshark": false}', 1),
+('Growth', 'growth', 149.00, 1500.00, 500, 2000, 10, 100, 20, '{"blog": true, "ebooks": true, "lead_magnets": true, "orders": true, "leadshark": true}', 2),
+('Enterprise', 'enterprise', 299.00, 2988.00, NULL, NULL, NULL, NULL, NULL, '{"blog": true, "ebooks": true, "lead_magnets": true, "orders": true, "leadshark": true, "custom_domain": true, "priority_support": true}', 3);
 
 -- Create default superadmin (password: change-me-immediately)
 INSERT INTO users (tenant_id, role, name, email, password_hash, status) VALUES
