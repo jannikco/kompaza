@@ -9,13 +9,13 @@ describe('Tenant Admin System Pages', () => {
   // Email Signups
   it('shows email signups list', () => {
     cy.visit(`${base}/admin/tilmeldinger`)
-    cy.contains('Email Signups').should('be.visible')
+    cy.get('main').contains('Email Signups').should('be.visible')
   })
 
   // Users
   it('shows users list', () => {
     cy.visit(`${base}/admin/brugere`)
-    cy.contains('Users').should('be.visible')
+    cy.get('main').contains('Users').should('be.visible')
   })
 
   it('loads create user form', () => {

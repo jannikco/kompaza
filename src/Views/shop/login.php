@@ -32,7 +32,10 @@ ob_start();
                 </div>
 
                 <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <div class="flex items-center justify-between mb-1">
+                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                        <a href="/forgot-password" class="text-sm text-brand hover:underline">Forgot password?</a>
+                    </div>
                     <input type="password" id="password" name="password" required
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 ring-brand focus:border-transparent"
                            placeholder="Your password">

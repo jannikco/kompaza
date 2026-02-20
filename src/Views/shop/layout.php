@@ -219,11 +219,12 @@ $currency = $tenant['currency'] ?? 'DKK';
                     </ul>
                 </div>
 
-                <!-- Legal -->
+                <!-- Legal & Support -->
                 <div>
-                    <h3 class="text-gray-900 font-semibold mb-4 text-sm uppercase tracking-wider">Legal</h3>
+                    <h3 class="text-gray-900 font-semibold mb-4 text-sm uppercase tracking-wider">Support</h3>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="/privacy" class="text-gray-500 hover:text-gray-700 transition">Privacy Policy</a></li>
+                        <li><a href="/contact" class="text-gray-500 hover:text-gray-700 transition">Contact Us</a></li>
+                        <li><a href="/privatlivspolitik" class="text-gray-500 hover:text-gray-700 transition">Privacy Policy</a></li>
                         <li><a href="/terms" class="text-gray-500 hover:text-gray-700 transition">Terms of Service</a></li>
                     </ul>
                 </div>

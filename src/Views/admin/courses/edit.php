@@ -18,6 +18,12 @@ ob_start();
             <a href="/admin/kurser/tilmeldinger?course_id=<?= $course['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
                 Students (<?= (int)$course['enrollment_count'] ?>)
             </a>
+            <a href="/admin/kurser/quiz/opret?course_id=<?= $course['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                + Add Quiz
+            </a>
+            <a href="/admin/certificates?course_id=<?= $course['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                Certificates
+            </a>
         </div>
     </div>
     <p class="text-sm text-gray-400 mt-1"><?= (int)$course['total_lessons'] ?> lessons &middot; <?= $course['total_duration_seconds'] ? gmdate('H:i:s', $course['total_duration_seconds']) : '0:00' ?> total</p>
@@ -312,6 +318,52 @@ ob_start();
             </div>
         </form>
     </div>
+</div>
+
+<!-- Quizzes Section -->
+<?php
+$courseQuizzes = \App\Models\Quiz::getByCourseId($course['id'], currentTenantId());
+?>
+<div class="max-w-4xl mt-8">
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-bold text-white">Quizzes (<?= count($courseQuizzes) ?>)</h3>
+        <a href="/admin/kurser/quiz/opret?course_id=<?= $course['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-indigo-400 hover:text-indigo-300 bg-gray-800 border border-gray-700 rounded-lg transition">
+            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Add Quiz
+        </a>
+    </div>
+    <?php if (empty($courseQuizzes)): ?>
+        <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 text-center">
+            <p class="text-gray-400 text-sm">No quizzes yet. Create a quiz to test students' knowledge.</p>
+        </div>
+    <?php else: ?>
+        <div class="space-y-3">
+            <?php foreach ($courseQuizzes as $cq): ?>
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 flex items-center justify-between">
+                <div>
+                    <p class="text-white font-medium text-sm"><?= h($cq['title']) ?></p>
+                    <p class="text-xs text-gray-400 mt-1">
+                        Pass: <?= (int)$cq['pass_threshold'] ?>%
+                        &middot; <?= $cq['status'] === 'published' ? '<span class="text-green-400">Published</span>' : '<span class="text-yellow-400">Draft</span>' ?>
+                        <?php
+                        $qCount = \App\Models\QuizQuestion::getByQuizId($cq['id']);
+                        ?>
+                        &middot; <?= count($qCount) ?> questions
+                    </p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <a href="/admin/kurser/quiz/rediger?id=<?= $cq['id'] ?>" class="text-indigo-400 hover:text-indigo-300 text-xs font-medium">Edit</a>
+                    <form method="POST" action="/admin/kurser/quiz/slet" onsubmit="return confirm('Delete this quiz?')" class="inline">
+                        <?= csrfField() ?>
+                        <input type="hidden" name="id" value="<?= $cq['id'] ?>">
+                        <input type="hidden" name="course_id" value="<?= $course['id'] ?>">
+                        <button type="submit" class="text-red-400 hover:text-red-300 text-xs">Delete</button>
+                    </form>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
 </div>
 
 <script>

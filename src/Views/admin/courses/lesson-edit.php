@@ -112,6 +112,54 @@ ob_start();
                   class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg text-sm"><?= h($lesson['text_content'] ?? '') ?></textarea>
     </div>
 
+    <!-- Attachments -->
+    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 mb-6">
+        <h3 class="text-lg font-semibold text-white mb-4">Attachments</h3>
+        <?php
+        $attachments = \App\Models\LessonAttachment::getByLessonId($lesson['id']);
+        ?>
+        <?php if (!empty($attachments)): ?>
+        <div class="space-y-2 mb-4">
+            <?php foreach ($attachments as $att): ?>
+            <div class="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                <div class="flex items-center">
+                    <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                    <span class="text-sm text-white"><?= h($att['title']) ?></span>
+                    <span class="text-xs text-gray-400 ml-2">(<?= strtoupper($att['file_type']) ?>, <?= number_format($att['file_size'] / 1024, 0) ?> KB)</span>
+                    <span class="text-xs text-gray-500 ml-2"><?= $att['download_count'] ?> downloads</span>
+                </div>
+                <form method="POST" action="/admin/kurser/attachment/slet" onsubmit="return confirm('Delete this attachment?')" class="inline">
+                    <?= csrfField() ?>
+                    <input type="hidden" name="id" value="<?= $att['id'] ?>">
+                    <input type="hidden" name="lesson_id" value="<?= $lesson['id'] ?>">
+                    <input type="hidden" name="course_id" value="<?= $course['id'] ?>">
+                    <button type="submit" class="text-red-400 hover:text-red-300 text-xs">Delete</button>
+                </form>
+            </div>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+    </div>
+    <form method="POST" action="/admin/kurser/attachment/gem" enctype="multipart/form-data" class="bg-gray-800 border border-gray-700 rounded-xl p-6 mb-6">
+        <?= csrfField() ?>
+        <input type="hidden" name="lesson_id" value="<?= $lesson['id'] ?>">
+        <input type="hidden" name="course_id" value="<?= $course['id'] ?>">
+        <h3 class="text-lg font-semibold text-white mb-4">Upload Attachment</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1.5">Title</label>
+                <input type="text" name="attachment_title" placeholder="e.g. Worksheet PDF"
+                       class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1.5">File</label>
+                <input type="file" name="attachment" required
+                       class="w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-indigo-600 file:text-white hover:file:bg-indigo-700">
+            </div>
+        </div>
+        <button type="submit" class="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition">Upload</button>
+    </form>
+
     <!-- Settings -->
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 mb-6">
         <h3 class="text-lg font-semibold text-white mb-4">Settings</h3>

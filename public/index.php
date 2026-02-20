@@ -150,7 +150,13 @@ if ($routingMode === 'tenant') {
             '/konto/downloads' => 'shop/account/downloads',
             '/konto/indstillinger' => 'shop/account/settings',
             '/konto/kurser' => 'shop/account/courses',
+            '/konto/certificates' => 'shop/account/certificates',
             '/courses' => 'shop/courses',
+            '/forgot-password' => 'shop/forgot-password',
+            '/reset-password' => 'shop/reset-password',
+            '/contact' => 'shop/contact',
+            '/terms' => 'shop/terms-of-service',
+            '/certificate/download' => 'shop/certificate-download',
         ],
         'POST' => [
             '/login' => 'shop/login-submit',
@@ -159,6 +165,9 @@ if ($routingMode === 'tenant') {
             '/checkout/submit' => 'shop/checkout-submit',
             '/api/newsletter' => 'api/newsletter-signup',
             '/konto/indstillinger' => 'shop/account/settings-update',
+            '/forgot-password' => 'shop/forgot-password-submit',
+            '/reset-password' => 'shop/reset-password-submit',
+            '/contact' => 'shop/contact-submit',
         ],
     ];
 
@@ -212,6 +221,10 @@ if ($routingMode === 'tenant') {
             '/admin/stripe-connect/callback' => 'admin/stripe-connect/callback',
             '/admin/stripe-connect/dashboard' => 'admin/stripe-connect/dashboard',
             '/admin/salg' => 'admin/sales/index',
+            '/admin/kurser/quiz/opret' => 'admin/courses/quiz-create',
+            '/admin/kurser/quiz/rediger' => 'admin/courses/quiz-edit',
+            '/admin/certificates' => 'admin/courses/certificates',
+            '/admin/contact-messages' => 'admin/contact-messages/index',
         ],
         'POST' => [
             '/admin/lead-magnets/gem' => 'admin/lead-magnets/store',
@@ -253,6 +266,17 @@ if ($routingMode === 'tenant') {
             '/admin/kurser/tilmeld' => 'admin/courses/enroll',
             '/admin/kurser/afmeld' => 'admin/courses/unenroll',
             '/admin/abonnement/checkout' => 'admin/subscription/checkout',
+            '/admin/kurser/quiz/gem' => 'admin/courses/quiz-store',
+            '/admin/kurser/quiz/opdater' => 'admin/courses/quiz-update',
+            '/admin/kurser/quiz/slet' => 'admin/courses/quiz-delete',
+            '/admin/kurser/quiz/spoergsmaal/gem' => 'admin/courses/question-store',
+            '/admin/kurser/quiz/spoergsmaal/opdater' => 'admin/courses/question-update',
+            '/admin/kurser/quiz/spoergsmaal/slet' => 'admin/courses/question-delete',
+            '/admin/certificates/revoke' => 'admin/courses/certificate-revoke',
+            '/admin/kurser/attachment/gem' => 'admin/courses/attachment-store',
+            '/admin/kurser/attachment/slet' => 'admin/courses/attachment-delete',
+            '/admin/contact-messages/reply' => 'admin/contact-messages/reply',
+            '/admin/contact-messages/slet' => 'admin/contact-messages/delete',
         ],
     ];
 
@@ -335,6 +359,28 @@ if ($routingMode === 'tenant') {
         elseif ($method === 'POST' && preg_match('#^/course/([a-z0-9\-]+)/enroll-free$#', $request, $matches)) {
             $controller = 'shop/course-enroll-free';
             $dynamicParams['slug'] = $matches[1];
+        }
+        // Quiz: take quiz
+        elseif ($method === 'GET' && $request === '/course/quiz') {
+            $controller = 'shop/course-quiz';
+        }
+        // Quiz: submit answers
+        elseif ($method === 'POST' && $request === '/course/quiz/submit') {
+            $controller = 'shop/course-quiz-submit';
+        }
+        // Certificate: generate
+        elseif ($method === 'GET' && preg_match('#^/course/([a-z0-9\-]+)/certificate$#', $request, $matches)) {
+            $controller = 'shop/certificate-generate';
+            $dynamicParams['slug'] = $matches[1];
+        }
+        // Certificate: public verify
+        elseif ($method === 'GET' && preg_match('#^/certificate/verify/([A-Z0-9\-]+)$#', $request, $matches)) {
+            $controller = 'shop/certificate-verify';
+            $dynamicParams['slug'] = $matches[1];
+        }
+        // Lesson attachment download
+        elseif ($method === 'GET' && $request === '/lesson/attachment/download') {
+            $controller = 'shop/lesson-attachment-download';
         }
         // Cart actions (AJAX)
         elseif ($method === 'POST' && $request === '/api/cart/add') {

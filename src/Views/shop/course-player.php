@@ -84,6 +84,21 @@ $companyName = $tenant['company_name'] ?? $tenant['name'] ?? 'Store';
                     </div>
                 </div>
                 <?php endforeach; ?>
+
+                <?php
+                $courseQuizzes = \App\Models\Quiz::getPublishedByCourse($course['id'], currentTenantId());
+                if (!empty($courseQuizzes)):
+                ?>
+                <div class="px-4 py-3 border-t border-gray-700">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Quizzes</p>
+                    <?php foreach ($courseQuizzes as $cq): ?>
+                    <a href="/course/quiz?quiz_id=<?= $cq['id'] ?>" class="flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-gray-750 hover:text-white rounded-lg transition">
+                        <svg class="w-4 h-4 mr-2 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                        <?= h($cq['title']) ?>
+                    </a>
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
             </nav>
         </aside>
 
@@ -108,6 +123,25 @@ $companyName = $tenant['company_name'] ?? $tenant['name'] ?? 'Store';
                 <?php if (!empty($currentLesson['text_content'])): ?>
                 <div class="prose prose-invert max-w-none mt-6">
                     <?= $currentLesson['text_content'] ?>
+                </div>
+                <?php endif; ?>
+
+                <!-- Attachments -->
+                <?php
+                $lessonAttachments = \App\Models\LessonAttachment::getByLessonId($currentLesson['id']);
+                if (!empty($lessonAttachments)):
+                ?>
+                <div class="mt-6 bg-gray-800 rounded-lg p-4 border border-gray-700">
+                    <h3 class="text-sm font-semibold text-gray-300 mb-3">Downloads</h3>
+                    <div class="space-y-2">
+                        <?php foreach ($lessonAttachments as $att): ?>
+                        <a href="/lesson/attachment/download?id=<?= $att['id'] ?>" class="flex items-center p-2 rounded-lg hover:bg-gray-700 transition group">
+                            <svg class="w-4 h-4 text-gray-400 mr-2 group-hover:text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17v3a2 2 0 002 2h14a2 2 0 002-2v-3"/></svg>
+                            <span class="text-sm text-gray-300 group-hover:text-white"><?= h($att['title']) ?></span>
+                            <span class="text-xs text-gray-500 ml-2"><?= strtoupper($att['file_type']) ?></span>
+                        </a>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
                 <?php endif; ?>
 
