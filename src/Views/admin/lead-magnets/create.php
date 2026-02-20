@@ -181,10 +181,10 @@ ob_start();
                                 <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
                                     <div class="flex items-start space-x-3">
                                         <div class="flex-1 space-y-2">
-                                            <input type="text" x-model="feature.title" :name="'features['+index+'][title]'"
+                                            <input type="text" x-model="feature.title"
                                                 class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                                 placeholder="Feature title">
-                                            <input type="text" x-model="feature.description" :name="'features['+index+'][description]'"
+                                            <input type="text" x-model="feature.description"
                                                 class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                                 placeholder="Feature description">
                                         </div>
