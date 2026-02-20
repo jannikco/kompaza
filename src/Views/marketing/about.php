@@ -317,7 +317,7 @@
 <section class="py-24 bg-white">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-6">Ready to build something that lasts?</h2>
-        <p class="text-lg text-gray-500 mb-10">Start your 14-day free trial. No credit card required.</p>
+        <p class="text-lg text-gray-500 mb-10">Start your 7-day free trial. Credit card required.</p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a href="/register" class="inline-flex items-center px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white text-base font-semibold rounded-xl transition duration-200 shadow-lg shadow-indigo-600/20 hover:shadow-xl hover:shadow-indigo-600/25">
                 Get Started Free

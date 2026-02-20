@@ -98,6 +98,13 @@
                 Mastermind
             </a>
 
+            <?php if (tenantFeature('custom_pages')): ?>
+            <a href="/admin/custom-pages" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?= ($currentPage ?? '') === 'custom-pages' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
+                Custom Pages
+            </a>
+            <?php endif; ?>
+
             <?php if (tenantFeature('connectpilot')): ?>
             <div class="pt-4 pb-2 px-3">
                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">ConnectPilot</p>

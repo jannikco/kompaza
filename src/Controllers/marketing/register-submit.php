@@ -124,7 +124,7 @@ try {
         'company_name' => $companyName,
         'email' => $email,
         'plan_id' => $planId,
-        'trial_ends_at' => date('Y-m-d H:i:s', strtotime('+14 days')),
+        'trial_ends_at' => date('Y-m-d H:i:s', strtotime('+7 days')),
     ]);
 
     // Create tenant admin user

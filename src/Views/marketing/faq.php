@@ -35,11 +35,11 @@
                     ],
                     [
                         'q' => 'How do I sign up?',
-                        'a' => 'Click "Get Started Free" on any page to create your account. You\'ll choose a subdomain (e.g., yourcompany.kompaza.com), fill in your details, and you\'re ready to go. No credit card is required to start your free trial.',
+                        'a' => 'Click "Get Started Free" on any page to create your account. You\'ll choose a subdomain (e.g., yourcompany.kompaza.com), fill in your details, and you\'re ready to go. A credit card is required to start your free trial.',
                     ],
                     [
                         'q' => 'Is there a free trial?',
-                        'a' => 'Yes! Every plan includes a 14-day free trial with full access to all features. No credit card required. You can upgrade, downgrade, or cancel at any time during or after your trial.',
+                        'a' => 'Yes! Every plan includes a 7-day free trial with full access to all features. Credit card required. You can upgrade, downgrade, or cancel at any time during or after your trial.',
                     ],
                     [
                         'q' => 'What happens after my trial ends?',

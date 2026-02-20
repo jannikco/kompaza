@@ -36,7 +36,7 @@
                                 Your site: <strong><?= h($subdomain ?? '') ?></strong>
                             </p>
                             <p style="color: #6b7280; font-size: 14px; margin: 0 0 24px;">
-                                Your 14-day free trial starts now. No credit card required.
+                                Your 7-day free trial starts now.
                             </p>
                             <table cellpadding="0" cellspacing="0" style="margin: 0 auto;">
                                 <tr>

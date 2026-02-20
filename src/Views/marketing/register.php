@@ -5,9 +5,9 @@
 
             <!-- Left: Benefits -->
             <div class="hidden lg:block">
-                <h1 class="text-3xl font-bold text-gray-900 mb-4">Start your 14-day free trial</h1>
+                <h1 class="text-3xl font-bold text-gray-900 mb-4">Start your 7-day free trial</h1>
                 <p class="text-gray-600 text-lg mb-10 leading-relaxed">
-                    Get instant access to all of Kompaza's features. No credit card required. Cancel anytime.
+                    Get instant access to all of Kompaza's features. Credit card required. Cancel anytime.
                 </p>
 
                 <div class="space-y-6">
@@ -67,7 +67,7 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 lg:p-10">
                     <div class="lg:hidden mb-8">
                         <h1 class="text-2xl font-bold text-gray-900 mb-2">Create your account</h1>
-                        <p class="text-gray-500 text-sm">14-day free trial. No credit card required.</p>
+                        <p class="text-gray-500 text-sm">7-day free trial. Credit card required.</p>
                     </div>
                     <h2 class="hidden lg:block text-xl font-bold text-gray-900 mb-6">Create your account</h2>
 

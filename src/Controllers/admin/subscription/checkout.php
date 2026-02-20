@@ -53,7 +53,7 @@ try {
     }
 
     // Determine trial days (only for new subscriptions)
-    $trialDays = $subscription ? 0 : 14;
+    $trialDays = $subscription ? 0 : 7;
 
     $session = StripeService::createSubscriptionCheckout(
         $customerId,

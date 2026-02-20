@@ -68,7 +68,7 @@ ob_start();
             <div>
                 <label for="trial_ends_at" class="block text-sm font-medium text-gray-300 mb-1">Trial Ends</label>
                 <input type="date" id="trial_ends_at" name="trial_ends_at"
-                    value="<?= date('Y-m-d', strtotime('+14 days')) ?>"
+                    value="<?= date('Y-m-d', strtotime('+7 days')) ?>"
                     class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
             </div>
 

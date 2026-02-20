@@ -14,7 +14,7 @@
                 <svg class="w-4 h-4 mr-2 text-cyan-300" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                 </svg>
-                14-day free trial &mdash; No credit card required
+                7-day free trial &mdash; Credit card required
             </div>
 
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight tracking-tight">
@@ -44,7 +44,7 @@
                     <div class="text-blue-200/70 text-sm mt-1">Tools in One</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-2xl md:text-3xl font-bold text-white">14</div>
+                    <div class="text-2xl md:text-3xl font-bold text-white">7</div>
                     <div class="text-blue-200/70 text-sm mt-1">Day Free Trial</div>
                 </div>
                 <div class="text-center">
@@ -286,7 +286,7 @@
             Ready to grow your business?
         </h2>
         <p class="text-blue-100/90 text-lg mb-10 max-w-2xl mx-auto">
-            Join hundreds of businesses already using Kompaza to create content, capture leads, and close deals. Start your 14-day free trial today.
+            Join hundreds of businesses already using Kompaza to create content, capture leads, and close deals. Start your 7-day free trial today.
         </p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a href="/register" class="w-full sm:w-auto px-10 py-4 bg-white text-indigo-600 font-bold rounded-xl transition duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl text-center">

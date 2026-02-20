@@ -47,7 +47,7 @@ $tenantId = Tenant::create([
     'email' => $email ?: null,
     'status' => $status,
     'plan_id' => $planId,
-    'trial_ends_at' => $trialEndsAt ? $trialEndsAt . ' 23:59:59' : date('Y-m-d H:i:s', strtotime('+14 days')),
+    'trial_ends_at' => $trialEndsAt ? $trialEndsAt . ' 23:59:59' : date('Y-m-d H:i:s', strtotime('+7 days')),
 ]);
 
 if ($tenantId) {

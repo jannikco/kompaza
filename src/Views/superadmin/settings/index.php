@@ -36,7 +36,7 @@ ob_start();
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-300 mb-1">Default Trial Days</label>
-                <input type="number" name="default_trial_days" value="<?= h($settingsMap['default_trial_days'] ?? '14') ?>" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2">
+                <input type="number" name="default_trial_days" value="<?= h($settingsMap['default_trial_days'] ?? '7') ?>" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2">
             </div>
             <div class="flex items-center gap-2">
                 <input type="hidden" name="maintenance_mode" value="0">

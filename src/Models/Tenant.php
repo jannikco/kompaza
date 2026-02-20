@@ -56,7 +56,7 @@ class Tenant {
             $data['currency'] ?? 'DKK',
             $data['tax_rate'] ?? 25.00,
             $data['plan_id'] ?? null,
-            $data['trial_ends_at'] ?? date('Y-m-d H:i:s', strtotime('+14 days')),
+            $data['trial_ends_at'] ?? date('Y-m-d H:i:s', strtotime('+7 days')),
         ]);
         return $db->lastInsertId();
     }

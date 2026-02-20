@@ -8,7 +8,7 @@
             Simple, transparent pricing
         </h1>
         <p class="text-blue-100/90 text-lg max-w-2xl mx-auto">
-            Start free for 14 days. No credit card required. Upgrade, downgrade, or cancel anytime.
+            Start free for 7 days. Credit card required. Upgrade, downgrade, or cancel anytime.
         </p>
     </div>
 
@@ -171,7 +171,7 @@
         <!-- FAQ teaser -->
         <div class="mt-20 text-center">
             <p class="text-gray-500 text-sm">
-                All plans include a 14-day free trial. No credit card required.
+                All plans include a 7-day free trial. Credit card required.
                 <br>
                 Have questions? <a href="mailto:support@kompaza.com" class="text-indigo-600 hover:text-indigo-700 font-medium">Contact our sales team</a>.
             </p>

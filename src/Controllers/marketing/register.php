@@ -26,7 +26,7 @@ if (isset($_COOKIE['kz_register_errors'])) {
 }
 
 $pageTitle = 'Sign Up - Start Your Free Trial | Kompaza';
-$metaDescription = 'Create your Kompaza account and get instant access to content marketing, lead generation, and LinkedIn automation tools. 14-day free trial.';
+$metaDescription = 'Create your Kompaza account and get instant access to content marketing, lead generation, and LinkedIn automation tools. 7-day free trial.';
 
 ob_start();
 include VIEWS_PATH . '/marketing/register.php';
