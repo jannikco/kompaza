@@ -26,7 +26,7 @@ ob_start();
         <?php else: ?>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 <?php foreach ($ebooks as $ebook): ?>
-                    <a href="/ebook/<?= h($ebook['slug']) ?>" class="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                    <a href="/ebog/<?= h($ebook['slug']) ?>" class="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
                         <?php if (!empty($ebook['cover_image_path'])): ?>
                             <div class="aspect-[3/4] overflow-hidden bg-gray-100">
                                 <img src="<?= h(imageUrl($ebook['cover_image_path'])) ?>" alt="<?= h($ebook['title']) ?>"

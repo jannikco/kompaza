@@ -339,6 +339,33 @@ describe('AIbootcamphq Tenant (aibootcamphq.kompaza.com)', () => {
   })
 
   // ==========================================
+  // EBOOKS
+  // ==========================================
+  describe('Ebooks', () => {
+    it('/eboger returns 200', () => {
+      cy.request(`${base}/eboger`).its('status').should('eq', 200)
+    })
+
+    const ebookSlugs = [
+      'chatgpt-atlas-guide',
+      'linkedin-ai-mastery',
+      'ai-resultater-7-dage',
+      '300-ai-prompts',
+    ]
+
+    ebookSlugs.forEach(slug => {
+      it(`/ebog/${slug} returns 200`, () => {
+        cy.request(`${base}/ebog/${slug}`).its('status').should('eq', 200)
+      })
+    })
+
+    it('/eboger page shows cover images (not just placeholders)', () => {
+      cy.visit(`${base}/eboger`)
+      cy.get('img[src*="/uploads/"]').should('have.length.gte', 1)
+    })
+  })
+
+  // ==========================================
   // DYNAMIC CONTENT ROUTES
   // ==========================================
   describe('Dynamic content routes', () => {
