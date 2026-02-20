@@ -94,11 +94,11 @@ ob_start();
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between mb-10">
             <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Featured Ebooks</h2>
-            <a href="/ebooks" class="text-sm font-medium text-brand hover:underline">View all &rarr;</a>
+            <a href="/eboger" class="text-sm font-medium text-brand hover:underline">View all &rarr;</a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <?php foreach ($ebooks as $ebook): ?>
-                <a href="/ebook/<?= h($ebook['slug']) ?>" class="group bg-gray-50 rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <a href="/ebog/<?= h($ebook['slug']) ?>" class="group bg-gray-50 rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
                     <?php if (!empty($ebook['cover_image_path'])): ?>
                         <div class="aspect-[3/4] overflow-hidden bg-gray-100">
                             <img src="<?= h(imageUrl($ebook['cover_image_path'])) ?>" alt="<?= h($ebook['title']) ?>"

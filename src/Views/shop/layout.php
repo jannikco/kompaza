@@ -91,7 +91,7 @@ $currency = $tenant['currency'] ?? 'DKK';
                         <a href="/blog" class="text-gray-600 hover:text-gray-900 transition text-sm font-medium">Blog</a>
                     <?php endif; ?>
                     <?php if (tenantFeature('ebooks')): ?>
-                        <a href="/ebooks" class="text-gray-600 hover:text-gray-900 transition text-sm font-medium">Ebooks</a>
+                        <a href="/eboger" class="text-gray-600 hover:text-gray-900 transition text-sm font-medium">Ebooks</a>
                     <?php endif; ?>
                     <?php if (tenantFeature('courses')): ?>
                         <a href="/courses" class="text-gray-600 hover:text-gray-900 transition text-sm font-medium">Courses</a>
@@ -142,7 +142,7 @@ $currency = $tenant['currency'] ?? 'DKK';
                     <a href="/blog" class="block px-3 py-2.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition text-sm font-medium">Blog</a>
                 <?php endif; ?>
                 <?php if (tenantFeature('ebooks')): ?>
-                    <a href="/ebooks" class="block px-3 py-2.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition text-sm font-medium">Ebooks</a>
+                    <a href="/eboger" class="block px-3 py-2.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition text-sm font-medium">Ebooks</a>
                 <?php endif; ?>
                 <?php if (tenantFeature('courses')): ?>
                     <a href="/courses" class="block px-3 py-2.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition text-sm font-medium">Courses</a>
@@ -208,7 +208,7 @@ $currency = $tenant['currency'] ?? 'DKK';
                             <li><a href="/blog" class="text-gray-500 hover:text-gray-700 transition">Blog</a></li>
                         <?php endif; ?>
                         <?php if (tenantFeature('ebooks')): ?>
-                            <li><a href="/ebooks" class="text-gray-500 hover:text-gray-700 transition">Ebooks</a></li>
+                            <li><a href="/eboger" class="text-gray-500 hover:text-gray-700 transition">Ebooks</a></li>
                         <?php endif; ?>
                         <?php if (tenantFeature('courses')): ?>
                             <li><a href="/courses" class="text-gray-500 hover:text-gray-700 transition">Courses</a></li>
