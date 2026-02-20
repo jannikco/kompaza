@@ -4,13 +4,8 @@
 
         <!-- Logo & Title -->
         <div class="text-center mb-8">
-            <a href="/" class="inline-flex items-center space-x-2 mb-6">
-                <div class="w-10 h-10 rounded-xl hero-gradient flex items-center justify-center">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                    </svg>
-                </div>
-                <span class="text-2xl font-bold text-gray-900">Kompaza</span>
+            <a href="/" class="inline-block mb-6">
+                <img src="/images/kompaza-logo.svg" alt="Kompaza" class="h-16">
             </a>
             <h1 class="text-2xl font-bold text-gray-900 mb-2">Welcome back</h1>
             <p class="text-gray-500 text-sm">Find your workspace and log in</p>
