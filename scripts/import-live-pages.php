@@ -86,6 +86,8 @@ $pages = [
     ['url' => '/dk/course-purchase',      'slug' => 'course-purchase',      'title' => 'Køb Kursus',                    'is_homepage' => false, 'sort_order' => 30],
     ['url' => '/dk/book-purchase',        'slug' => 'book-purchase',        'title' => 'Køb Ebog',                      'is_homepage' => false, 'sort_order' => 31],
     ['url' => '/dk/claude-cowork-kursus-koeb', 'slug' => 'claude-cowork-kursus-koeb', 'title' => 'Køb Claude Cowork Kursus', 'is_homepage' => false, 'sort_order' => 32],
+    ['url' => '/dk/atlas-purchase',       'slug' => 'atlas-purchase',       'title' => 'Køb Atlas Guide',               'is_homepage' => false, 'sort_order' => 33],
+    ['url' => '/dk/claude-cowork-koeb',   'slug' => 'claude-cowork-koeb',   'title' => 'Køb Claude Cowork Ebog',         'is_homepage' => false, 'sort_order' => 34],
     // Legal
     ['url' => '/dk/privacy-policy',       'slug' => 'privacy',              'title' => 'Privatlivspolitik',              'is_homepage' => false, 'sort_order' => 90],
 ];
