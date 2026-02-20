@@ -16,11 +16,21 @@ ob_start();
     <div class="bg-gray-800 rounded-xl border border-gray-700 p-6 mb-6">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-white">Tenant Info</h3>
-            <a href="https://<?= h($tenant['slug']) ?>.<?= PLATFORM_DOMAIN ?>" target="_blank"
-                class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
-                Visit Site
-                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-            </a>
+            <div class="flex items-center gap-4">
+                <form method="POST" action="/tenants/impersonate" class="inline">
+                    <?= csrfField() ?>
+                    <input type="hidden" name="tenant_id" value="<?= $tenant['id'] ?>">
+                    <button type="submit" class="inline-flex items-center text-sm text-yellow-400 hover:text-yellow-300">
+                        Login As Admin
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </button>
+                </form>
+                <a href="https://<?= h($tenant['slug']) ?>.<?= PLATFORM_DOMAIN ?>" target="_blank"
+                    class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300">
+                    Visit Site
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </a>
+            </div>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>

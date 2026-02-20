@@ -72,7 +72,12 @@ ob_start();
                     <td class="px-6 py-4 text-sm text-gray-300"><?= h($t['plan_name'] ?? 'None') ?></td>
                     <td class="px-6 py-4 text-sm text-gray-300"><?= $t['user_count'] ?? 0 ?></td>
                     <td class="px-6 py-4 text-sm text-gray-400"><?= formatDate($t['created_at']) ?></td>
-                    <td class="px-6 py-4 text-right">
+                    <td class="px-6 py-4 text-right space-x-3">
+                        <form method="POST" action="/tenants/impersonate" class="inline">
+                            <?= csrfField() ?>
+                            <input type="hidden" name="tenant_id" value="<?= $t['id'] ?>">
+                            <button type="submit" class="text-yellow-400 hover:text-yellow-300 text-sm font-medium">Login As</button>
+                        </form>
                         <a href="/tenants/edit?id=<?= $t['id'] ?>" class="text-indigo-400 hover:text-indigo-300 text-sm font-medium">Edit</a>
                     </td>
                 </tr>
