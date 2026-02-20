@@ -395,11 +395,13 @@ if ($routingMode === 'tenant') {
         }
         // Admin order detail: /admin/ordrer/{id}
         elseif ($method === 'GET' && preg_match('#^/admin/ordrer/(\d+)$#', $request, $matches)) {
+            Auth::requireTenantAdmin();
             $_GET['id'] = $matches[1];
             $controller = 'admin/orders/show';
         }
         // Admin customer detail: /admin/kunder/{id}
         elseif ($method === 'GET' && preg_match('#^/admin/kunder/(\d+)$#', $request, $matches)) {
+            Auth::requireTenantAdmin();
             $_GET['id'] = $matches[1];
             $controller = 'admin/customers/show';
         }
