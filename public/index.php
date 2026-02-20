@@ -38,6 +38,8 @@ if ($routingMode === 'marketing') {
         'GET' => [
             '/' => 'home',
             '/pricing' => 'pricing',
+            '/faq' => 'faq',
+            '/about' => 'about',
             '/register' => 'register',
             '/login' => 'login',
         ],
@@ -87,6 +89,8 @@ if ($routingMode === 'superadmin') {
             '/plans' => 'plans/index',
             '/plans/create' => 'plans/create',
             '/plans/edit' => 'plans/edit',
+            '/tenants/subscriptions' => 'subscriptions/index',
+            '/tenants/revenue' => 'revenue/index',
             '/settings' => 'settings/index',
             '/logout' => 'logout',
         ],
@@ -94,8 +98,10 @@ if ($routingMode === 'superadmin') {
             '/login' => 'login-submit',
             '/tenants/store' => 'tenants/store',
             '/tenants/update' => 'tenants/update',
+            '/tenants/impersonate' => 'tenants/impersonate',
             '/plans/store' => 'plans/store',
             '/plans/update' => 'plans/update',
+            '/plans/sync-stripe' => 'plans/sync-stripe',
             '/settings/update' => 'settings/update',
         ],
     ];
@@ -178,12 +184,12 @@ if ($routingMode === 'tenant') {
             '/admin/produkter' => 'admin/products/index',
             '/admin/produkter/opret' => 'admin/products/create',
             '/admin/produkter/rediger' => 'admin/products/edit',
-            '/admin/leadshark' => 'admin/leadshark/dashboard',
-            '/admin/leadshark/kampagner' => 'admin/leadshark/campaigns/index',
-            '/admin/leadshark/kampagner/opret' => 'admin/leadshark/campaigns/create',
-            '/admin/leadshark/kampagner/rediger' => 'admin/leadshark/campaigns/edit',
-            '/admin/leadshark/leads' => 'admin/leadshark/leads/index',
-            '/admin/leadshark/konto' => 'admin/leadshark/account',
+            '/admin/connectpilot' => 'admin/connectpilot/dashboard',
+            '/admin/connectpilot/kampagner' => 'admin/connectpilot/campaigns/index',
+            '/admin/connectpilot/kampagner/opret' => 'admin/connectpilot/campaigns/create',
+            '/admin/connectpilot/kampagner/rediger' => 'admin/connectpilot/campaigns/edit',
+            '/admin/connectpilot/leads' => 'admin/connectpilot/leads/index',
+            '/admin/connectpilot/konto' => 'admin/connectpilot/account',
             '/admin/tilmeldinger' => 'admin/signups/index',
             '/admin/tilmeldinger/eksport' => 'admin/signups/export',
             '/admin/indstillinger' => 'admin/settings/index',
@@ -196,6 +202,16 @@ if ($routingMode === 'tenant') {
             '/admin/kurser/lektion/opret' => 'admin/courses/lesson-create',
             '/admin/kurser/lektion' => 'admin/courses/lesson-edit',
             '/admin/kurser/tilmeldinger' => 'admin/courses/enrollments',
+            '/admin/abonnement' => 'admin/subscription/index',
+            '/admin/abonnement/succes' => 'admin/subscription/success',
+            '/admin/abonnement/annuller' => 'admin/subscription/cancel',
+            '/admin/abonnement/genoptag' => 'admin/subscription/resume',
+            '/admin/abonnement/portal' => 'admin/subscription/portal',
+            '/admin/stripe-connect' => 'admin/stripe-connect/index',
+            '/admin/stripe-connect/forbind' => 'admin/stripe-connect/connect',
+            '/admin/stripe-connect/callback' => 'admin/stripe-connect/callback',
+            '/admin/stripe-connect/dashboard' => 'admin/stripe-connect/dashboard',
+            '/admin/salg' => 'admin/sales/index',
         ],
         'POST' => [
             '/admin/lead-magnets/gem' => 'admin/lead-magnets/store',
@@ -214,10 +230,10 @@ if ($routingMode === 'tenant') {
             '/admin/produkter/gem' => 'admin/products/store',
             '/admin/produkter/opdater' => 'admin/products/update',
             '/admin/produkter/slet' => 'admin/products/delete',
-            '/admin/leadshark/kampagner/gem' => 'admin/leadshark/campaigns/store',
-            '/admin/leadshark/kampagner/opdater' => 'admin/leadshark/campaigns/update',
-            '/admin/leadshark/kampagner/slet' => 'admin/leadshark/campaigns/delete',
-            '/admin/leadshark/konto/gem' => 'admin/leadshark/account-store',
+            '/admin/connectpilot/kampagner/gem' => 'admin/connectpilot/campaigns/store',
+            '/admin/connectpilot/kampagner/opdater' => 'admin/connectpilot/campaigns/update',
+            '/admin/connectpilot/kampagner/slet' => 'admin/connectpilot/campaigns/delete',
+            '/admin/connectpilot/konto/gem' => 'admin/connectpilot/account-store',
             '/admin/tilmeldinger/slet' => 'admin/signups/delete',
             '/admin/indstillinger/opdater' => 'admin/settings/update',
             '/admin/brugere/gem' => 'admin/users/store',
@@ -236,6 +252,7 @@ if ($routingMode === 'tenant') {
             '/admin/kurser/lektion/sorter' => 'admin/courses/lesson-reorder',
             '/admin/kurser/tilmeld' => 'admin/courses/enroll',
             '/admin/kurser/afmeld' => 'admin/courses/unenroll',
+            '/admin/abonnement/checkout' => 'admin/subscription/checkout',
         ],
     ];
 
@@ -329,10 +346,10 @@ if ($routingMode === 'tenant') {
         elseif ($method === 'POST' && $request === '/api/cart/remove') {
             $controller = 'api/cart-remove';
         }
-        // LeadShark API endpoints
-        elseif ($method === 'POST' && $request === '/api/leadshark/validate-cookie') {
+        // ConnectPilot API endpoints
+        elseif ($method === 'POST' && $request === '/api/connectpilot/validate-cookie') {
             Auth::requireTenantAdmin();
-            $controller = 'api/leadshark/validate-cookie';
+            $controller = 'api/connectpilot/validate-cookie';
         }
         // Course API endpoints
         elseif ($method === 'POST' && $request === '/api/courses/upload-chunk') {
@@ -368,6 +385,28 @@ if ($routingMode === 'tenant') {
         elseif ($method === 'POST' && $request === '/api/webhooks/stripe') {
             $controller = 'api/webhooks/stripe';
         }
+        // Stripe Connect webhook
+        elseif ($method === 'POST' && $request === '/api/stripe/connect-webhook') {
+            $controller = 'api/stripe-connect-webhook';
+        }
+        // Ebook checkout API
+        elseif ($method === 'POST' && $request === '/api/ebook-checkout') {
+            $controller = 'api/ebook-checkout';
+        }
+        // Ebook purchase success: /ebog/kob-succes/{session_id}
+        elseif ($method === 'GET' && preg_match('#^/ebog/kob-succes/([a-zA-Z0-9_]+)$#', $request, $matches)) {
+            $controller = 'ebook-purchase-success';
+            $dynamicParams['session_id'] = $matches[1];
+        }
+        // Ebook download with token
+        elseif ($method === 'GET' && preg_match('#^/ebog/download/([a-zA-Z0-9]+)$#', $request, $matches)) {
+            $controller = 'ebook-download';
+            $dynamicParams['token'] = $matches[1];
+        }
+        // Impersonate login (HMAC-signed, no auth required)
+        elseif ($method === 'GET' && $request === '/auth/impersonate') {
+            $controller = 'shop/impersonate';
+        }
     }
 
     // Load controller
@@ -378,6 +417,7 @@ if ($routingMode === 'tenant') {
             $token = $dynamicParams['token'] ?? null;
             $id = $dynamicParams['id'] ?? null;
             $lesson_id = $dynamicParams['lesson_id'] ?? null;
+            $session_id = $dynamicParams['session_id'] ?? null;
             require $controllerPath;
         } else {
             http_response_code(404);

@@ -32,6 +32,8 @@ define('MAIL_FROM_NAME', $_ENV['MAIL_FROM_NAME'] ?? 'Kompaza');
 define('STRIPE_PUBLISHABLE_KEY', $_ENV['STRIPE_PUBLISHABLE_KEY'] ?? '');
 define('STRIPE_SECRET_KEY', $_ENV['STRIPE_SECRET_KEY'] ?? '');
 define('STRIPE_WEBHOOK_SECRET', $_ENV['STRIPE_WEBHOOK_SECRET'] ?? '');
+define('STRIPE_CONNECT_WEBHOOK_SECRET', $_ENV['STRIPE_CONNECT_WEBHOOK_SECRET'] ?? '');
+define('APP_SECRET', $_ENV['APP_SECRET'] ?? 'change-me-in-production');
 
 // S3 / Linode Object Storage
 define('S3_ENDPOINT', $_ENV['S3_ENDPOINT'] ?? 'https://de-fra-1.linodeobjects.com');

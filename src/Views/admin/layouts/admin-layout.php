@@ -77,23 +77,39 @@
                 Customers
             </a>
 
-            <?php if (tenantFeature('leadshark')): ?>
+            <?php if (tenantFeature('connectpilot')): ?>
             <div class="pt-4 pb-2 px-3">
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">LeadShark</p>
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">ConnectPilot</p>
             </div>
-            <a href="/admin/leadshark" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?= ($currentPage ?? '') === 'leadshark' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
+            <a href="/admin/connectpilot" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?= ($currentPage ?? '') === 'connectpilot' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                LeadShark
+                ConnectPilot
             </a>
-            <a href="/admin/leadshark/kampagner" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?= ($currentPage ?? '') === 'leadshark-campaigns' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
+            <a href="/admin/connectpilot/kampagner" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?= ($currentPage ?? '') === 'connectpilot-campaigns' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/></svg>
                 Campaigns
             </a>
-            <a href="/admin/leadshark/leads" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?= ($currentPage ?? '') === 'leadshark-leads' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
+            <a href="/admin/connectpilot/leads" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?= ($currentPage ?? '') === 'connectpilot-leads' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                 Leads
             </a>
             <?php endif; ?>
+
+            <div class="pt-4 pb-2 px-3">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Payments</p>
+            </div>
+            <a href="/admin/abonnement" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?= ($currentPage ?? '') === 'subscription' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                Subscription
+            </a>
+            <a href="/admin/stripe-connect" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?= ($currentPage ?? '') === 'stripe-connect' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                Stripe Connect
+            </a>
+            <a href="/admin/salg" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?= ($currentPage ?? '') === 'sales' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                Sales
+            </a>
 
             <div class="pt-4 pb-2 px-3">
                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">System</p>
@@ -138,6 +154,14 @@
                 <a href="/" target="_blank" class="text-sm text-gray-400 hover:text-white">View Site</a>
             </div>
         </header>
+
+        <!-- Impersonation banner -->
+        <?php if (isset($_COOKIE['impersonating'])): ?>
+        <div class="bg-yellow-600 text-white px-4 py-2 text-sm flex items-center justify-between">
+            <span>You are logged in as <?= h(\App\Auth\Auth::admin()['name'] ?? 'tenant admin') ?> (support mode)</span>
+            <a href="https://superadmin.<?= h(PLATFORM_DOMAIN) ?>/tenants" class="underline font-medium">Back to Superadmin</a>
+        </div>
+        <?php endif; ?>
 
         <!-- Flash message -->
         <?php $flash = getFlashMessage(); ?>

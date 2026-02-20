@@ -25,6 +25,7 @@
             }
         }
     </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -67,6 +68,8 @@
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="/#features" class="text-gray-600 hover:text-gray-900 transition text-sm font-medium">Features</a>
                     <a href="/pricing" class="text-gray-600 hover:text-gray-900 transition text-sm font-medium">Pricing</a>
+                    <a href="/faq" class="text-gray-600 hover:text-gray-900 transition text-sm font-medium">FAQ</a>
+                    <a href="/about" class="text-gray-600 hover:text-gray-900 transition text-sm font-medium">About</a>
                     <a href="/login" class="text-gray-600 hover:text-gray-900 transition text-sm font-medium">Log In</a>
                     <a href="/register" class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition duration-200 shadow-sm shadow-indigo-600/25 hover:shadow-md hover:shadow-indigo-600/25">
                         Get Started Free
@@ -90,6 +93,8 @@
                  class="md:hidden pb-4 space-y-1 border-t border-gray-100 pt-4">
                 <a href="/#features" class="block px-3 py-2.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition text-sm font-medium">Features</a>
                 <a href="/pricing" class="block px-3 py-2.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition text-sm font-medium">Pricing</a>
+                <a href="/faq" class="block px-3 py-2.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition text-sm font-medium">FAQ</a>
+                <a href="/about" class="block px-3 py-2.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition text-sm font-medium">About</a>
                 <a href="/login" class="block px-3 py-2.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition text-sm font-medium">Log In</a>
                 <div class="pt-2">
                     <a href="/register" class="block w-full text-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition">
@@ -146,6 +151,7 @@
                     <ul class="space-y-3 text-sm">
                         <li><a href="/#features" class="text-gray-400 hover:text-white transition">Features</a></li>
                         <li><a href="/pricing" class="text-gray-400 hover:text-white transition">Pricing</a></li>
+                        <li><a href="/faq" class="text-gray-400 hover:text-white transition">FAQ</a></li>
                         <li><a href="/register" class="text-gray-400 hover:text-white transition">Get Started</a></li>
                     </ul>
                 </div>
@@ -154,6 +160,7 @@
                 <div>
                     <h3 class="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Company</h3>
                     <ul class="space-y-3 text-sm">
+                        <li><a href="/about" class="text-gray-400 hover:text-white transition">About Us</a></li>
                         <li><a href="/login" class="text-gray-400 hover:text-white transition">Log In</a></li>
                         <li><a href="mailto:support@kompaza.com" class="text-gray-400 hover:text-white transition">Support</a></li>
                     </ul>
