@@ -278,7 +278,7 @@ CREATE TABLE IF NOT EXISTS email_signups (
     tenant_id INT UNSIGNED NOT NULL,
     email VARCHAR(255) NOT NULL,
     name VARCHAR(255) DEFAULT NULL,
-    source_type ENUM('lead_magnet','ebook','newsletter','article') NOT NULL,
+    source_type ENUM('lead_magnet','ebook','newsletter','article','waitlist') NOT NULL,
     source_id INT UNSIGNED DEFAULT NULL,
     source_slug VARCHAR(255) DEFAULT NULL,
     brevo_synced BOOLEAN DEFAULT FALSE,

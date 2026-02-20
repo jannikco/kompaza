@@ -7,8 +7,8 @@ use App\Models\CourseEnrollment;
 $tenant = currentTenant();
 $tenantId = currentTenantId();
 
-$course = Course::findBySlug($slug, $tenantId);
-if (!$course) {
+$course = Course::findBySlugAnyStatus($slug, $tenantId);
+if (!$course || $course['status'] === 'archived') {
     http_response_code(404);
     view('errors/404');
     exit;

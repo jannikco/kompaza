@@ -171,6 +171,7 @@ if ($routingMode === 'tenant') {
             '/reset-password' => 'shop/reset-password-submit',
             '/contact' => 'shop/contact-submit',
             '/consultation/submit' => 'shop/consultation-submit',
+            '/course/waitlist' => 'shop/course-waitlist',
         ],
     ];
 
@@ -224,6 +225,7 @@ if ($routingMode === 'tenant') {
             '/admin/stripe-connect/callback' => 'admin/stripe-connect/callback',
             '/admin/stripe-connect/dashboard' => 'admin/stripe-connect/dashboard',
             '/admin/salg' => 'admin/sales/index',
+            '/admin/sales/export-orders' => 'admin/sales/export-orders',
             '/admin/kurser/quiz/opret' => 'admin/courses/quiz-create',
             '/admin/kurser/quiz/rediger' => 'admin/courses/quiz-edit',
             '/admin/certificates' => 'admin/courses/certificates',

@@ -99,7 +99,22 @@ ob_start();
             <!-- Sidebar: pricing card -->
             <div class="lg:col-span-1">
                 <div class="sticky top-24 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-                    <?php if ($enrollment): ?>
+                    <?php if ($course['status'] === 'draft'): ?>
+                        <!-- Coming Soon - Waitlist -->
+                        <div class="text-center mb-4">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-amber-100 text-amber-800">Coming Soon</span>
+                        </div>
+                        <p class="text-sm text-gray-500 text-center mb-4">This course is not yet available. Join the waitlist to be notified when it launches.</p>
+                        <form method="POST" action="/course/waitlist" class="space-y-3">
+                            <?= csrfField() ?>
+                            <input type="hidden" name="course_id" value="<?= $course['id'] ?>">
+                            <input type="email" name="email" required placeholder="Your email address" value="<?= h(currentUser()['email'] ?? '') ?>" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand focus:border-transparent">
+                            <input type="text" name="name" placeholder="Your name (optional)" value="<?= h(currentUser()['name'] ?? '') ?>" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand focus:border-transparent">
+                            <button type="submit" class="block w-full btn-brand text-white font-semibold py-3 px-6 rounded-xl text-center transition">
+                                Join Waitlist
+                            </button>
+                        </form>
+                    <?php elseif ($enrollment): ?>
                         <!-- Already enrolled -->
                         <div class="text-center">
                             <div class="mb-4">

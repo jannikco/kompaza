@@ -52,4 +52,30 @@ class EmailSignup {
         $stmt->execute([$tenantId, $limit]);
         return $stmt->fetchAll();
     }
+
+    public static function countBySourceType($tenantId, $sourceType) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("SELECT COUNT(*) as count FROM email_signups WHERE tenant_id = ? AND source_type = ?");
+        $stmt->execute([$tenantId, $sourceType]);
+        return $stmt->fetch()['count'];
+    }
+
+    public static function findByEmailAndSource($email, $tenantId, $sourceType, $sourceId = null) {
+        $db = Database::getConnection();
+        if ($sourceId) {
+            $stmt = $db->prepare("SELECT * FROM email_signups WHERE email = ? AND tenant_id = ? AND source_type = ? AND source_id = ?");
+            $stmt->execute([$email, $tenantId, $sourceType, $sourceId]);
+        } else {
+            $stmt = $db->prepare("SELECT * FROM email_signups WHERE email = ? AND tenant_id = ? AND source_type = ?");
+            $stmt->execute([$email, $tenantId, $sourceType]);
+        }
+        return $stmt->fetch();
+    }
+
+    public static function countBySource($tenantId, $sourceType, $sourceId) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("SELECT COUNT(*) as count FROM email_signups WHERE tenant_id = ? AND source_type = ? AND source_id = ?");
+        $stmt->execute([$tenantId, $sourceType, $sourceId]);
+        return $stmt->fetch()['count'];
+    }
 }
