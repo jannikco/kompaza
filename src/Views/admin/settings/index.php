@@ -13,6 +13,116 @@ ob_start();
 <form method="POST" action="/admin/indstillinger/opdater" enctype="multipart/form-data" class="space-y-8">
     <?= csrfField() ?>
 
+    <!-- Homepage Design -->
+    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6" x-data="{ selectedTemplate: '<?= h($tenant['homepage_template'] ?? 'starter') ?>' }">
+        <h3 class="text-lg font-semibold text-white mb-6 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
+            Homepage Design
+        </h3>
+
+        <!-- Template Picker -->
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-300 mb-3">Homepage Template</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- Starter -->
+                <label class="relative cursor-pointer" @click="selectedTemplate = 'starter'">
+                    <input type="radio" name="homepage_template" value="starter" x-model="selectedTemplate" class="sr-only">
+                    <div class="border-2 rounded-xl p-4 transition-all"
+                         :class="selectedTemplate === 'starter' ? 'border-indigo-500 bg-indigo-500/10' : 'border-gray-600 hover:border-gray-500'">
+                        <!-- Mini preview -->
+                        <div class="bg-gray-900 rounded-lg p-3 mb-3 aspect-[16/10] flex flex-col items-center justify-center">
+                            <div class="w-16 h-1.5 bg-gray-600 rounded mb-1.5"></div>
+                            <div class="w-24 h-1 bg-gray-700 rounded mb-3"></div>
+                            <div class="flex gap-1.5">
+                                <div class="w-8 h-2 bg-indigo-500 rounded-sm"></div>
+                                <div class="w-8 h-2 bg-gray-600 rounded-sm"></div>
+                            </div>
+                            <div class="flex gap-2 mt-3">
+                                <div class="w-10 h-6 bg-gray-700 rounded-sm"></div>
+                                <div class="w-10 h-6 bg-gray-700 rounded-sm"></div>
+                                <div class="w-10 h-6 bg-gray-700 rounded-sm"></div>
+                            </div>
+                        </div>
+                        <div class="text-sm font-semibold text-white">Starter</div>
+                        <div class="text-xs text-gray-400 mt-0.5">Clean, centered layout. The classic default.</div>
+                    </div>
+                </label>
+
+                <!-- Bold -->
+                <label class="relative cursor-pointer" @click="selectedTemplate = 'bold'">
+                    <input type="radio" name="homepage_template" value="bold" x-model="selectedTemplate" class="sr-only">
+                    <div class="border-2 rounded-xl p-4 transition-all"
+                         :class="selectedTemplate === 'bold' ? 'border-indigo-500 bg-indigo-500/10' : 'border-gray-600 hover:border-gray-500'">
+                        <div class="bg-gray-900 rounded-lg p-3 mb-3 aspect-[16/10] flex flex-col">
+                            <div class="flex-1 bg-gradient-to-br from-indigo-500 to-sky-500 rounded-md flex items-center justify-center mb-2">
+                                <div class="text-center">
+                                    <div class="w-14 h-1 bg-white/80 rounded mx-auto mb-1"></div>
+                                    <div class="w-10 h-0.5 bg-white/50 rounded mx-auto"></div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <div class="w-10 h-5 bg-gray-700 rounded-sm"></div>
+                                <div class="w-10 h-5 bg-gray-700 rounded-sm"></div>
+                                <div class="w-10 h-5 bg-gray-700 rounded-sm"></div>
+                            </div>
+                        </div>
+                        <div class="text-sm font-semibold text-white">Bold</div>
+                        <div class="text-xs text-gray-400 mt-0.5">Gradient hero, modern SaaS aesthetic.</div>
+                    </div>
+                </label>
+
+                <!-- Elegant -->
+                <label class="relative cursor-pointer" @click="selectedTemplate = 'elegant'">
+                    <input type="radio" name="homepage_template" value="elegant" x-model="selectedTemplate" class="sr-only">
+                    <div class="border-2 rounded-xl p-4 transition-all"
+                         :class="selectedTemplate === 'elegant' ? 'border-indigo-500 bg-indigo-500/10' : 'border-gray-600 hover:border-gray-500'">
+                        <div class="bg-gray-900 rounded-lg p-3 mb-3 aspect-[16/10] flex flex-col">
+                            <div class="flex-1 flex gap-2 mb-2">
+                                <div class="flex-1 flex flex-col justify-center">
+                                    <div class="w-12 h-1 bg-gray-500 rounded mb-1"></div>
+                                    <div class="w-16 h-1.5 bg-gray-400 rounded mb-1"></div>
+                                    <div class="w-8 h-0.5 bg-gray-600 rounded"></div>
+                                </div>
+                                <div class="w-12 bg-gradient-to-br from-indigo-500/30 to-sky-500/30 rounded-md"></div>
+                            </div>
+                            <div class="flex gap-2">
+                                <div class="w-10 h-5 bg-gray-700 rounded-sm border border-gray-600"></div>
+                                <div class="w-10 h-5 bg-gray-700 rounded-sm border border-gray-600"></div>
+                                <div class="w-10 h-5 bg-gray-700 rounded-sm border border-gray-600"></div>
+                            </div>
+                        </div>
+                        <div class="text-sm font-semibold text-white">Elegant</div>
+                        <div class="text-xs text-gray-400 mt-0.5">Split hero, refined editorial feel.</div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Hero Subtitle -->
+        <div class="mb-6">
+            <label for="hero_subtitle" class="block text-sm font-medium text-gray-300 mb-2">Hero Subtitle</label>
+            <input type="text" name="hero_subtitle" id="hero_subtitle"
+                value="<?= h($tenant['hero_subtitle'] ?? '') ?>"
+                class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                placeholder="A short description shown below your tagline">
+            <p class="text-xs text-gray-500 mt-2">Displayed below the main headline on your homepage.</p>
+        </div>
+
+        <!-- Hero Image -->
+        <div>
+            <label for="hero_image" class="block text-sm font-medium text-gray-300 mb-2">Hero Image</label>
+            <?php if (!empty($tenant['hero_image_path'])): ?>
+                <div class="mb-3 flex items-center space-x-3">
+                    <img src="<?= h(imageUrl($tenant['hero_image_path'])) ?>" alt="Current hero image" class="h-20 w-auto rounded border border-gray-600">
+                    <span class="text-sm text-gray-400">Current hero image</span>
+                </div>
+            <?php endif; ?>
+            <input type="file" name="hero_image" id="hero_image" accept="image/*"
+                class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
+            <p class="text-xs text-gray-500 mt-2">Used in the Bold and Elegant templates. Recommended size: 1200x800px or larger.</p>
+        </div>
+    </div>
+
     <!-- Branding -->
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
         <h3 class="text-lg font-semibold text-white mb-6 flex items-center">

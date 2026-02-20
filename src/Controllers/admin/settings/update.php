@@ -18,7 +18,15 @@ if (!in_array($emailService, ['kompaza', 'brevo', 'mailgun', 'smtp'])) {
     $emailService = 'kompaza';
 }
 
+// Validate homepage_template
+$homepageTemplate = $_POST['homepage_template'] ?? 'starter';
+if (!in_array($homepageTemplate, ['starter', 'bold', 'elegant'])) {
+    $homepageTemplate = 'starter';
+}
+
 $data = [
+    'homepage_template' => $homepageTemplate,
+    'hero_subtitle' => sanitize($_POST['hero_subtitle'] ?? ''),
     'company_name' => sanitize($_POST['company_name'] ?? ''),
     'tagline' => sanitize($_POST['tagline'] ?? ''),
     'email' => sanitize($_POST['email'] ?? ''),
@@ -53,6 +61,20 @@ if (!empty($_FILES['logo']['name']) && $_FILES['logo']['error'] === UPLOAD_ERR_O
         deleteUploadedFile($tenant['logo_path']);
     }
     $data['logo_path'] = uploadPublicFile($_FILES['logo']['tmp_name'], 'branding', 'logo', $ext);
+}
+
+// Handle hero image upload
+if (!empty($_FILES['hero_image']['name']) && $_FILES['hero_image']['error'] === UPLOAD_ERR_OK) {
+    $ext = strtolower(pathinfo($_FILES['hero_image']['name'], PATHINFO_EXTENSION));
+    if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
+        flashMessage('error', 'Only images (jpg, png, webp, gif) are allowed for hero image.');
+        redirect('/admin/settings');
+    }
+    // Delete old hero image
+    if (!empty($tenant['hero_image_path'])) {
+        deleteUploadedFile($tenant['hero_image_path']);
+    }
+    $data['hero_image_path'] = uploadPublicFile($_FILES['hero_image']['tmp_name'], 'branding', 'hero', $ext);
 }
 
 Tenant::update($tenantId, $data);

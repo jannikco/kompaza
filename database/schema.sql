@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS tenants (
     secondary_color VARCHAR(7) DEFAULT '#6366f1',
     company_name VARCHAR(255) DEFAULT NULL,
     tagline VARCHAR(500) DEFAULT NULL,
+    hero_subtitle VARCHAR(500) DEFAULT NULL,
 
     -- Contact
     email VARCHAR(255) DEFAULT NULL,
@@ -67,6 +68,8 @@ CREATE TABLE IF NOT EXISTS tenants (
     feature_mastermind BOOLEAN DEFAULT FALSE,
     feature_custom_pages BOOLEAN DEFAULT FALSE,
     custom_css TEXT DEFAULT NULL,
+    homepage_template VARCHAR(50) DEFAULT 'starter',
+    hero_image_path VARCHAR(500) DEFAULT NULL,
     custom_footer_html TEXT DEFAULT NULL,
 
     -- Subscription
