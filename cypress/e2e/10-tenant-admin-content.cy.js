@@ -14,12 +14,16 @@ describe('Tenant Admin Content Management', () => {
 
   it('loads create lead magnet form', () => {
     cy.visit(`${base}/admin/lead-magnets/opret`)
+    // AI wizard step 1 is shown first; skip to manual form
+    cy.contains('Skip AI').click()
     cy.get('input[name="title"]').should('be.visible')
     cy.get('input[name="slug"]').should('be.visible')
   })
 
   it('creates a lead magnet', () => {
     cy.visit(`${base}/admin/lead-magnets/opret`)
+    // Skip AI wizard to get to the manual form
+    cy.contains('Skip AI').click()
     cy.get('input[name="title"]').type('Test Lead Magnet')
     cy.get('input[name="slug"]').clear().type('test-lead-magnet')
     cy.get('input[name="hero_headline"]').type('Download Our Free Guide')
