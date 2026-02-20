@@ -127,12 +127,31 @@ ob_start();
                             </div>
                         </div>
 
-                        <!-- Payment -->
+                        <!-- Payment Method -->
                         <div class="bg-white rounded-xl border border-gray-200 p-6">
-                            <h2 class="text-lg font-bold text-gray-900 mb-6">Payment</h2>
-                            <div id="stripe-card-element" class="p-4 border border-gray-300 rounded-lg bg-gray-50 min-h-[44px]">
-                                <!-- Stripe Elements will be mounted here -->
-                                <p class="text-sm text-gray-400">Secure payment processing will appear here.</p>
+                            <h2 class="text-lg font-bold text-gray-900 mb-6">Payment Method</h2>
+                            <div class="space-y-3">
+                                <label class="flex items-center p-4 border rounded-lg cursor-pointer transition"
+                                       :class="form.payment_method === 'invoice' ? 'border-brand bg-blue-50 ring-2 ring-brand' : 'border-gray-200 hover:border-gray-300'">
+                                    <input type="radio" name="payment_method" value="invoice" x-model="form.payment_method" class="w-4 h-4 text-brand focus:ring-brand">
+                                    <div class="ml-3">
+                                        <span class="text-sm font-medium text-gray-900">Invoice / Bank Transfer</span>
+                                        <p class="text-xs text-gray-500 mt-0.5">Pay within 14 days via bank transfer</p>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-4 border rounded-lg cursor-pointer transition"
+                                       :class="form.payment_method === 'card' ? 'border-brand bg-blue-50 ring-2 ring-brand' : 'border-gray-200 hover:border-gray-300'">
+                                    <input type="radio" name="payment_method" value="card" x-model="form.payment_method" class="w-4 h-4 text-brand focus:ring-brand">
+                                    <div class="ml-3">
+                                        <span class="text-sm font-medium text-gray-900">Credit / Debit Card</span>
+                                        <p class="text-xs text-gray-500 mt-0.5">Pay securely with Stripe</p>
+                                    </div>
+                                </label>
+                            </div>
+                            <div x-show="form.payment_method === 'card'" x-cloak class="mt-4">
+                                <div id="stripe-card-element" class="p-4 border border-gray-300 rounded-lg bg-gray-50 min-h-[44px]">
+                                    <p class="text-sm text-gray-400">Secure payment processing will appear here.</p>
+                                </div>
                             </div>
                             <p class="mt-3 text-xs text-gray-400">
                                 <svg class="w-3.5 h-3.5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
@@ -164,10 +183,33 @@ ob_start();
                                 </template>
                             </div>
 
-                            <div class="border-t border-gray-200 pt-4 space-y-3 text-sm">
+                            <!-- Discount Code -->
+                            <div class="mb-4 pb-4 border-b border-gray-200">
+                                <div class="flex gap-2">
+                                    <input type="text" x-model="discountCode" placeholder="Discount code"
+                                           class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 ring-brand focus:border-transparent"
+                                           :disabled="discountApplied">
+                                    <button type="button" @click="applyDiscount()" :disabled="discountApplied || !discountCode"
+                                            class="px-4 py-2 text-sm font-medium rounded-lg transition"
+                                            :class="discountApplied ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
+                                        <span x-text="discountApplied ? 'Applied' : 'Apply'"></span>
+                                    </button>
+                                </div>
+                                <p x-show="discountError" x-cloak class="text-xs text-red-600 mt-1" x-text="discountError"></p>
+                                <div x-show="discountApplied" x-cloak class="flex items-center justify-between mt-2 text-sm">
+                                    <span class="text-green-600 font-medium" x-text="discountLabel"></span>
+                                    <button type="button" @click="removeDiscount()" class="text-xs text-red-500 hover:text-red-700">Remove</button>
+                                </div>
+                            </div>
+
+                            <div class="space-y-3 text-sm">
                                 <div class="flex justify-between text-gray-600">
                                     <span>Subtotal</span>
                                     <span x-text="formatPrice(subtotal)"></span>
+                                </div>
+                                <div x-show="discountAmount > 0" x-cloak class="flex justify-between text-green-600">
+                                    <span>Discount</span>
+                                    <span x-text="'-' + formatPrice(discountAmount)"></span>
                                 </div>
                                 <div class="flex justify-between text-gray-600">
                                     <span>Tax (<?= h($taxRate) ?>%)</span>
@@ -208,11 +250,17 @@ function checkoutPage() {
         sameAsShipping: true,
         submitting: false,
         error: '',
+        discountCode: '',
+        discountAmount: 0,
+        discountApplied: false,
+        discountLabel: '',
+        discountError: '',
         form: {
             name: '<?= h(currentUser()['name'] ?? '') ?>',
             email: '<?= h(currentUser()['email'] ?? '') ?>',
             phone: '',
             company: '',
+            payment_method: 'invoice',
             shipping: { street: '', city: '', postal: '', country: '' },
             billing: { street: '', city: '', postal: '', country: '' }
         },
@@ -225,16 +273,50 @@ function checkoutPage() {
             return this.items.reduce((sum, item) => sum + item.price * item.qty, 0);
         },
 
+        get discountedSubtotal() {
+            return Math.max(0, this.subtotal - this.discountAmount);
+        },
+
         get tax() {
-            return this.subtotal * (this.taxRate / 100);
+            return this.discountedSubtotal * (this.taxRate / 100);
         },
 
         get total() {
-            return this.subtotal + this.tax;
+            return this.discountedSubtotal + this.tax;
         },
 
         formatPrice(amount) {
             return amount.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' ' + this.currency;
+        },
+
+        async applyDiscount() {
+            if (!this.discountCode.trim()) return;
+            this.discountError = '';
+            try {
+                const res = await fetch('/api/discount/validate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: this.discountCode, subtotal: this.subtotal })
+                });
+                const data = await res.json();
+                if (data.valid) {
+                    this.discountApplied = true;
+                    this.discountAmount = data.discount_amount;
+                    this.discountLabel = data.label || 'Discount applied';
+                } else {
+                    this.discountError = data.error || 'Invalid discount code.';
+                }
+            } catch (err) {
+                this.discountError = 'Could not validate discount code.';
+            }
+        },
+
+        removeDiscount() {
+            this.discountApplied = false;
+            this.discountAmount = 0;
+            this.discountLabel = '';
+            this.discountCode = '';
+            this.discountError = '';
         },
 
         async submitOrder() {
@@ -253,6 +335,8 @@ function checkoutPage() {
                         customer_email: this.form.email,
                         customer_phone: this.form.phone,
                         customer_company: this.form.company,
+                        payment_method: this.form.payment_method,
+                        discount_code: this.discountApplied ? this.discountCode : null,
                         shipping_address: this.form.shipping,
                         billing_address: billing,
                         items: this.items

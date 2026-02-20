@@ -80,6 +80,19 @@ class Order {
         return $db->lastInsertId();
     }
 
+    public static function update($id, $data) {
+        $db = Database::getConnection();
+        $fields = [];
+        $values = [];
+        foreach ($data as $key => $value) {
+            $fields[] = "$key = ?";
+            $values[] = $value;
+        }
+        $values[] = $id;
+        $stmt = $db->prepare("UPDATE orders SET " . implode(', ', $fields) . " WHERE id = ?");
+        return $stmt->execute($values);
+    }
+
     public static function updateStatus($id, $status, $note = null) {
         $db = Database::getConnection();
 

@@ -127,6 +127,43 @@ ob_start();
             <p class="text-sm text-gray-300 font-mono break-all"><?= h($order['payment_reference']) ?></p>
         </div>
         <?php endif; ?>
+
+        <!-- Invoice Info -->
+        <?php if ($order['payment_method'] === 'invoice'): ?>
+        <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+            <h3 class="text-lg font-semibold text-white mb-3">Invoice</h3>
+            <?php if (!empty($order['invoice_number'])): ?>
+            <div class="space-y-2">
+                <div>
+                    <label class="text-xs font-medium text-gray-500 uppercase tracking-wider">Invoice Number</label>
+                    <p class="text-sm text-gray-200 mt-0.5 font-mono"><?= h($order['invoice_number']) ?></p>
+                </div>
+                <?php if (!empty($order['invoice_due_date'])): ?>
+                <div>
+                    <label class="text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</label>
+                    <p class="text-sm text-gray-200 mt-0.5"><?= formatDate($order['invoice_due_date'], 'd M Y') ?></p>
+                </div>
+                <?php endif; ?>
+                <div class="pt-2">
+                    <a href="/admin/ordrer/faktura?id=<?= $order['id'] ?>" target="_blank" class="text-sm text-indigo-400 hover:text-indigo-300 inline-flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17v3a2 2 0 002 2h14a2 2 0 002-2v-3"/></svg>
+                        View Invoice
+                    </a>
+                </div>
+            </div>
+            <?php else: ?>
+            <form method="POST" action="/admin/ordrer/generer-faktura">
+                <?= csrfField() ?>
+                <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
+                <p class="text-sm text-gray-400 mb-3">No invoice generated yet.</p>
+                <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Generate Invoice
+                </button>
+            </form>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
     </div>
 
     <!-- Right Column: Order Items & Totals -->

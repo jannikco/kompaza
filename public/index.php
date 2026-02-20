@@ -155,6 +155,8 @@ if ($routingMode === 'tenant') {
             '/forgot-password' => 'shop/forgot-password',
             '/reset-password' => 'shop/reset-password',
             '/contact' => 'shop/contact',
+            '/consultation' => 'shop/consultation',
+            '/consultation/success' => 'shop/consultation-success',
             '/terms' => 'shop/terms-of-service',
             '/certificate/download' => 'shop/certificate-download',
         ],
@@ -168,6 +170,7 @@ if ($routingMode === 'tenant') {
             '/forgot-password' => 'shop/forgot-password-submit',
             '/reset-password' => 'shop/reset-password-submit',
             '/contact' => 'shop/contact-submit',
+            '/consultation/submit' => 'shop/consultation-submit',
         ],
     ];
 
@@ -224,7 +227,23 @@ if ($routingMode === 'tenant') {
             '/admin/kurser/quiz/opret' => 'admin/courses/quiz-create',
             '/admin/kurser/quiz/rediger' => 'admin/courses/quiz-edit',
             '/admin/certificates' => 'admin/courses/certificates',
+            '/admin/consultations' => 'admin/consultations/index',
+            '/admin/consultations/types' => 'admin/consultations/types',
             '/admin/contact-messages' => 'admin/contact-messages/index',
+            '/admin/discount-codes' => 'admin/discount-codes/index',
+            '/admin/discount-codes/create' => 'admin/discount-codes/create',
+            '/admin/discount-codes/edit' => 'admin/discount-codes/edit',
+            '/admin/newsletters' => 'admin/newsletters/index',
+            '/admin/newsletters/compose' => 'admin/newsletters/compose',
+            '/admin/email-sequences' => 'admin/email-sequences/index',
+            '/admin/email-sequences/create' => 'admin/email-sequences/create',
+            '/admin/email-sequences/edit' => 'admin/email-sequences/edit',
+            '/admin/companies' => 'admin/companies/index',
+            '/admin/companies/create' => 'admin/companies/create',
+            '/admin/companies/edit' => 'admin/companies/edit',
+            '/admin/mastermind' => 'admin/mastermind/index',
+            '/admin/mastermind/create' => 'admin/mastermind/create',
+            '/admin/mastermind/edit' => 'admin/mastermind/edit',
         ],
         'POST' => [
             '/admin/lead-magnets/gem' => 'admin/lead-magnets/store',
@@ -275,8 +294,39 @@ if ($routingMode === 'tenant') {
             '/admin/certificates/revoke' => 'admin/courses/certificate-revoke',
             '/admin/kurser/attachment/gem' => 'admin/courses/attachment-store',
             '/admin/kurser/attachment/slet' => 'admin/courses/attachment-delete',
+            '/admin/consultations/update-status' => 'admin/consultations/update-status',
+            '/admin/consultations/type-store' => 'admin/consultations/type-store',
+            '/admin/consultations/type-update' => 'admin/consultations/type-update',
+            '/admin/consultations/type-delete' => 'admin/consultations/type-delete',
             '/admin/contact-messages/reply' => 'admin/contact-messages/reply',
             '/admin/contact-messages/slet' => 'admin/contact-messages/delete',
+            '/admin/discount-codes/store' => 'admin/discount-codes/store',
+            '/admin/discount-codes/update' => 'admin/discount-codes/update',
+            '/admin/discount-codes/delete' => 'admin/discount-codes/delete',
+            '/admin/newsletters/store' => 'admin/newsletters/store',
+            '/admin/newsletters/send' => 'admin/newsletters/send',
+            '/admin/newsletters/send-test' => 'admin/newsletters/send-test',
+            '/admin/newsletters/delete' => 'admin/newsletters/delete',
+            '/admin/email-sequences/store' => 'admin/email-sequences/store',
+            '/admin/email-sequences/update' => 'admin/email-sequences/update',
+            '/admin/email-sequences/delete' => 'admin/email-sequences/delete',
+            '/admin/email-sequences/step-store' => 'admin/email-sequences/step-store',
+            '/admin/email-sequences/step-update' => 'admin/email-sequences/step-update',
+            '/admin/email-sequences/step-delete' => 'admin/email-sequences/step-delete',
+            '/admin/companies/store' => 'admin/companies/store',
+            '/admin/companies/update' => 'admin/companies/update',
+            '/admin/companies/delete' => 'admin/companies/delete',
+            '/admin/companies/member-add' => 'admin/companies/member-add',
+            '/admin/companies/member-remove' => 'admin/companies/member-remove',
+            '/admin/companies/license-add' => 'admin/companies/license-add',
+            '/admin/companies/license-remove' => 'admin/companies/license-remove',
+            '/admin/mastermind/store' => 'admin/mastermind/store',
+            '/admin/mastermind/update' => 'admin/mastermind/update',
+            '/admin/mastermind/delete' => 'admin/mastermind/delete',
+            '/admin/mastermind/tier-store' => 'admin/mastermind/tier-store',
+            '/admin/mastermind/tier-update' => 'admin/mastermind/tier-update',
+            '/admin/mastermind/tier-delete' => 'admin/mastermind/tier-delete',
+            '/admin/mastermind/enrollment-update' => 'admin/mastermind/enrollment-update',
         ],
     ];
 
@@ -318,6 +368,11 @@ if ($routingMode === 'tenant') {
         elseif ($method === 'GET' && preg_match('#^/lp/download/([a-zA-Z0-9]+)$#', $request, $matches)) {
             $controller = 'shop/lead-magnet-download';
             $dynamicParams['token'] = $matches[1];
+        }
+        // Mastermind program: /mastermind/{slug}
+        elseif ($method === 'GET' && preg_match('#^/mastermind/([a-z0-9\-]+)$#', $request, $matches)) {
+            $controller = 'shop/mastermind';
+            $dynamicParams['slug'] = $matches[1];
         }
         // Product single: /produkt/{slug}
         elseif ($method === 'GET' && preg_match('#^/produkt/([a-z0-9\-]+)$#', $request, $matches)) {
@@ -434,6 +489,14 @@ if ($routingMode === 'tenant') {
         // Stripe Connect webhook
         elseif ($method === 'POST' && $request === '/api/stripe/connect-webhook') {
             $controller = 'api/stripe-connect-webhook';
+        }
+        // Discount code validation API
+        elseif ($method === 'POST' && $request === '/api/discount/validate') {
+            $controller = 'api/discount-validate';
+        }
+        // Email sequence cron processor
+        elseif ($method === 'GET' && $request === '/api/cron/process-email-sequences') {
+            $controller = 'api/cron/process-email-sequences';
         }
         // Ebook checkout API
         elseif ($method === 'POST' && $request === '/api/ebook-checkout') {
