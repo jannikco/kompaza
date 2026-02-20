@@ -213,8 +213,9 @@ function transformHtml(string $html): string
     // Fix non-/dk/ prefixed links that got through (rendered without /dk/ in the HTML)
     $html = str_replace('href="/eboeger"', 'href="/eboger"', $html);
     $html = str_replace("href='/eboeger'", "href='/eboger'", $html);
-    $html = str_replace('href="/privacy-policy"', 'href="/privacy"', $html);
-    $html = str_replace("href='/privacy-policy'", "href='/privacy'", $html);
+    // /privacy-policy → /privacy (including anchor variants like /privacy-policy#cookies)
+    $html = preg_replace('/href="\/privacy-policy(#[^"]*)?"/','href="/privacy$1"', $html);
+    $html = preg_replace("/href='\/privacy-policy(#[^']*)?'/","href='/privacy\$1'", $html);
     $html = str_replace('href="/terms-of-service"', 'href="/terms"', $html);
     $html = str_replace("href='/terms-of-service'", "href='/terms'", $html);
     // /faq and /kursus redirect to login on live site, point to safe pages
