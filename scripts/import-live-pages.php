@@ -70,7 +70,11 @@ $pages = [
     ['url' => '/dk/lp-klar-til-ai',       'slug' => 'lp-klar-til-ai',      'title' => 'AI Klar Til Kamp',               'is_homepage' => false, 'sort_order' => 7],
     // Ebook landing pages
     ['url' => '/dk/ebook-landing',        'slug' => 'ebook-landing',        'title' => 'LinkedIn AI Mastery',            'is_homepage' => false, 'sort_order' => 10],
-    ['url' => '/dk/mba',                  'slug' => 'mba',                  'title' => 'MBA i AI',                       'is_homepage' => false, 'sort_order' => 11],
+    ['url' => '/dk/ebook-atlas',          'slug' => 'ebook-atlas',          'title' => 'Atlas Browser Guide',            'is_homepage' => false, 'sort_order' => 11],
+    ['url' => '/dk/ai-gdpr-bog',          'slug' => 'ai-gdpr-bog',         'title' => 'AI & GDPR Ebog',                 'is_homepage' => false, 'sort_order' => 12],
+    ['url' => '/dk/ai-gdpr-bog-koeb',     'slug' => 'ai-gdpr-bog-koeb',    'title' => 'Køb AI & GDPR Ebog',             'is_homepage' => false, 'sort_order' => 13],
+    ['url' => '/dk/claude-cowork',        'slug' => 'claude-cowork',        'title' => 'Claude Cowork Ebog',             'is_homepage' => false, 'sort_order' => 14],
+    ['url' => '/dk/mba',                  'slug' => 'mba',                  'title' => 'MBA i AI',                       'is_homepage' => false, 'sort_order' => 15],
     // Free lead magnet pages
     ['url' => '/dk/free-ai-prompts',      'slug' => 'free-ai-prompts',      'title' => 'Gratis AI Prompts',              'is_homepage' => false, 'sort_order' => 20],
     ['url' => '/dk/free-atlas',           'slug' => 'free-atlas',           'title' => 'Gratis Atlas Guide',             'is_homepage' => false, 'sort_order' => 21],
@@ -211,9 +215,11 @@ function transformHtml(string $html): string
     $html = str_replace("href='/privacy-policy'", "href='/privacy'", $html);
     $html = str_replace('href="/terms-of-service"', 'href="/terms"', $html);
     $html = str_replace("href='/terms-of-service'", "href='/terms'", $html);
-    // /faq redirects to login on live site, point to contact instead
+    // /faq and /kursus redirect to login on live site, point to safe pages
     $html = str_replace('href="/faq"', 'href="/contact"', $html);
     $html = str_replace("href='/faq'", "href='/contact'", $html);
+    $html = preg_replace('/href="\/kursus(\?[^"]*)?"/','href="/"', $html);
+    $html = preg_replace("/href='\/kursus(\?[^']*)?'/","href='/'", $html);
 
     // 5. Rewire newsletter signup forms
     // Replace form action for newsletter popup: /nyhedsbrev/tilmeld → /api/newsletter
