@@ -96,7 +96,7 @@ Return a JSON object with exactly these fields:
 - "email_subject": Email subject line for delivering the PDF (friendly, enticing)
 - "email_body_html": A short, friendly HTML email body that delivers the download link. Use {{name}} for the recipient's name and {{download_link}} for the PDF download URL. Keep it concise (3-5 short paragraphs). Use simple HTML (p tags, a tag for the link). Make it warm and professional.
 
-Write all content in English. Make the copy compelling and benefit-focused. The hero headline should grab attention instantly.
+Write all content in the same language as the PDF content. If the PDF is in Danish, write in Danish. If in English, write in English. Always match the language of the source material. Make the copy compelling and benefit-focused. The hero headline should grab attention instantly.
 PROMPT;
 
 $userMessage = "Here is the content of the PDF lead magnet:\n\n" . $pdfText;

@@ -284,6 +284,31 @@ function leadMagnetWizard() {
         pdfOriginalName: '',
         aiGenerated: false,
         features: [],
+        init() {
+            if (this.step === 2) {
+                this.$nextTick(() => this.initEmailEditor());
+            }
+            this.$watch('step', (val) => {
+                if (val === 2) {
+                    this.$nextTick(() => this.initEmailEditor());
+                }
+            });
+        },
+        initEmailEditor() {
+            if (tinymce.get('email_body_html')) return;
+            tinymce.init({
+                selector: '#email_body_html',
+                height: 300,
+                menubar: false,
+                plugins: 'lists link code',
+                toolbar: 'undo redo | bold italic | bullist numlist | link | removeformat | code',
+                skin: 'oxide-dark',
+                content_css: 'dark',
+                content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #e5e7eb; background: #374151; }',
+                branding: false,
+                promotion: false
+            });
+        },
         formData: {
             title: '',
             slug: '',
@@ -344,6 +369,18 @@ function leadMagnetWizard() {
                 }
 
                 this.step = 2;
+
+                // Set TinyMCE content after editor initializes
+                if (this.formData.email_body_html) {
+                    const waitForEditor = setInterval(() => {
+                        const editor = tinymce.get('email_body_html');
+                        if (editor && editor.initialized) {
+                            editor.setContent(this.formData.email_body_html);
+                            clearInterval(waitForEditor);
+                        }
+                    }, 100);
+                    setTimeout(() => clearInterval(waitForEditor), 5000);
+                }
             } catch (e) {
                 this.error = 'Network error. Please try again.';
             }

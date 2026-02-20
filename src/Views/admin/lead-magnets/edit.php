@@ -186,6 +186,19 @@ ob_start();
     document.getElementById('hero_bg_color').addEventListener('input', function() {
         document.getElementById('hero_bg_color_text').value = this.value;
     });
+
+    tinymce.init({
+        selector: '#email_body',
+        height: 300,
+        menubar: false,
+        plugins: 'lists link code',
+        toolbar: 'undo redo | bold italic | bullist numlist | link | removeformat | code',
+        skin: 'oxide-dark',
+        content_css: 'dark',
+        content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #e5e7eb; background: #374151; }',
+        branding: false,
+        promotion: false
+    });
 </script>
 
 <?php
