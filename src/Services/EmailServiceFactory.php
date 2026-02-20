@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Setting;
+
 class EmailServiceFactory {
 
     /**
@@ -35,8 +37,7 @@ class EmailServiceFactory {
 
             case 'kompaza':
             default:
-                // Use platform default Brevo key
-                return new BrevoService(defined('BREVO_API_KEY') ? BREVO_API_KEY : null);
+                return self::createPlatformService();
         }
     }
 
@@ -50,7 +51,12 @@ class EmailServiceFactory {
 
         switch ($provider) {
             case 'kompaza':
-                $brevo = new BrevoService(defined('BREVO_API_KEY') ? BREVO_API_KEY : null);
+                $platformProvider = Setting::get('platform_email_service', null, 'brevo');
+                if ($platformProvider !== 'brevo') {
+                    return null;
+                }
+                $apiKey = Setting::get('platform_brevo_api_key') ?: (defined('BREVO_API_KEY') ? BREVO_API_KEY : null);
+                $brevo = new BrevoService($apiKey);
                 return $brevo->isConfigured() ? $brevo : null;
 
             case 'brevo':
@@ -62,6 +68,36 @@ class EmailServiceFactory {
 
             default:
                 return null;
+        }
+    }
+
+    /**
+     * Create the platform-level email service based on superadmin settings.
+     * Falls back to .env constants if no DB settings exist.
+     */
+    private static function createPlatformService(): BrevoService|MailgunService|SmtpService {
+        $provider = Setting::get('platform_email_service', null, 'brevo');
+
+        switch ($provider) {
+            case 'mailgun':
+                return new MailgunService(
+                    Setting::get('platform_mailgun_api_key') ?: '',
+                    Setting::get('platform_mailgun_domain') ?: ''
+                );
+
+            case 'smtp':
+                return new SmtpService(
+                    Setting::get('platform_smtp_host') ?: '',
+                    (int)(Setting::get('platform_smtp_port') ?: 587),
+                    Setting::get('platform_smtp_username') ?: '',
+                    Setting::get('platform_smtp_password') ?: '',
+                    Setting::get('platform_smtp_encryption') ?: 'tls'
+                );
+
+            case 'brevo':
+            default:
+                $apiKey = Setting::get('platform_brevo_api_key') ?: (defined('BREVO_API_KEY') ? BREVO_API_KEY : null);
+                return new BrevoService($apiKey);
         }
     }
 }
