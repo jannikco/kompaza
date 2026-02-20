@@ -393,6 +393,16 @@ if ($routingMode === 'tenant') {
             $controller = 'shop/account/order-detail';
             $dynamicParams['id'] = $matches[1];
         }
+        // Admin order detail: /admin/ordrer/{id}
+        elseif ($method === 'GET' && preg_match('#^/admin/ordrer/(\d+)$#', $request, $matches)) {
+            $_GET['id'] = $matches[1];
+            $controller = 'admin/orders/show';
+        }
+        // Admin customer detail: /admin/kunder/{id}
+        elseif ($method === 'GET' && preg_match('#^/admin/kunder/(\d+)$#', $request, $matches)) {
+            $_GET['id'] = $matches[1];
+            $controller = 'admin/customers/show';
+        }
         // Quiz: take quiz (must be before /course/{slug} pattern)
         elseif ($method === 'GET' && $request === '/course/quiz') {
             $controller = 'shop/course-quiz';
