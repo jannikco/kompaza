@@ -59,14 +59,31 @@ if ($dryRun) {
 
 // Pages to import from live site
 $pages = [
-    ['url' => '/dk',                      'slug' => 'homepage',              'title' => 'AI BootCamp HQ',             'is_homepage' => true,  'sort_order' => 0],
-    ['url' => '/dk/gratis',               'slug' => 'gratis',               'title' => 'Gratis PDF\'er & AI Guides',  'is_homepage' => false, 'sort_order' => 1],
-    ['url' => '/dk/foredrag',             'slug' => 'foredrag',             'title' => 'Foredrag om AI',              'is_homepage' => false, 'sort_order' => 2],
-    ['url' => '/dk/konsulent',            'slug' => 'konsulent',            'title' => 'AI Konsulent',                'is_homepage' => false, 'sort_order' => 3],
-    ['url' => '/dk/ai-konsulent',         'slug' => 'ai-konsulent',         'title' => 'AI Konsulenterne',            'is_homepage' => false, 'sort_order' => 4],
-    ['url' => '/dk/claude-cowork-kursus', 'slug' => 'claude-cowork-kursus', 'title' => 'Claude Cowork Masterclass',   'is_homepage' => false, 'sort_order' => 5],
-    ['url' => '/dk/hjemmeside',           'slug' => 'hjemmeside',           'title' => 'Byg hjemmeside med AI',       'is_homepage' => false, 'sort_order' => 6],
-    ['url' => '/dk/lp-klar-til-ai',       'slug' => 'lp-klar-til-ai',      'title' => 'AI Klar Til Kamp',            'is_homepage' => false, 'sort_order' => 7],
+    // Main pages
+    ['url' => '/dk',                      'slug' => 'homepage',              'title' => 'AI BootCamp HQ',                'is_homepage' => true,  'sort_order' => 0],
+    ['url' => '/dk/gratis',               'slug' => 'gratis',               'title' => 'Gratis PDF\'er & AI Guides',     'is_homepage' => false, 'sort_order' => 1],
+    ['url' => '/dk/foredrag',             'slug' => 'foredrag',             'title' => 'Foredrag om AI',                 'is_homepage' => false, 'sort_order' => 2],
+    ['url' => '/dk/konsulent',            'slug' => 'konsulent',            'title' => 'AI Konsulent',                   'is_homepage' => false, 'sort_order' => 3],
+    ['url' => '/dk/ai-konsulent',         'slug' => 'ai-konsulent',         'title' => 'AI Konsulenterne',               'is_homepage' => false, 'sort_order' => 4],
+    ['url' => '/dk/claude-cowork-kursus', 'slug' => 'claude-cowork-kursus', 'title' => 'Claude Cowork Masterclass',      'is_homepage' => false, 'sort_order' => 5],
+    ['url' => '/dk/hjemmeside',           'slug' => 'hjemmeside',           'title' => 'Byg hjemmeside med AI',          'is_homepage' => false, 'sort_order' => 6],
+    ['url' => '/dk/lp-klar-til-ai',       'slug' => 'lp-klar-til-ai',      'title' => 'AI Klar Til Kamp',               'is_homepage' => false, 'sort_order' => 7],
+    // Ebook landing pages
+    ['url' => '/dk/ebook-landing',        'slug' => 'ebook-landing',        'title' => 'LinkedIn AI Mastery',            'is_homepage' => false, 'sort_order' => 10],
+    ['url' => '/dk/mba',                  'slug' => 'mba',                  'title' => 'MBA i AI',                       'is_homepage' => false, 'sort_order' => 11],
+    // Free lead magnet pages
+    ['url' => '/dk/free-ai-prompts',      'slug' => 'free-ai-prompts',      'title' => 'Gratis AI Prompts',              'is_homepage' => false, 'sort_order' => 20],
+    ['url' => '/dk/free-atlas',           'slug' => 'free-atlas',           'title' => 'Gratis Atlas Guide',             'is_homepage' => false, 'sort_order' => 21],
+    ['url' => '/dk/free-udlaeg',          'slug' => 'free-udlaeg',          'title' => 'Gratis AI Kvitteringer Guide',   'is_homepage' => false, 'sort_order' => 22],
+    ['url' => '/dk/free-konsulent-ai-tools', 'slug' => 'free-konsulent-ai-tools', 'title' => 'Gratis AI Konsulent Tools', 'is_homepage' => false, 'sort_order' => 23],
+    ['url' => '/dk/free-claude-cowork',   'slug' => 'free-claude-cowork',   'title' => 'Gratis Claude Cowork Kapitel',   'is_homepage' => false, 'sort_order' => 24],
+    ['url' => '/dk/free-gdpr-tjekliste',  'slug' => 'free-gdpr-tjekliste',  'title' => 'Gratis GDPR Tjekliste',         'is_homepage' => false, 'sort_order' => 25],
+    // Purchase / course pages
+    ['url' => '/dk/course-purchase',      'slug' => 'course-purchase',      'title' => 'Køb Kursus',                    'is_homepage' => false, 'sort_order' => 30],
+    ['url' => '/dk/book-purchase',        'slug' => 'book-purchase',        'title' => 'Køb Ebog',                      'is_homepage' => false, 'sort_order' => 31],
+    ['url' => '/dk/claude-cowork-kursus-koeb', 'slug' => 'claude-cowork-kursus-koeb', 'title' => 'Køb Claude Cowork Kursus', 'is_homepage' => false, 'sort_order' => 32],
+    // Legal
+    ['url' => '/dk/privacy-policy',       'slug' => 'privacy',              'title' => 'Privatlivspolitik',              'is_homepage' => false, 'sort_order' => 90],
 ];
 
 /**
@@ -186,6 +203,17 @@ function transformHtml(string $html): string
     $html = preg_replace('/href="https?:\/\/aibootcamphq\.com\/dk"/', 'href="/"', $html);
     $html = preg_replace('/href="https?:\/\/aibootcamphq\.com\/"/', 'href="/"', $html);
     $html = preg_replace('/href="https?:\/\/aibootcamphq\.com"/', 'href="/"', $html);
+
+    // Fix non-/dk/ prefixed links that got through (rendered without /dk/ in the HTML)
+    $html = str_replace('href="/eboeger"', 'href="/eboger"', $html);
+    $html = str_replace("href='/eboeger'", "href='/eboger'", $html);
+    $html = str_replace('href="/privacy-policy"', 'href="/privacy"', $html);
+    $html = str_replace("href='/privacy-policy'", "href='/privacy'", $html);
+    $html = str_replace('href="/terms-of-service"', 'href="/terms"', $html);
+    $html = str_replace("href='/terms-of-service'", "href='/terms'", $html);
+    // /faq redirects to login on live site, point to contact instead
+    $html = str_replace('href="/faq"', 'href="/contact"', $html);
+    $html = str_replace("href='/faq'", "href='/contact'", $html);
 
     // 5. Rewire newsletter signup forms
     // Replace form action for newsletter popup: /nyhedsbrev/tilmeld → /api/newsletter
