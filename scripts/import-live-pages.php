@@ -140,7 +140,7 @@ function transformHtml(string $html): string
 
     // 3. Remove Brevo chat widget
     $html = preg_replace('/<!-- Brevo Conversations.*?<\/script>/s', '', $html);
-    $html = preg_replace('/<script[^>]*>.*?BrevoConversations.*?<\/script>/s', '', $html);
+    $html = preg_replace('/<script[^>]*>[^<]*BrevoConversations[^<]*<\/script>/s', '', $html);
 
     // 4. Rewrite internal navigation links
     // Order matters - most specific first, then general patterns
