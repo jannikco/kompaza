@@ -15,11 +15,33 @@
 
 $dryRun = in_array('--dry-run', $argv);
 
-// Database config - runs on the server
-$kompazaDb = new PDO('mysql:host=127.0.0.1;dbname=kompaza;charset=utf8mb4', 'root', '', [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-]);
+// Load .env from project root
+$envFile = __DIR__ . '/../.env';
+if (!file_exists($envFile)) {
+    die("ERROR: .env file not found at $envFile\n");
+}
+$envLines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+foreach ($envLines as $line) {
+    if (str_starts_with(trim($line), '#')) continue;
+    if (str_contains($line, '=')) {
+        [$key, $val] = explode('=', $line, 2);
+        $_ENV[trim($key)] = trim($val);
+    }
+}
+
+$kompazaDb = new PDO(
+    sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',
+        $_ENV['DB_HOST'] ?? 'localhost',
+        $_ENV['DB_PORT'] ?? '3306',
+        $_ENV['DB_DATABASE'] ?? 'kompaza'
+    ),
+    $_ENV['DB_USERNAME'] ?? 'root',
+    $_ENV['DB_PASSWORD'] ?? '',
+    [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    ]
+);
 
 // Get tenant ID
 $stmt = $kompazaDb->prepare("SELECT id FROM tenants WHERE slug = 'aibootcamphq'");
