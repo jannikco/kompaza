@@ -46,6 +46,9 @@ define('S3_PUBLIC_DOMAIN', $_ENV['S3_PUBLIC_DOMAIN'] ?? 'kompaza.de-fra-1.linode
 // Security configuration
 define('CSRF_TOKEN_NAME', $_ENV['CSRF_TOKEN_NAME'] ?? 'csrf_token');
 
+// OpenAI
+define('OPENAI_API_KEY', $_ENV['OPENAI_API_KEY'] ?? '');
+
 // Superadmin
 define('SUPERADMIN_EMAIL', $_ENV['SUPERADMIN_EMAIL'] ?? 'admin@kompaza.com');
 

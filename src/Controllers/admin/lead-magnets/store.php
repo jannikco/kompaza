@@ -5,8 +5,8 @@ use App\Models\LeadMagnet;
 if (!isPost()) redirect('/admin/lead-magnets');
 
 if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
-    flashMessage('error', 'Ugyldig CSRF-token. Prøv igen.');
-    redirect('/admin/lead-magnets/create');
+    flashMessage('error', 'Invalid CSRF token. Please try again.');
+    redirect('/admin/lead-magnets/opret');
 }
 
 $tenantId = currentTenantId();
@@ -15,19 +15,22 @@ $title = sanitize($_POST['title'] ?? '');
 $slug = sanitize($_POST['slug'] ?? '') ?: slugify($title);
 
 if (!$title || !$slug) {
-    flashMessage('error', 'Titel og slug er påkrævet.');
-    redirect('/admin/lead-magnets/create');
+    flashMessage('error', 'Title and slug are required.');
+    redirect('/admin/lead-magnets/opret');
 }
 
-// Handle PDF upload
+// Handle PDF upload — check for pre-uploaded (AI step) first
 $pdfFilename = null;
 $pdfOriginalName = null;
-if (!empty($_FILES['pdf_file']['name']) && $_FILES['pdf_file']['error'] === UPLOAD_ERR_OK) {
+if (!empty($_POST['pdf_filename_existing'])) {
+    $pdfFilename = $_POST['pdf_filename_existing'];
+    $pdfOriginalName = sanitize($_POST['pdf_original_name_existing'] ?? 'document.pdf');
+} elseif (!empty($_FILES['pdf_file']['name']) && $_FILES['pdf_file']['error'] === UPLOAD_ERR_OK) {
     $pdfOriginalName = $_FILES['pdf_file']['name'];
     $ext = strtolower(pathinfo($pdfOriginalName, PATHINFO_EXTENSION));
     if ($ext !== 'pdf') {
-        flashMessage('error', 'Kun PDF-filer er tilladt.');
-        redirect('/admin/lead-magnets/create');
+        flashMessage('error', 'Only PDF files are allowed.');
+        redirect('/admin/lead-magnets/opret');
     }
     $pdfFilename = uploadPrivateFile($_FILES['pdf_file']['tmp_name'], 'pdfs', 'lm', 'pdf');
 }
@@ -65,5 +68,5 @@ $id = LeadMagnet::create([
 ]);
 
 logAudit('lead_magnet_created', 'lead_magnet', $id);
-flashMessage('success', 'Lead magnet oprettet.');
+flashMessage('success', 'Lead magnet created.');
 redirect('/admin/lead-magnets');

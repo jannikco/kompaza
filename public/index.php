@@ -246,8 +246,12 @@ if ($routingMode === 'tenant') {
             '/admin/mastermind' => 'admin/mastermind/index',
             '/admin/mastermind/create' => 'admin/mastermind/create',
             '/admin/mastermind/edit' => 'admin/mastermind/edit',
+            '/admin/custom-pages' => 'admin/custom-pages/index',
+            '/admin/custom-pages/create' => 'admin/custom-pages/create',
+            '/admin/custom-pages/edit' => 'admin/custom-pages/edit',
         ],
         'POST' => [
+            '/admin/lead-magnets/ai-generate' => 'admin/lead-magnets/ai-generate',
             '/admin/lead-magnets/gem' => 'admin/lead-magnets/store',
             '/admin/lead-magnets/opdater' => 'admin/lead-magnets/update',
             '/admin/lead-magnets/slet' => 'admin/lead-magnets/delete',
@@ -329,6 +333,9 @@ if ($routingMode === 'tenant') {
             '/admin/mastermind/tier-update' => 'admin/mastermind/tier-update',
             '/admin/mastermind/tier-delete' => 'admin/mastermind/tier-delete',
             '/admin/mastermind/enrollment-update' => 'admin/mastermind/enrollment-update',
+            '/admin/custom-pages/store' => 'admin/custom-pages/store',
+            '/admin/custom-pages/update' => 'admin/custom-pages/update',
+            '/admin/custom-pages/delete' => 'admin/custom-pages/delete',
         ],
     ];
 
@@ -517,6 +524,18 @@ if ($routingMode === 'tenant') {
         // Impersonate login (HMAC-signed, no auth required)
         elseif ($method === 'GET' && $request === '/auth/impersonate') {
             $controller = 'shop/impersonate';
+        }
+    }
+
+    // Before 404: check if slug matches a custom page
+    if (!$controller && $method === 'GET') {
+        $request_slug = ltrim($request, '/');
+        if ($request_slug && !str_contains($request_slug, '/')) {
+            $customPage = \App\Models\CustomPage::findBySlug($request_slug, $tenant['id']);
+            if ($customPage) {
+                $controller = 'shop/custom-page';
+                $dynamicParams['slug'] = $request_slug;
+            }
         }
     }
 
