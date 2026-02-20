@@ -1,9 +1,9 @@
-<?php $pageTitle = 'LinkedIn Account'; $currentPage = 'leadshark'; $tenant = currentTenant(); ob_start(); ?>
+<?php $pageTitle = 'LinkedIn Account'; $currentPage = 'connectpilot'; $tenant = currentTenant(); ob_start(); ?>
 
 <div class="mb-6">
-    <a href="/admin/leadshark" class="inline-flex items-center text-sm text-gray-400 hover:text-white transition">
+    <a href="/admin/connectpilot" class="inline-flex items-center text-sm text-gray-400 hover:text-white transition">
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-        Back to LeadShark
+        Back to ConnectPilot
     </a>
 </div>
 
@@ -51,14 +51,14 @@
 <?php endif; ?>
 
 <!-- Connection Form -->
-<form method="POST" action="/admin/leadshark/konto/gem" class="space-y-8">
+<form method="POST" action="/admin/connectpilot/konto/gem" class="space-y-8">
     <?= csrfField() ?>
 
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
         <h3 class="text-lg font-semibold text-white mb-2">
             <?= ($linkedinAccount && $linkedinAccount['status'] === 'active') ? 'Reconnect LinkedIn' : 'Connect LinkedIn Account' ?>
         </h3>
-        <p class="text-sm text-gray-400 mb-6">Enter your LinkedIn session cookies to connect your account. LeadShark uses these to automate actions on your behalf.</p>
+        <p class="text-sm text-gray-400 mb-6">Enter your LinkedIn session cookies to connect your account. ConnectPilot uses these to automate actions on your behalf.</p>
 
         <!-- Instructions -->
         <div class="bg-gray-900 border border-gray-700 rounded-lg p-4 mb-6">
@@ -124,7 +124,7 @@
             Test Connection
         </button>
         <div class="flex items-center space-x-4">
-            <a href="/admin/leadshark" class="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+            <a href="/admin/connectpilot" class="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
                 Cancel
             </a>
             <button type="submit" class="px-6 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition">
@@ -155,7 +155,7 @@ async function validateCookie() {
     btn.innerHTML = '<svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Validating...';
 
     try {
-        const response = await fetch('/api/leadshark/validate-cookie', {
+        const response = await fetch('/api/connectpilot/validate-cookie', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ li_at_cookie: liAt, csrf_token: csrf })

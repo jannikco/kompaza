@@ -25,7 +25,7 @@ $totalPages = max(1, ceil($totalLeads / $perPage));
 // Load campaigns for filter dropdown
 $campaigns = Campaign::allByTenant($tenantId);
 
-view('admin/leadshark/leads/index', [
+view('admin/connectpilot/leads/index', [
     'tenant' => currentTenant(),
     'leads' => $leads,
     'campaigns' => $campaigns,

@@ -6,7 +6,7 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- Alter existing tables
-ALTER TABLE tenants ADD COLUMN feature_courses BOOLEAN DEFAULT FALSE AFTER feature_leadshark;
+ALTER TABLE tenants ADD COLUMN feature_courses BOOLEAN DEFAULT FALSE AFTER feature_connectpilot;
 ALTER TABLE plans ADD COLUMN max_courses INT UNSIGNED DEFAULT NULL AFTER max_lead_magnets;
 ALTER TABLE order_items
     ADD COLUMN item_type ENUM('product','course') DEFAULT 'product' AFTER order_id,

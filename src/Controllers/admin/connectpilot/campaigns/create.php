@@ -8,7 +8,7 @@ $stmt = $db->prepare("SELECT id, linkedin_name, linkedin_email, status FROM link
 $stmt->execute([$tenantId]);
 $linkedinAccounts = $stmt->fetchAll();
 
-view('admin/leadshark/campaigns/create', [
+view('admin/connectpilot/campaigns/create', [
     'tenant' => currentTenant(),
     'linkedinAccounts' => $linkedinAccounts,
 ]);

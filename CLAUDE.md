@@ -1,7 +1,7 @@
 # Kompaza (kompaza.com)
 
 ## Project Overview
-Multi-tenant SaaS platform combining content marketing, lead generation, order management, customer management, and LinkedIn automation (LeadShark). Each customer (tenant) gets their own subdomain (`company.kompaza.com`) or custom domain. All UI text is in **English**.
+Multi-tenant SaaS platform combining content marketing, lead generation, order management, customer management, and LinkedIn automation (ConnectPilot). Each customer (tenant) gets their own subdomain (`company.kompaza.com`) or custom domain. All UI text is in **English**.
 
 ## Tech Stack
 - **Backend:** PHP 8.2+, custom MVC (same pattern as PrintWorks/connect2print)
@@ -32,7 +32,7 @@ Multi-tenant SaaS platform combining content marketing, lead generation, order m
 - **All user roles in one table**: `users` table with role ENUM (superadmin, tenant_admin, customer)
 - **Per-tenant content**: All content tables have tenant_id FK
 - **Per-tenant integrations**: Tenants can configure their own Brevo/Stripe keys
-- **LeadShark**: Browser automation via LinkedIn session cookie (li_at)
+- **ConnectPilot**: Browser automation via LinkedIn session cookie (li_at)
 - **Local file storage**: PDFs in `storage/pdfs/{tenant_id}/`, images in `public/uploads/{tenant_id}/`
 
 ## URL Structure
@@ -65,13 +65,13 @@ Multi-tenant SaaS platform combining content marketing, lead generation, order m
 - `/admin/kunder` - Customer management
 - `/admin/ordrer` - Order management
 - `/admin/produkter` - Product management
-- `/admin/leadshark` - LeadShark LinkedIn automation
+- `/admin/connectpilot` - ConnectPilot LinkedIn automation
 - `/admin/indstillinger` - Settings
 
 ## Deployment
-- Server: app1.profectify.com (SSH as root)
+- Server: `ssh root@app1` (short alias for app1.profectify.com)
 - Web root: `/var/www/kompaza.com/public/`
-- Deploy: `git pull` via update script
+- Deploy: `ssh root@app1 "cd /var/www/kompaza.com && git pull"`
 - Database: `kompaza`
 - Wildcard SSL via Let's Encrypt + Cloudflare DNS challenge
 
@@ -80,4 +80,4 @@ Multi-tenant SaaS platform combining content marketing, lead generation, order m
 - BREVO_API_KEY, STRIPE keys configured on server, not in git
 - PDF files served via tokenized download links
 - Rate limiting on login, signup, and API endpoints
-- LeadShark respects daily LinkedIn limits (20 connections, 50 messages default)
+- ConnectPilot respects daily LinkedIn limits (20 connections, 50 messages default)

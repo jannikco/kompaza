@@ -30,7 +30,7 @@
                                 <li>Create lead magnets to capture emails</li>
                                 <li>Publish blog articles and ebooks</li>
                                 <li>Manage customers and orders</li>
-                                <li>Automate LinkedIn outreach with LeadShark</li>
+                                <li>Automate LinkedIn outreach with ConnectPilot</li>
                             </ul>
                             <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 8px;">
                                 Your site: <strong><?= h($subdomain ?? '') ?></strong>

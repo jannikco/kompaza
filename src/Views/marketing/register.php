@@ -34,7 +34,7 @@
                             <svg class="w-5 h-5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                         </div>
                         <div class="ml-4">
-                            <h3 class="text-base font-semibold text-gray-900">LeadShark LinkedIn Automation</h3>
+                            <h3 class="text-base font-semibold text-gray-900">ConnectPilot LinkedIn Automation</h3>
                             <p class="text-sm text-gray-500 mt-1">Automated connection requests, message sequences, and lead tracking.</p>
                         </div>
                     </div>

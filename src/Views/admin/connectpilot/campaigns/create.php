@@ -1,13 +1,13 @@
-<?php $pageTitle = 'Create Campaign'; $currentPage = 'leadshark-campaigns'; $tenant = currentTenant(); ob_start(); ?>
+<?php $pageTitle = 'Create Campaign'; $currentPage = 'connectpilot-campaigns'; $tenant = currentTenant(); ob_start(); ?>
 
 <div class="mb-6">
-    <a href="/admin/leadshark/kampagner" class="inline-flex items-center text-sm text-gray-400 hover:text-white transition">
+    <a href="/admin/connectpilot/kampagner" class="inline-flex items-center text-sm text-gray-400 hover:text-white transition">
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
         Back to Campaigns
     </a>
 </div>
 
-<form method="POST" action="/admin/leadshark/kampagner/gem" x-data="campaignForm()" class="space-y-8">
+<form method="POST" action="/admin/connectpilot/kampagner/gem" x-data="campaignForm()" class="space-y-8">
     <?= csrfField() ?>
 
     <!-- Basic Information -->
@@ -42,7 +42,7 @@
                     <?php endif; ?>
                 </select>
                 <?php if (empty($linkedinAccounts)): ?>
-                <p class="text-xs text-yellow-400 mt-1"><a href="/admin/leadshark/konto" class="underline">Connect a LinkedIn account</a> first.</p>
+                <p class="text-xs text-yellow-400 mt-1"><a href="/admin/connectpilot/konto" class="underline">Connect a LinkedIn account</a> first.</p>
                 <?php endif; ?>
             </div>
             <div>
@@ -140,7 +140,7 @@
 
     <!-- Submit -->
     <div class="flex items-center justify-end space-x-4">
-        <a href="/admin/leadshark/kampagner" class="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+        <a href="/admin/connectpilot/kampagner" class="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
             Cancel
         </a>
         <button type="submit" class="px-6 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition">

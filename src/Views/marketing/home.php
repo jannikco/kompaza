@@ -137,7 +137,7 @@
                 </ul>
             </div>
 
-            <!-- LeadShark LinkedIn Automation -->
+            <!-- ConnectPilot LinkedIn Automation -->
             <div class="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-cyan-200 shadow-sm hover:shadow-lg transition-all duration-300">
                 <div class="absolute top-4 right-4">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-cyan-500 to-blue-500 text-white">
@@ -149,7 +149,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                     </svg>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-3">LeadShark LinkedIn Automation</h3>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">ConnectPilot LinkedIn Automation</h3>
                 <p class="text-gray-600 mb-4 leading-relaxed">
                     Automate your LinkedIn outreach with smart sequences. Find leads, send connection requests, and follow up automatically.
                 </p>
@@ -244,7 +244,7 @@
                     <?php endfor; ?>
                 </div>
                 <p class="text-gray-700 text-sm leading-relaxed mt-4 mb-4">
-                    "The LeadShark automation is a game-changer. We've tripled our LinkedIn connection rate and the follow-up sequences run on autopilot."
+                    "The ConnectPilot automation is a game-changer. We've tripled our LinkedIn connection rate and the follow-up sequences run on autopilot."
                 </p>
                 <div class="flex items-center">
                     <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm">SL</div>

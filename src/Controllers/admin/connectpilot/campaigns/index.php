@@ -11,7 +11,7 @@ $stmt = $db->prepare("SELECT id, linkedin_name FROM linkedin_accounts WHERE tena
 $stmt->execute([$tenantId]);
 $linkedinAccount = $stmt->fetch();
 
-view('admin/leadshark/campaigns/index', [
+view('admin/connectpilot/campaigns/index', [
     'tenant' => currentTenant(),
     'campaigns' => $campaigns,
     'linkedinAccount' => $linkedinAccount,

@@ -1,11 +1,11 @@
-<?php $pageTitle = 'Campaigns'; $currentPage = 'leadshark-campaigns'; $tenant = currentTenant(); ob_start(); ?>
+<?php $pageTitle = 'Campaigns'; $currentPage = 'connectpilot-campaigns'; $tenant = currentTenant(); ob_start(); ?>
 
 <div class="flex items-center justify-between mb-6">
     <div>
         <h2 class="text-2xl font-bold text-white">Campaigns</h2>
         <p class="text-sm text-gray-400 mt-1">Manage your LinkedIn outreach campaigns.</p>
     </div>
-    <a href="/admin/leadshark/kampagner/opret" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition">
+    <a href="/admin/connectpilot/kampagner/opret" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition">
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
         Create Campaign
     </a>
@@ -16,7 +16,7 @@
         <div class="p-12 text-center">
             <svg class="w-12 h-12 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/></svg>
             <p class="text-gray-400 mb-4">No campaigns yet. Create your first campaign to start generating leads.</p>
-            <a href="/admin/leadshark/kampagner/opret" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition">
+            <a href="/admin/connectpilot/kampagner/opret" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition">
                 Create Campaign
             </a>
         </div>
@@ -67,10 +67,10 @@
                         <td class="px-6 py-4 text-sm text-gray-400"><?= formatDate($campaign['created_at']) ?></td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end space-x-2">
-                                <a href="/admin/leadshark/leads?campaign_id=<?= $campaign['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition" title="View Leads">
+                                <a href="/admin/connectpilot/leads?campaign_id=<?= $campaign['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition" title="View Leads">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 </a>
-                                <a href="/admin/leadshark/kampagner/rediger?id=<?= $campaign['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                                <a href="/admin/connectpilot/kampagner/rediger?id=<?= $campaign['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
                                     Edit
                                 </a>
                                 <template x-if="!confirmDelete">
@@ -79,7 +79,7 @@
                                     </button>
                                 </template>
                                 <template x-if="confirmDelete">
-                                    <form method="POST" action="/admin/leadshark/kampagner/slet" class="inline-flex items-center space-x-1">
+                                    <form method="POST" action="/admin/connectpilot/kampagner/slet" class="inline-flex items-center space-x-1">
                                         <?= csrfField() ?>
                                         <input type="hidden" name="id" value="<?= $campaign['id'] ?>">
                                         <button type="submit" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition">

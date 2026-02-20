@@ -8,10 +8,10 @@ class Campaign {
     public static function find($id, $tenantId = null) {
         $db = Database::getConnection();
         if ($tenantId) {
-            $stmt = $db->prepare("SELECT * FROM leadshark_campaigns WHERE id = ? AND tenant_id = ?");
+            $stmt = $db->prepare("SELECT * FROM connectpilot_campaigns WHERE id = ? AND tenant_id = ?");
             $stmt->execute([$id, $tenantId]);
         } else {
-            $stmt = $db->prepare("SELECT * FROM leadshark_campaigns WHERE id = ?");
+            $stmt = $db->prepare("SELECT * FROM connectpilot_campaigns WHERE id = ?");
             $stmt->execute([$id]);
         }
         return $stmt->fetch();
@@ -19,7 +19,7 @@ class Campaign {
 
     public static function allByTenant($tenantId) {
         $db = Database::getConnection();
-        $stmt = $db->prepare("SELECT * FROM leadshark_campaigns WHERE tenant_id = ? ORDER BY created_at DESC");
+        $stmt = $db->prepare("SELECT * FROM connectpilot_campaigns WHERE tenant_id = ? ORDER BY created_at DESC");
         $stmt->execute([$tenantId]);
         return $stmt->fetchAll();
     }
@@ -27,7 +27,7 @@ class Campaign {
     public static function create($data) {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            INSERT INTO leadshark_campaigns (tenant_id, name, description, linkedin_account_id, search_url, status, created_at)
+            INSERT INTO connectpilot_campaigns (tenant_id, name, description, linkedin_account_id, search_url, status, created_at)
             VALUES (?, ?, ?, ?, ?, ?, NOW())
         ");
         $stmt->execute([
@@ -50,19 +50,19 @@ class Campaign {
             $values[] = $value;
         }
         $values[] = $id;
-        $stmt = $db->prepare("UPDATE leadshark_campaigns SET " . implode(', ', $fields) . " WHERE id = ?");
+        $stmt = $db->prepare("UPDATE connectpilot_campaigns SET " . implode(', ', $fields) . " WHERE id = ?");
         return $stmt->execute($values);
     }
 
     public static function delete($id, $tenantId) {
         $db = Database::getConnection();
-        $stmt = $db->prepare("DELETE FROM leadshark_campaigns WHERE id = ? AND tenant_id = ?");
+        $stmt = $db->prepare("DELETE FROM connectpilot_campaigns WHERE id = ? AND tenant_id = ?");
         return $stmt->execute([$id, $tenantId]);
     }
 
     public static function countByTenant($tenantId) {
         $db = Database::getConnection();
-        $stmt = $db->prepare("SELECT COUNT(*) as count FROM leadshark_campaigns WHERE tenant_id = ?");
+        $stmt = $db->prepare("SELECT COUNT(*) as count FROM connectpilot_campaigns WHERE tenant_id = ?");
         $stmt->execute([$tenantId]);
         return $stmt->fetch()['count'];
     }
@@ -70,7 +70,7 @@ class Campaign {
     public static function updateStats($id) {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            UPDATE leadshark_campaigns SET
+            UPDATE connectpilot_campaigns SET
                 leads_found = (SELECT COUNT(*) FROM linkedin_leads WHERE campaign_id = ?),
                 connections_sent = (SELECT COUNT(*) FROM linkedin_leads WHERE campaign_id = ? AND connection_status IN ('pending', 'accepted')),
                 replies_received = (SELECT COUNT(*) FROM linkedin_leads WHERE campaign_id = ? AND last_replied_at IS NOT NULL)

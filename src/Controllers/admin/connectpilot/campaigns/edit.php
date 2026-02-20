@@ -26,11 +26,11 @@ $stmt->execute([$tenantId]);
 $linkedinAccounts = $stmt->fetchAll();
 
 // Load campaign steps
-$stmt = $db->prepare("SELECT * FROM leadshark_campaign_steps WHERE campaign_id = ? ORDER BY step_order ASC");
+$stmt = $db->prepare("SELECT * FROM connectpilot_campaign_steps WHERE campaign_id = ? ORDER BY step_order ASC");
 $stmt->execute([$id]);
 $steps = $stmt->fetchAll();
 
-view('admin/leadshark/campaigns/edit', [
+view('admin/connectpilot/campaigns/edit', [
     'tenant' => currentTenant(),
     'campaign' => $campaign,
     'linkedinAccounts' => $linkedinAccounts,

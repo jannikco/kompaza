@@ -27,11 +27,11 @@ $totalLeads = LinkedInLead::countByTenant($tenantId);
 $recentCampaigns = array_slice($campaigns, 0, 5);
 
 // Recent activity log
-$stmt = $db->prepare("SELECT * FROM leadshark_activity_log WHERE tenant_id = ? ORDER BY created_at DESC LIMIT 10");
+$stmt = $db->prepare("SELECT * FROM connectpilot_activity_log WHERE tenant_id = ? ORDER BY created_at DESC LIMIT 10");
 $stmt->execute([$tenantId]);
 $recentActivity = $stmt->fetchAll();
 
-view('admin/leadshark/dashboard', [
+view('admin/connectpilot/dashboard', [
     'tenant' => $tenant,
     'linkedinAccount' => $linkedinAccount,
     'activeCampaigns' => $activeCampaigns,

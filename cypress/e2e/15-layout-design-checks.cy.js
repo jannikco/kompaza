@@ -57,9 +57,9 @@ describe('Layout & Design Verification', () => {
       '/admin/tilmeldinger',
       '/admin/brugere',
       '/admin/indstillinger',
-      '/admin/leadshark',
-      '/admin/leadshark/kampagner',
-      '/admin/leadshark/leads',
+      '/admin/connectpilot',
+      '/admin/connectpilot/kampagner',
+      '/admin/connectpilot/leads',
     ]
     pages.forEach(page => {
       cy.visit(`${base}${page}`)

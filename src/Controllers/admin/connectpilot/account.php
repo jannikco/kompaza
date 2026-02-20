@@ -9,7 +9,7 @@ $stmt = $db->prepare("SELECT * FROM linkedin_accounts WHERE tenant_id = ? LIMIT 
 $stmt->execute([$tenantId]);
 $linkedinAccount = $stmt->fetch();
 
-view('admin/leadshark/account', [
+view('admin/connectpilot/account', [
     'tenant' => $tenant,
     'linkedinAccount' => $linkedinAccount,
 ]);

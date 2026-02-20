@@ -1,4 +1,4 @@
-<?php $pageTitle = 'LeadShark'; $currentPage = 'leadshark'; $tenant = currentTenant(); ob_start(); ?>
+<?php $pageTitle = 'ConnectPilot'; $currentPage = 'connectpilot'; $tenant = currentTenant(); ob_start(); ?>
 
 <!-- Connection Status Card -->
 <div class="mb-8">
@@ -17,7 +17,7 @@
                     <?php endif; ?>
                 </div>
             </div>
-            <a href="/admin/leadshark/konto" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+            <a href="/admin/connectpilot/konto" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
                 Manage Account
             </a>
         </div>
@@ -34,7 +34,7 @@
                     <p class="text-gray-300">Connect your LinkedIn account to start automating outreach.</p>
                 </div>
             </div>
-            <a href="/admin/leadshark/konto" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition">
+            <a href="/admin/connectpilot/konto" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
                 Connect Account
             </a>
@@ -97,12 +97,12 @@
     <div class="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-700">
             <h3 class="text-lg font-semibold text-white">Recent Campaigns</h3>
-            <a href="/admin/leadshark/kampagner" class="text-sm text-indigo-400 hover:text-indigo-300">View All</a>
+            <a href="/admin/connectpilot/kampagner" class="text-sm text-indigo-400 hover:text-indigo-300">View All</a>
         </div>
         <?php if (empty($recentCampaigns)): ?>
         <div class="p-8 text-center">
             <p class="text-gray-400 mb-3">No campaigns yet.</p>
-            <a href="/admin/leadshark/kampagner/opret" class="text-sm text-indigo-400 hover:text-indigo-300">Create your first campaign</a>
+            <a href="/admin/connectpilot/kampagner/opret" class="text-sm text-indigo-400 hover:text-indigo-300">Create your first campaign</a>
         </div>
         <?php else: ?>
         <div class="divide-y divide-gray-700">
@@ -128,7 +128,7 @@
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?= $statusClass ?>">
                         <?= ucfirst($campaign['status']) ?>
                     </span>
-                    <a href="/admin/leadshark/kampagner/rediger?id=<?= $campaign['id'] ?>" class="text-gray-400 hover:text-white">
+                    <a href="/admin/connectpilot/kampagner/rediger?id=<?= $campaign['id'] ?>" class="text-gray-400 hover:text-white">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                     </a>
                 </div>

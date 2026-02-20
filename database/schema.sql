@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS tenants (
     feature_ebooks BOOLEAN DEFAULT TRUE,
     feature_lead_magnets BOOLEAN DEFAULT TRUE,
     feature_orders BOOLEAN DEFAULT TRUE,
-    feature_leadshark BOOLEAN DEFAULT FALSE,
+    feature_connectpilot BOOLEAN DEFAULT FALSE,
     custom_css TEXT DEFAULT NULL,
     custom_footer_html TEXT DEFAULT NULL,
 
@@ -490,7 +490,7 @@ CREATE TABLE IF NOT EXISTS carts (
 );
 
 -- ============================================
--- PHASE 5: LEADSHARK - LINKEDIN AUTOMATION
+-- PHASE 5: CONNECTPILOT - LINKEDIN AUTOMATION
 -- ============================================
 
 CREATE TABLE IF NOT EXISTS linkedin_accounts (
@@ -514,7 +514,7 @@ CREATE TABLE IF NOT EXISTS linkedin_accounts (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS leadshark_campaigns (
+CREATE TABLE IF NOT EXISTS connectpilot_campaigns (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     tenant_id INT UNSIGNED NOT NULL,
     name VARCHAR(255) NOT NULL,
@@ -540,7 +540,7 @@ CREATE TABLE IF NOT EXISTS leadshark_campaigns (
     FOREIGN KEY (linkedin_account_id) REFERENCES linkedin_accounts(id) ON DELETE SET NULL
 );
 
-CREATE TABLE IF NOT EXISTS leadshark_sequence_steps (
+CREATE TABLE IF NOT EXISTS connectpilot_sequence_steps (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     campaign_id INT UNSIGNED NOT NULL,
     step_number INT UNSIGNED NOT NULL,
@@ -551,7 +551,7 @@ CREATE TABLE IF NOT EXISTS leadshark_sequence_steps (
     condition_type ENUM('always','if_accepted','if_no_reply','if_replied') DEFAULT 'always',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_campaign (campaign_id),
-    FOREIGN KEY (campaign_id) REFERENCES leadshark_campaigns(id) ON DELETE CASCADE
+    FOREIGN KEY (campaign_id) REFERENCES connectpilot_campaigns(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS linkedin_leads (
@@ -588,11 +588,11 @@ CREATE TABLE IF NOT EXISTS linkedin_leads (
     INDEX idx_campaign (campaign_id),
     INDEX idx_status (connection_status),
     FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE,
-    FOREIGN KEY (campaign_id) REFERENCES leadshark_campaigns(id) ON DELETE SET NULL,
+    FOREIGN KEY (campaign_id) REFERENCES connectpilot_campaigns(id) ON DELETE SET NULL,
     FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
-CREATE TABLE IF NOT EXISTS leadshark_activity_log (
+CREATE TABLE IF NOT EXISTS connectpilot_activity_log (
     id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     tenant_id INT UNSIGNED NOT NULL,
     campaign_id INT UNSIGNED DEFAULT NULL,
@@ -764,9 +764,9 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- ============================================
 
 INSERT INTO plans (name, slug, price_monthly_usd, price_yearly_usd, max_customers, max_leads, max_campaigns, max_products, max_lead_magnets, features_json, sort_order) VALUES
-('Starter', 'starter', 79.00, 780.00, 100, 500, 2, 20, 5, '{"blog": true, "ebooks": true, "lead_magnets": true, "orders": false, "leadshark": false}', 1),
-('Growth', 'growth', 149.00, 1500.00, 500, 2000, 10, 100, 20, '{"blog": true, "ebooks": true, "lead_magnets": true, "orders": true, "leadshark": true}', 2),
-('Enterprise', 'enterprise', 299.00, 2988.00, NULL, NULL, NULL, NULL, NULL, '{"blog": true, "ebooks": true, "lead_magnets": true, "orders": true, "leadshark": true, "custom_domain": true, "priority_support": true}', 3);
+('Starter', 'starter', 79.00, 780.00, 100, 500, 2, 20, 5, '{"blog": true, "ebooks": true, "lead_magnets": true, "orders": false, "connectpilot": false}', 1),
+('Growth', 'growth', 149.00, 1500.00, 500, 2000, 10, 100, 20, '{"blog": true, "ebooks": true, "lead_magnets": true, "orders": true, "connectpilot": true}', 2),
+('Enterprise', 'enterprise', 299.00, 2988.00, NULL, NULL, NULL, NULL, NULL, '{"blog": true, "ebooks": true, "lead_magnets": true, "orders": true, "connectpilot": true, "custom_domain": true, "priority_support": true}', 3);
 
 -- Create default superadmin (password: change-me-immediately)
 INSERT INTO users (tenant_id, role, name, email, password_hash, status) VALUES

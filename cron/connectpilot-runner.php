@@ -1,9 +1,9 @@
 #!/usr/bin/env php
 <?php
 /**
- * LeadShark Sequence Runner
+ * ConnectPilot Sequence Runner
  * Run via cron every 5 minutes:
- * 0/5 * * * * php /var/www/kompaza.com/cron/leadshark-runner.php
+ * 0/5 * * * * php /var/www/kompaza.com/cron/connectpilot-runner.php
  *
  * Processes pending sequence steps for active campaigns.
  * Respects daily limits per LinkedIn account.
@@ -27,7 +27,7 @@ $stmt->execute();
 $stmt = $db->prepare("
     SELECT c.*, la.li_at_cookie, la.csrf_token, la.daily_connection_limit, la.daily_message_limit,
            la.connections_sent_today, la.messages_sent_today, la.id as account_id
-    FROM leadshark_campaigns c
+    FROM connectpilot_campaigns c
     JOIN linkedin_accounts la ON la.id = c.linkedin_account_id
     WHERE c.status = 'active'
     AND la.status = 'active'
@@ -41,7 +41,7 @@ foreach ($campaigns as $campaign) {
     $stmt = $db->prepare("
         SELECT ll.*, lss.id as step_id, lss.action_type, lss.message_template, lss.condition_type
         FROM linkedin_leads ll
-        JOIN leadshark_sequence_steps lss ON lss.campaign_id = ll.campaign_id AND lss.step_number = ll.current_step + 1
+        JOIN connectpilot_sequence_steps lss ON lss.campaign_id = ll.campaign_id AND lss.step_number = ll.current_step + 1
         WHERE ll.campaign_id = ?
         AND ll.connection_status != 'rejected'
         AND (ll.last_contacted_at IS NULL OR ll.last_contacted_at < DATE_SUB(NOW(), INTERVAL lss.delay_days DAY))
@@ -88,7 +88,7 @@ foreach ($campaigns as $campaign) {
                         $connectionsSent++;
                         $stmt2 = $db->prepare("UPDATE linkedin_leads SET connection_status = 'pending', last_contacted_at = NOW(), current_step = current_step + 1 WHERE id = ?");
                         $stmt2->execute([$lead['id']]);
-                        $stmt2 = $db->prepare("UPDATE leadshark_campaigns SET connections_sent = connections_sent + 1 WHERE id = ?");
+                        $stmt2 = $db->prepare("UPDATE connectpilot_campaigns SET connections_sent = connections_sent + 1 WHERE id = ?");
                         $stmt2->execute([$campaign['id']]);
                     }
                     break;
@@ -101,7 +101,7 @@ foreach ($campaigns as $campaign) {
                         $messagesSent++;
                         $stmt2 = $db->prepare("UPDATE linkedin_leads SET last_contacted_at = NOW(), current_step = current_step + 1 WHERE id = ?");
                         $stmt2->execute([$lead['id']]);
-                        $stmt2 = $db->prepare("UPDATE leadshark_campaigns SET messages_sent = messages_sent + 1 WHERE id = ?");
+                        $stmt2 = $db->prepare("UPDATE connectpilot_campaigns SET messages_sent = messages_sent + 1 WHERE id = ?");
                         $stmt2->execute([$campaign['id']]);
                     }
                     break;
@@ -116,12 +116,12 @@ foreach ($campaigns as $campaign) {
             }
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
-            error_log("LeadShark error for lead {$lead['id']}: {$errorMessage}");
+            error_log("ConnectPilot error for lead {$lead['id']}: {$errorMessage}");
         }
 
         // Log activity
         $stmt2 = $db->prepare("
-            INSERT INTO leadshark_activity_log (tenant_id, campaign_id, lead_id, action_type, step_id, message_sent, status, error_message)
+            INSERT INTO connectpilot_activity_log (tenant_id, campaign_id, lead_id, action_type, step_id, message_sent, status, error_message)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt2->execute([
@@ -144,4 +144,4 @@ foreach ($campaigns as $campaign) {
     $stmt->execute([$connectionsSent, $messagesSent, $campaign['account_id']]);
 }
 
-echo "LeadShark runner completed at " . date('Y-m-d H:i:s') . "\n";
+echo "ConnectPilot runner completed at " . date('Y-m-d H:i:s') . "\n";

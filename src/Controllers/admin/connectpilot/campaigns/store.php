@@ -2,11 +2,11 @@
 
 use App\Models\Campaign;
 
-if (!isPost()) redirect('/admin/leadshark/kampagner');
+if (!isPost()) redirect('/admin/connectpilot/kampagner');
 
 if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
     flashMessage('error', 'Invalid CSRF token. Please try again.');
-    redirect('/admin/leadshark/kampagner/opret');
+    redirect('/admin/connectpilot/kampagner/opret');
 }
 
 $tenantId = currentTenantId();
@@ -19,7 +19,7 @@ $status = sanitize($_POST['status'] ?? 'draft');
 
 if (empty($name)) {
     flashMessage('error', 'Campaign name is required.');
-    redirect('/admin/leadshark/kampagner/opret');
+    redirect('/admin/connectpilot/kampagner/opret');
 }
 
 $campaignId = Campaign::create([
@@ -36,7 +36,7 @@ $steps = $_POST['steps'] ?? [];
 if (!empty($steps) && is_array($steps)) {
     $db = \App\Database\Database::getConnection();
     $stmt = $db->prepare("
-        INSERT INTO leadshark_sequence_steps (campaign_id, step_number, action_type, message_template, delay_days, delay_hours, condition_type, created_at)
+        INSERT INTO connectpilot_sequence_steps (campaign_id, step_number, action_type, message_template, delay_days, delay_hours, condition_type, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
     ");
     foreach ($steps as $index => $step) {
@@ -54,4 +54,4 @@ if (!empty($steps) && is_array($steps)) {
 
 logAudit('campaign_created', 'campaign', $campaignId);
 flashMessage('success', 'Campaign created successfully.');
-redirect('/admin/leadshark/kampagner');
+redirect('/admin/connectpilot/kampagner');

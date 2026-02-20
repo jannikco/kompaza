@@ -2,11 +2,11 @@
 
 use App\Services\LinkedInService;
 
-if (!isPost()) redirect('/admin/leadshark/konto');
+if (!isPost()) redirect('/admin/connectpilot/konto');
 
 if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
     flashMessage('error', 'Invalid CSRF token. Please try again.');
-    redirect('/admin/leadshark/konto');
+    redirect('/admin/connectpilot/konto');
 }
 
 $tenantId = currentTenantId();
@@ -17,7 +17,7 @@ $dailyMessageLimit = (int)($_POST['daily_message_limit'] ?? 50);
 
 if (empty($liAtCookie) || empty($csrfToken)) {
     flashMessage('error', 'Both li_at cookie and CSRF token are required.');
-    redirect('/admin/leadshark/konto');
+    redirect('/admin/connectpilot/konto');
 }
 
 // Clamp limits to reasonable values
@@ -98,4 +98,4 @@ if ($profile !== false) {
     flashMessage('error', 'Could not validate LinkedIn cookie. The session may be expired or invalid. Please check your credentials and try again.');
 }
 
-redirect('/admin/leadshark/konto');
+redirect('/admin/connectpilot/konto');

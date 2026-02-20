@@ -1,4 +1,4 @@
-<?php $pageTitle = 'Leads'; $currentPage = 'leadshark-leads'; $tenant = currentTenant(); ob_start(); ?>
+<?php $pageTitle = 'Leads'; $currentPage = 'connectpilot-leads'; $tenant = currentTenant(); ob_start(); ?>
 
 <div class="flex items-center justify-between mb-6">
     <div>
@@ -9,7 +9,7 @@
 
 <!-- Filters -->
 <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 mb-6">
-    <form method="GET" action="/admin/leadshark/leads" class="flex flex-col sm:flex-row items-stretch sm:items-end gap-4">
+    <form method="GET" action="/admin/connectpilot/leads" class="flex flex-col sm:flex-row items-stretch sm:items-end gap-4">
         <div class="flex-1">
             <label for="search" class="block text-sm font-medium text-gray-300 mb-1">Search</label>
             <input type="text" name="search" id="search" value="<?= h($search) ?>"
@@ -33,7 +33,7 @@
                 Filter
             </button>
             <?php if ($search || $campaignId): ?>
-            <a href="/admin/leadshark/leads" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm font-medium rounded-lg transition">
+            <a href="/admin/connectpilot/leads" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm font-medium rounded-lg transition">
                 Clear
             </a>
             <?php endif; ?>
@@ -149,13 +149,13 @@
             </p>
             <div class="flex items-center space-x-2">
                 <?php if ($page > 1): ?>
-                <a href="/admin/leadshark/leads?page=<?= $page - 1 ?><?= $search ? '&search=' . urlencode($search) : '' ?><?= $campaignId ? '&campaign_id=' . $campaignId : '' ?>"
+                <a href="/admin/connectpilot/leads?page=<?= $page - 1 ?><?= $search ? '&search=' . urlencode($search) : '' ?><?= $campaignId ? '&campaign_id=' . $campaignId : '' ?>"
                     class="px-3 py-1.5 text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
                     Previous
                 </a>
                 <?php endif; ?>
                 <?php if ($page < $totalPages): ?>
-                <a href="/admin/leadshark/leads?page=<?= $page + 1 ?><?= $search ? '&search=' . urlencode($search) : '' ?><?= $campaignId ? '&campaign_id=' . $campaignId : '' ?>"
+                <a href="/admin/connectpilot/leads?page=<?= $page + 1 ?><?= $search ? '&search=' . urlencode($search) : '' ?><?= $campaignId ? '&campaign_id=' . $campaignId : '' ?>"
                     class="px-3 py-1.5 text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
                     Next
                 </a>
