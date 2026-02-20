@@ -45,6 +45,16 @@ CREATE TABLE IF NOT EXISTS tenants (
     stripe_webhook_secret VARCHAR(255) DEFAULT NULL,
     google_analytics_id VARCHAR(50) DEFAULT NULL,
 
+    -- Email service provider selection
+    email_service ENUM('kompaza','brevo','mailgun','smtp') DEFAULT 'kompaza',
+    mailgun_api_key VARCHAR(255) DEFAULT NULL,
+    mailgun_domain VARCHAR(255) DEFAULT NULL,
+    smtp_host VARCHAR(255) DEFAULT NULL,
+    smtp_port SMALLINT UNSIGNED DEFAULT 587,
+    smtp_username VARCHAR(255) DEFAULT NULL,
+    smtp_password VARCHAR(255) DEFAULT NULL,
+    smtp_encryption ENUM('tls','ssl','none') DEFAULT 'tls',
+
     -- Features
     feature_blog BOOLEAN DEFAULT TRUE,
     feature_ebooks BOOLEAN DEFAULT TRUE,

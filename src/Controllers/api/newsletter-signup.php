@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\EmailSignup;
-use App\Services\BrevoService;
+use App\Services\EmailServiceFactory;
 
 header('Content-Type: application/json');
 
@@ -41,16 +41,16 @@ EmailSignup::create([
     'user_agent' => getUserAgent(),
 ]);
 
-// Sync to Brevo if configured
+// Sync to Brevo if configured (only available for Kompaza/Brevo providers)
 try {
-    $brevo = new BrevoService(null, $tenantId);
-    if ($brevo->isConfigured()) {
+    $contactService = EmailServiceFactory::getContactService();
+    if ($contactService && $contactService->isConfigured()) {
         $listId = tenantSetting('brevo_newsletter_list_id');
-        $brevo->addContact($email, $name, $listId ? (int)$listId : null);
+        $contactService->addContact($email, $name, $listId ? (int)$listId : null);
     }
 } catch (Exception $e) {
     if (APP_DEBUG) {
-        error_log('Newsletter Brevo sync failed: ' . $e->getMessage());
+        error_log('Newsletter contact sync failed: ' . $e->getMessage());
     }
 }
 

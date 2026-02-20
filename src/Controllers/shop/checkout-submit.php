@@ -4,7 +4,7 @@ use App\Models\Product;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\StripeService;
-use App\Services\BrevoService;
+use App\Services\EmailServiceFactory;
 
 $tenant = currentTenant();
 $tenantId = currentTenantId();
@@ -161,10 +161,10 @@ foreach ($cartItems as $cartItem) {
     ]);
 }
 
-// Send confirmation email via Brevo
+// Send confirmation email
 try {
-    $brevo = new BrevoService(null, $tenantId);
-    if ($brevo->isConfigured()) {
+    $emailService = EmailServiceFactory::create();
+    if ($emailService->isConfigured()) {
         $subject = 'Ordrebekræftelse: ' . $orderNumber;
         $htmlContent = '<h2>Tak for din ordre!</h2>';
         $htmlContent .= '<p>Hej ' . h($name) . ',</p>';
@@ -175,7 +175,7 @@ try {
         }
         $htmlContent .= '<p>Vi vender tilbage med mere information snarest.</p>';
 
-        $brevo->sendTransactionalEmail($email, $subject, $htmlContent);
+        $emailService->sendTransactionalEmail($email, $subject, $htmlContent);
     }
 } catch (Exception $e) {
     if (APP_DEBUG) {

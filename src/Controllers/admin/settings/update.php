@@ -12,6 +12,12 @@ if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
 $tenantId = currentTenantId();
 $tenant = currentTenant();
 
+// Validate email_service
+$emailService = $_POST['email_service'] ?? 'kompaza';
+if (!in_array($emailService, ['kompaza', 'brevo', 'mailgun', 'smtp'])) {
+    $emailService = 'kompaza';
+}
+
 $data = [
     'company_name' => sanitize($_POST['company_name'] ?? ''),
     'tagline' => sanitize($_POST['tagline'] ?? ''),
@@ -19,8 +25,16 @@ $data = [
     'phone' => sanitize($_POST['phone'] ?? ''),
     'primary_color' => sanitize($_POST['primary_color'] ?? '#3b82f6'),
     'secondary_color' => sanitize($_POST['secondary_color'] ?? '#6366f1'),
+    'email_service' => $emailService,
     'brevo_api_key' => sanitize($_POST['brevo_api_key'] ?? ''),
     'brevo_list_id' => sanitize($_POST['brevo_list_id'] ?? ''),
+    'mailgun_api_key' => sanitize($_POST['mailgun_api_key'] ?? ''),
+    'mailgun_domain' => sanitize($_POST['mailgun_domain'] ?? ''),
+    'smtp_host' => sanitize($_POST['smtp_host'] ?? ''),
+    'smtp_port' => (int)($_POST['smtp_port'] ?? 587),
+    'smtp_username' => sanitize($_POST['smtp_username'] ?? ''),
+    'smtp_password' => $_POST['smtp_password'] ?? '',
+    'smtp_encryption' => in_array($_POST['smtp_encryption'] ?? 'tls', ['tls', 'ssl', 'none']) ? $_POST['smtp_encryption'] : 'tls',
     'stripe_publishable_key' => sanitize($_POST['stripe_publishable_key'] ?? ''),
     'stripe_secret_key' => sanitize($_POST['stripe_secret_key'] ?? ''),
     'google_analytics_id' => sanitize($_POST['google_analytics_id'] ?? ''),

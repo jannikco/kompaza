@@ -3,7 +3,7 @@
 use App\Models\LeadMagnet;
 use App\Models\EmailSignup;
 use App\Models\DownloadToken;
-use App\Services\BrevoService;
+use App\Services\EmailServiceFactory;
 
 $tenant = currentTenant();
 $tenantId = currentTenantId();
@@ -72,19 +72,28 @@ $token = DownloadToken::create([
 
 $downloadUrl = url('lp/download/' . $token);
 
-// Send email via Brevo if configured
+// Send lead magnet email via configured provider
 try {
-    $brevo = new BrevoService(null, $tenantId);
-    if ($brevo->isConfigured()) {
-        $brevo->sendLeadMagnetEmail($email, $name, $leadMagnet, $downloadUrl);
-
-        // Sync contact to Brevo list if configured
-        $listId = !empty($leadMagnet['brevo_list_id']) ? (int)$leadMagnet['brevo_list_id'] : null;
-        $brevo->addContact($email, $name, $listId);
+    $emailService = EmailServiceFactory::create();
+    if ($emailService->isConfigured()) {
+        $emailService->sendLeadMagnetEmail($email, $name, $leadMagnet, $downloadUrl);
     }
 } catch (Exception $e) {
     if (APP_DEBUG) {
         error_log('Lead magnet email failed: ' . $e->getMessage());
+    }
+}
+
+// Sync contact to Brevo list (only available for Kompaza/Brevo providers)
+try {
+    $contactService = EmailServiceFactory::getContactService();
+    if ($contactService && $contactService->isConfigured()) {
+        $listId = !empty($leadMagnet['brevo_list_id']) ? (int)$leadMagnet['brevo_list_id'] : null;
+        $contactService->addContact($email, $name, $listId);
+    }
+} catch (Exception $e) {
+    if (APP_DEBUG) {
+        error_log('Lead magnet contact sync failed: ' . $e->getMessage());
     }
 }
 

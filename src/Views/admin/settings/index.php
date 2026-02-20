@@ -115,26 +115,114 @@ ob_start();
     </div>
 
     <!-- Integrations -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6" x-data="{ emailService: '<?= h($tenant['email_service'] ?? 'kompaza') ?>' }">
         <h3 class="text-lg font-semibold text-white mb-6 flex items-center">
             <svg class="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
             Integrations
         </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Email Service Provider -->
+        <div class="mb-6">
+            <label for="email_service" class="block text-sm font-medium text-gray-300 mb-2">Email Service Provider</label>
+            <select name="email_service" id="email_service" x-model="emailService"
+                class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                <option value="kompaza">Kompaza (Platform Default)</option>
+                <option value="brevo">Brevo (Own Account)</option>
+                <option value="mailgun">Mailgun</option>
+                <option value="smtp">Own SMTP Server</option>
+            </select>
+        </div>
+
+        <!-- Kompaza (default) -->
+        <div x-show="emailService === 'kompaza'" x-cloak class="mb-6">
+            <p class="text-sm text-gray-400">No configuration needed. Emails are sent via the Kompaza platform.</p>
+        </div>
+
+        <!-- Brevo fields -->
+        <div x-show="emailService === 'brevo'" x-cloak class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
                 <label for="brevo_api_key" class="block text-sm font-medium text-gray-300 mb-2">Brevo API Key</label>
                 <input type="password" name="brevo_api_key" id="brevo_api_key"
-                    value="<?= h($settings['brevo_api_key'] ?? '') ?>"
+                    value="<?= h($tenant['brevo_api_key'] ?? '') ?>"
                     class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="xkeysib-...">
             </div>
             <div>
                 <label for="brevo_list_id" class="block text-sm font-medium text-gray-300 mb-2">Brevo List ID</label>
                 <input type="text" name="brevo_list_id" id="brevo_list_id"
-                    value="<?= h($settings['brevo_list_id'] ?? '') ?>"
+                    value="<?= h($tenant['brevo_list_id'] ?? '') ?>"
                     class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="e.g., 3">
             </div>
+        </div>
+
+        <!-- Mailgun fields -->
+        <div x-show="emailService === 'mailgun'" x-cloak class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+                <label for="mailgun_api_key" class="block text-sm font-medium text-gray-300 mb-2">Mailgun API Key</label>
+                <input type="password" name="mailgun_api_key" id="mailgun_api_key"
+                    value="<?= h($tenant['mailgun_api_key'] ?? '') ?>"
+                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="key-...">
+            </div>
+            <div>
+                <label for="mailgun_domain" class="block text-sm font-medium text-gray-300 mb-2">Mailgun Domain</label>
+                <input type="text" name="mailgun_domain" id="mailgun_domain"
+                    value="<?= h($tenant['mailgun_domain'] ?? '') ?>"
+                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="mg.example.com">
+            </div>
+            <div class="md:col-span-2">
+                <p class="text-sm text-yellow-400">Contact list sync is only available with Brevo. Newsletter signups will be recorded locally but not synced to an external list.</p>
+            </div>
+        </div>
+
+        <!-- SMTP fields -->
+        <div x-show="emailService === 'smtp'" x-cloak class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+                <label for="smtp_host" class="block text-sm font-medium text-gray-300 mb-2">SMTP Host</label>
+                <input type="text" name="smtp_host" id="smtp_host"
+                    value="<?= h($tenant['smtp_host'] ?? '') ?>"
+                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="smtp.example.com">
+            </div>
+            <div>
+                <label for="smtp_port" class="block text-sm font-medium text-gray-300 mb-2">SMTP Port</label>
+                <input type="number" name="smtp_port" id="smtp_port"
+                    value="<?= h($tenant['smtp_port'] ?? '587') ?>"
+                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="587">
+            </div>
+            <div>
+                <label for="smtp_username" class="block text-sm font-medium text-gray-300 mb-2">SMTP Username</label>
+                <input type="text" name="smtp_username" id="smtp_username"
+                    value="<?= h($tenant['smtp_username'] ?? '') ?>"
+                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="user@example.com">
+            </div>
+            <div>
+                <label for="smtp_password" class="block text-sm font-medium text-gray-300 mb-2">SMTP Password</label>
+                <input type="password" name="smtp_password" id="smtp_password"
+                    value="<?= h($tenant['smtp_password'] ?? '') ?>"
+                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="Password">
+            </div>
+            <div>
+                <label for="smtp_encryption" class="block text-sm font-medium text-gray-300 mb-2">Encryption</label>
+                <select name="smtp_encryption" id="smtp_encryption"
+                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    <option value="tls" <?= ($tenant['smtp_encryption'] ?? 'tls') === 'tls' ? 'selected' : '' ?>>TLS (Recommended)</option>
+                    <option value="ssl" <?= ($tenant['smtp_encryption'] ?? '') === 'ssl' ? 'selected' : '' ?>>SSL</option>
+                    <option value="none" <?= ($tenant['smtp_encryption'] ?? '') === 'none' ? 'selected' : '' ?>>None</option>
+                </select>
+            </div>
+            <div class="md:col-span-2">
+                <p class="text-sm text-yellow-400">Contact list sync is only available with Brevo. Newsletter signups will be recorded locally but not synced to an external list.</p>
+            </div>
+        </div>
+
+        <!-- Stripe & GA (always visible) -->
+        <div class="border-t border-gray-700 pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label for="stripe_publishable_key" class="block text-sm font-medium text-gray-300 mb-2">Stripe Publishable Key</label>
                 <input type="text" name="stripe_publishable_key" id="stripe_publishable_key"
