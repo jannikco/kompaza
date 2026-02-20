@@ -131,16 +131,28 @@ ob_start();
                         <label class="block">
                             <div class="relative border-2 border-dashed border-gray-600 rounded-lg p-4 hover:border-blue-500 transition cursor-pointer text-center">
                                 <input type="file" accept="image/*" @click.stop
-                                    @change="coverFile = $event.target.files[0]; coverPreview = URL.createObjectURL($event.target.files[0]); coverImagePath = '';"
+                                    @change="uploadCover($event.target.files[0])"
                                     class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                                <template x-if="!coverPreview">
+                                <template x-if="!coverPreview && !coverLoading">
                                     <p class="text-gray-500 text-sm">Click to select an image</p>
                                 </template>
-                                <template x-if="coverPreview">
+                                <template x-if="coverLoading">
+                                    <div class="flex items-center justify-center space-x-2 py-2">
+                                        <svg class="animate-spin w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        <span class="text-blue-300 text-sm">Uploading...</span>
+                                    </div>
+                                </template>
+                                <template x-if="coverPreview && !coverLoading">
                                     <img :src="coverPreview" class="max-h-48 mx-auto rounded-lg" alt="Cover preview">
                                 </template>
                             </div>
                         </label>
+                        <template x-if="coverError">
+                            <div class="mt-2 p-2 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-xs" x-text="coverError"></div>
+                        </template>
                     </div>
                 </div>
 
@@ -188,7 +200,7 @@ ob_start();
                         <div x-show="coverPreview && !coverLoading">
                             <img :src="coverPreview" class="max-h-48 mx-auto rounded-lg mb-3" alt="AI cover preview">
                             <div class="flex items-center space-x-2">
-                                <button type="button" @click="coverPreview = ''; coverImagePath = ''; coverFile = null;"
+                                <button type="button" @click="coverPreview = ''; coverImagePath = ''; coverImageUrl = '';"
                                     class="flex-1 px-3 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg text-sm transition">
                                     Retry
                                 </button>
@@ -215,7 +227,7 @@ ob_start();
                         Skip for now &rarr;
                     </button>
                     <button type="button" @click="step = 3"
-                        x-show="coverPreview || coverFile"
+                        x-show="coverImagePath"
                         class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition">
                         Next &rarr;
                     </button>
@@ -322,23 +334,17 @@ ob_start();
             </div>
 
             <!-- Cover Image Preview (if set in step 2) -->
-            <template x-if="coverPreview || coverImagePath">
+            <template x-if="coverImagePath">
                 <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
                     <h3 class="text-lg font-semibold text-white mb-4">Book Cover</h3>
                     <div class="flex items-start space-x-4">
-                        <img :src="coverPreview || coverImageUrl" class="h-32 rounded-lg border border-gray-600" alt="Cover preview">
+                        <img :src="coverImageUrl" class="h-32 rounded-lg border border-gray-600" alt="Cover preview">
                         <div>
                             <p class="text-gray-400 text-sm">This cover will be displayed as a 3D book mockup on the landing page.</p>
                             <button type="button" @click="step = 2" class="mt-2 text-sm text-indigo-400 hover:text-indigo-300 transition">
                                 Change cover
                             </button>
                         </div>
-                    </div>
-                    <!-- Manual cover upload as alternative/override -->
-                    <div class="mt-4">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Or upload a different cover</label>
-                        <input type="file" name="cover_image" accept="image/*"
-                            class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
                     </div>
                 </div>
             </template>
@@ -682,6 +688,42 @@ function leadMagnetWizard() {
 
             } catch (e) {
                 this.coverError = 'Network error. Please try again.';
+            }
+
+            this.coverLoading = false;
+        },
+
+        async uploadCover(file) {
+            if (!file) return;
+            this.coverLoading = true;
+            this.coverError = '';
+            this.coverPreview = URL.createObjectURL(file);
+
+            const formData = new FormData();
+            formData.append('cover_image', file);
+            formData.append('<?= CSRF_TOKEN_NAME ?>', '<?= generateCsrfToken() ?>');
+
+            try {
+                const response = await fetch('/admin/lead-magnets/upload-cover', {
+                    method: 'POST',
+                    body: formData,
+                });
+                const result = await response.json();
+
+                if (!result.success) {
+                    this.coverError = result.error || 'Failed to upload cover.';
+                    this.coverPreview = '';
+                    this.coverLoading = false;
+                    return;
+                }
+
+                this.coverImagePath = result.cover_image_path;
+                this.coverImageUrl = result.cover_image_url;
+                this.coverPreview = result.cover_image_url;
+
+            } catch (e) {
+                this.coverError = 'Network error. Please try again.';
+                this.coverPreview = '';
             }
 
             this.coverLoading = false;
