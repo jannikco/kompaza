@@ -36,7 +36,7 @@ ob_start();
             <?php endif; ?>
             <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
                 <?php if (tenantFeature('orders')): ?>
-                    <a href="/products" class="btn-brand inline-flex items-center justify-center px-8 py-3.5 text-white font-semibold rounded-lg transition shadow-sm text-base">
+                    <a href="/produkter" class="btn-brand inline-flex items-center justify-center px-8 py-3.5 text-white font-semibold rounded-lg transition shadow-sm text-base">
                         Browse Products
                     </a>
                 <?php endif; ?>

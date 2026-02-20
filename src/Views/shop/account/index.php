@@ -48,7 +48,7 @@ ob_start();
             </a>
             <?php endif; ?>
 
-            <a href="/products" class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow duration-300 group">
+            <a href="/produkter" class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow duration-300 group">
                 <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center mb-4">
                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                 </div>

@@ -18,7 +18,7 @@ ob_start();
             <ol class="flex items-center text-sm text-gray-400 space-x-2">
                 <li><a href="/" class="hover:text-gray-600 transition">Home</a></li>
                 <li><span>/</span></li>
-                <li><a href="/products" class="hover:text-gray-600 transition">Products</a></li>
+                <li><a href="/produkter" class="hover:text-gray-600 transition">Products</a></li>
                 <li><span>/</span></li>
                 <li class="text-gray-600 truncate max-w-xs"><?= h($product['name']) ?></li>
             </ol>

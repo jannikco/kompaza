@@ -17,7 +17,7 @@ ob_start();
                 <h1 class="text-3xl font-bold text-gray-900">My Orders</h1>
                 <p class="mt-1 text-sm text-gray-500">Track and manage your orders</p>
             </div>
-            <a href="/account" class="text-sm font-medium text-gray-500 hover:text-gray-700 transition">
+            <a href="/konto" class="text-sm font-medium text-gray-500 hover:text-gray-700 transition">
                 &larr; Back to Account
             </a>
         </div>
@@ -27,7 +27,7 @@ ob_start();
                 <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
                 <p class="text-gray-500 text-lg mb-2">No orders yet</p>
                 <p class="text-gray-400 text-sm mb-6">When you place your first order, it will appear here.</p>
-                <a href="/products" class="btn-brand inline-flex items-center px-6 py-3 text-white font-semibold rounded-lg transition text-sm">
+                <a href="/produkter" class="btn-brand inline-flex items-center px-6 py-3 text-white font-semibold rounded-lg transition text-sm">
                     Browse Products
                 </a>
             </div>

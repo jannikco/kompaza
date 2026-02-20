@@ -18,7 +18,7 @@ ob_start();
                 <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
                 <p class="text-gray-500 text-lg mb-2">Your cart is empty</p>
                 <p class="text-gray-400 text-sm mb-6">Browse our products and add items to your cart.</p>
-                <a href="/products" class="btn-brand inline-flex items-center px-6 py-3 text-white font-semibold rounded-lg transition text-sm">
+                <a href="/produkter" class="btn-brand inline-flex items-center px-6 py-3 text-white font-semibold rounded-lg transition text-sm">
                     Browse Products
                 </a>
             </div>
@@ -95,7 +95,7 @@ ob_start();
                            class="mt-6 block w-full btn-brand px-6 py-3.5 text-white font-semibold rounded-lg transition text-center text-base">
                             Proceed to Checkout
                         </a>
-                        <a href="/products" class="mt-3 block w-full text-center text-sm text-gray-500 hover:text-gray-700 transition py-2">
+                        <a href="/produkter" class="mt-3 block w-full text-center text-sm text-gray-500 hover:text-gray-700 transition py-2">
                             Continue Shopping
                         </a>
                     </div>

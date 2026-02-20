@@ -16,7 +16,7 @@ ob_start();
         <template x-if="items.length === 0">
             <div class="text-center py-16 bg-white rounded-xl border border-gray-200">
                 <p class="text-gray-500 text-lg mb-4">Your cart is empty. Add some products first.</p>
-                <a href="/products" class="btn-brand inline-flex items-center px-6 py-3 text-white font-semibold rounded-lg transition text-sm">
+                <a href="/produkter" class="btn-brand inline-flex items-center px-6 py-3 text-white font-semibold rounded-lg transition text-sm">
                     Browse Products
                 </a>
             </div>
@@ -230,7 +230,7 @@ ob_start();
                                 <span x-show="submitting" x-cloak>Processing...</span>
                             </button>
 
-                            <a href="/cart" class="mt-3 block text-center text-sm text-gray-500 hover:text-gray-700 transition py-2">
+                            <a href="/kurv" class="mt-3 block text-center text-sm text-gray-500 hover:text-gray-700 transition py-2">
                                 Back to Cart
                             </a>
                         </div>
