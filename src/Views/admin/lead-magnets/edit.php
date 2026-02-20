@@ -12,8 +12,9 @@ ob_start();
     </a>
 </div>
 
-<form method="POST" action="/admin/lead-magnets/opdater/<?= $leadMagnet['id'] ?>" enctype="multipart/form-data" class="space-y-8">
+<form method="POST" action="/admin/lead-magnets/opdater" enctype="multipart/form-data" class="space-y-8">
     <?= csrfField() ?>
+    <input type="hidden" name="id" value="<?= $leadMagnet['id'] ?>">
 
     <!-- Basic Information -->
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
