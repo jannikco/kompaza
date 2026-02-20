@@ -6,7 +6,7 @@
     <title><?= h($pageTitle ?? 'Admin') ?> — <?= h($tenant['company_name'] ?? $tenant['name'] ?? 'Kompaza') ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@6.8.4/tinymce.min.js"></script>
     <style>
         [x-cloak] { display: none !important; }
     </style>
