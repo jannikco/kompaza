@@ -1,42 +1,38 @@
 <?php
 
 use App\Models\Tenant;
-use App\Models\Admin;
+use App\Models\User;
 use App\Database\Database;
 
 // Verify CSRF
 $csrfToken = $_POST[CSRF_TOKEN_NAME] ?? '';
 if (!verifyCsrfToken($csrfToken)) {
-    flashMessage('error', 'Ugyldig forespørgsel. Prøv igen.');
+    flashMessage('error', 'Invalid request. Please try again.');
     redirect('/tenants');
 }
 
 $tenantId = (int) ($_POST['tenant_id'] ?? 0);
 if (!$tenantId) {
-    flashMessage('error', 'Ugyldig tenant.');
+    flashMessage('error', 'Invalid tenant.');
     redirect('/tenants');
 }
 
 // Find tenant
 $tenant = Tenant::find($tenantId);
 if (!$tenant) {
-    flashMessage('error', 'Tenant ikke fundet.');
+    flashMessage('error', 'Tenant not found.');
     redirect('/tenants');
 }
 
-// Find the tenant's admin user: prefer owner_admin_id, fallback to first admin
-$userId = $tenant['owner_admin_id'];
+// Find the tenant's admin user
+$db = Database::getConnection();
+$stmt = $db->prepare("SELECT id FROM users WHERE tenant_id = ? AND role = 'tenant_admin' ORDER BY id ASC LIMIT 1");
+$stmt->execute([$tenantId]);
+$row = $stmt->fetch();
+$userId = $row['id'] ?? null;
 
 if (!$userId) {
-    // Fallback: find first admin (in a multi-tenant setup you'd scope this to tenant)
-    $db = Database::getConnection();
-    $stmt = $db->query("SELECT id FROM admins WHERE is_superadmin = 0 ORDER BY id ASC LIMIT 1");
-    $row = $stmt->fetch();
-    $userId = $row['id'] ?? null;
-}
-
-if (!$userId) {
-    flashMessage('error', 'Ingen admin-bruger fundet for denne tenant.');
+    flashMessage('error', 'No admin user found for this tenant.');
     redirect('/tenants');
 }
 
