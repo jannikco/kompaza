@@ -57,7 +57,7 @@ ob_start();
                         <td class="px-6 py-4 text-sm text-gray-300"><?= number_format($lm['views'] ?? 0) ?></td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end space-x-2">
-                                <a href="/admin/lead-magnets/rediger/<?= $lm['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                                <a href="/admin/lead-magnets/rediger?id=<?= $lm['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
                                     Edit
                                 </a>
                                 <template x-if="!confirmDelete">
@@ -66,8 +66,9 @@ ob_start();
                                     </button>
                                 </template>
                                 <template x-if="confirmDelete">
-                                    <form method="POST" action="/admin/lead-magnets/slet/<?= $lm['id'] ?>" class="inline-flex items-center space-x-1">
+                                    <form method="POST" action="/admin/lead-magnets/slet" class="inline-flex items-center space-x-1">
                                         <?= csrfField() ?>
+                                        <input type="hidden" name="id" value="<?= $lm['id'] ?>">
                                         <button type="submit" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition">
                                             Confirm
                                         </button>

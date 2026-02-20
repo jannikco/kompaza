@@ -67,8 +67,9 @@ ob_start();
                                     </button>
                                 </template>
                                 <template x-if="confirmDelete">
-                                    <form method="POST" action="/admin/tilmeldinger/slet/<?= $signup['id'] ?>" class="inline-flex items-center space-x-1">
+                                    <form method="POST" action="/admin/tilmeldinger/slet" class="inline-flex items-center space-x-1">
                                         <?= csrfField() ?>
+                                        <input type="hidden" name="id" value="<?= $signup['id'] ?>">
                                         <button type="submit" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition">
                                             Confirm
                                         </button>

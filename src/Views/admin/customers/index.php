@@ -88,7 +88,7 @@ ob_start();
                                 <a href="/admin/kunder/<?= $customer['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
                                     View
                                 </a>
-                                <a href="/admin/kunder/rediger/<?= $customer['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                                <a href="/admin/kunder/rediger?id=<?= $customer['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
                                     Edit
                                 </a>
                             </div>

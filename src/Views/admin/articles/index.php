@@ -59,7 +59,7 @@ ob_start();
                         <td class="px-6 py-4 text-sm text-gray-300"><?= $article['published_at'] ? formatDate($article['published_at']) : '-' ?></td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end space-x-2">
-                                <a href="/admin/artikler/rediger/<?= $article['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                                <a href="/admin/artikler/rediger?id=<?= $article['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
                                     Edit
                                 </a>
                                 <template x-if="!confirmDelete">
@@ -68,8 +68,9 @@ ob_start();
                                     </button>
                                 </template>
                                 <template x-if="confirmDelete">
-                                    <form method="POST" action="/admin/artikler/slet/<?= $article['id'] ?>" class="inline-flex items-center space-x-1">
+                                    <form method="POST" action="/admin/artikler/slet" class="inline-flex items-center space-x-1">
                                         <?= csrfField() ?>
+                                        <input type="hidden" name="id" value="<?= $article['id'] ?>">
                                         <button type="submit" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition">
                                             Confirm
                                         </button>

@@ -81,7 +81,7 @@ ob_start();
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end space-x-2">
-                                <a href="/admin/brugere/rediger/<?= $user['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                                <a href="/admin/brugere/rediger?id=<?= $user['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
                                     Edit
                                 </a>
                                 <?php if (($user['id'] ?? 0) !== currentUserId()): ?>
@@ -91,8 +91,9 @@ ob_start();
                                     </button>
                                 </template>
                                 <template x-if="confirmDelete">
-                                    <form method="POST" action="/admin/brugere/slet/<?= $user['id'] ?>" class="inline-flex items-center space-x-1">
+                                    <form method="POST" action="/admin/brugere/slet" class="inline-flex items-center space-x-1">
                                         <?= csrfField() ?>
+                                        <input type="hidden" name="id" value="<?= $user['id'] ?>">
                                         <button type="submit" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition">
                                             Confirm
                                         </button>
