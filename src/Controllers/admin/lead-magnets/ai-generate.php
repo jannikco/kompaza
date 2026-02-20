@@ -95,13 +95,22 @@ Return a JSON object with exactly these fields:
 - "hero_bg_color": A professional hex color for the hero background (dark/rich tone, e.g. "#1e3a5f")
 - "features_headline": A headline for the features/benefits section
 - "features": An array of 3-6 objects, each with "title" (short, 3-6 words) and "description" (1 sentence). These highlight key takeaways from the PDF content.
+- "target_audience": An array of exactly 3 objects, each with "icon" (a single relevant emoji), "title" (short persona name, 3-5 words), and "description" (1 sentence explaining why this persona benefits from the PDF). These represent who the lead magnet is for.
+- "faq": An array of exactly 3 objects, each with "question" and "answer". These are common questions a prospect might have before downloading. Keep answers concise (1-2 sentences).
+- "cover_prompt": A DALL-E image generation prompt describing an ideal abstract book cover for this PDF. Focus on visual elements, colors, mood, and abstract shapes only. Do NOT include any text or typography in the description. Example: "Abstract geometric shapes in deep blue and gold gradients, flowing lines suggesting growth and progress, minimalist professional design"
 - "email_subject": Email subject line for delivering the PDF (friendly, enticing)
 - "email_body_html": A short, friendly HTML email body that delivers the download link. Use {{name}} for the recipient's name and {{download_link}} for the PDF download URL. Keep it concise (3-5 short paragraphs). Use simple HTML (p tags, a tag for the link). Make it warm and professional.
 
-Make the copy compelling and benefit-focused. The hero headline should grab attention instantly. Remember: output language MUST match the PDF language.
+Make the copy compelling and benefit-focused. The hero headline should grab attention instantly. Remember: output language MUST match the PDF language (except cover_prompt which should be in English for DALL-E).
 PROMPT;
 
 $userMessage = "Here is the content of the PDF lead magnet:\n\n" . $pdfText;
+
+// Append optional context from user
+$context = trim($_POST['context'] ?? '');
+if (!empty($context)) {
+    $userMessage .= "\n\nAdditional context from the author about the target audience and goals:\n" . $context;
+}
 
 $openai = new OpenAIService();
 $result = $openai->chatCompletion($systemPrompt, $userMessage);
@@ -121,6 +130,14 @@ if (!$result) {
 // Ensure features is a JSON string for the form
 if (isset($result['features']) && is_array($result['features'])) {
     $result['features_json'] = json_encode($result['features']);
+}
+
+// Ensure target_audience and faq are arrays
+if (isset($result['target_audience']) && is_array($result['target_audience'])) {
+    $result['target_audience_json'] = json_encode($result['target_audience']);
+}
+if (isset($result['faq']) && is_array($result['faq'])) {
+    $result['faq_json'] = json_encode($result['faq']);
 }
 
 echo json_encode([

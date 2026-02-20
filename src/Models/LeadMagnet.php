@@ -39,8 +39,8 @@ class LeadMagnet {
     public static function create($data) {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            INSERT INTO lead_magnets (tenant_id, slug, title, subtitle, meta_description, hero_headline, hero_subheadline, hero_cta_text, hero_bg_color, hero_image_path, features_headline, features, pdf_filename, pdf_original_name, email_subject, email_body_html, brevo_list_id, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO lead_magnets (tenant_id, slug, title, subtitle, meta_description, hero_headline, hero_subheadline, hero_cta_text, hero_bg_color, hero_image_path, cover_image_path, features_headline, features, target_audience, faq, pdf_filename, pdf_original_name, email_subject, email_body_html, brevo_list_id, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->execute([
             $data['tenant_id'],
@@ -53,8 +53,11 @@ class LeadMagnet {
             $data['hero_cta_text'] ?? 'Download Free',
             $data['hero_bg_color'] ?? '#1e40af',
             $data['hero_image_path'] ?? null,
+            $data['cover_image_path'] ?? null,
             $data['features_headline'] ?? null,
             $data['features'] ?? null,
+            $data['target_audience'] ?? null,
+            $data['faq'] ?? null,
             $data['pdf_filename'] ?? null,
             $data['pdf_original_name'] ?? null,
             $data['email_subject'] ?? null,

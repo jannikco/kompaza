@@ -2,6 +2,22 @@
 $pageTitle = 'Edit Lead Magnet';
 $currentPage = 'lead-magnets';
 $tenant = currentTenant();
+
+$existingTargetAudience = [];
+if (!empty($leadMagnet['target_audience'])) {
+    $existingTargetAudience = json_decode($leadMagnet['target_audience'], true) ?: [];
+}
+
+$existingFaq = [];
+if (!empty($leadMagnet['faq'])) {
+    $existingFaq = json_decode($leadMagnet['faq'], true) ?: [];
+}
+
+$existingFeatures = [];
+if (!empty($leadMagnet['features'])) {
+    $existingFeatures = json_decode($leadMagnet['features'], true) ?: [];
+}
+
 ob_start();
 ?>
 
@@ -16,9 +32,18 @@ ob_start();
     </a>
 </div>
 
+<div x-data="{
+    features: <?= h(json_encode($existingFeatures)) ?>,
+    targetAudience: <?= h(json_encode($existingTargetAudience)) ?>,
+    faq: <?= h(json_encode($existingFaq)) ?>
+}">
 <form method="POST" action="/admin/lead-magnets/opdater" enctype="multipart/form-data" class="space-y-8">
     <?= csrfField() ?>
     <input type="hidden" name="id" value="<?= $leadMagnet['id'] ?>">
+
+    <!-- Hidden fields for target audience and FAQ as JSON -->
+    <input type="hidden" name="target_audience" :value="JSON.stringify(targetAudience)">
+    <input type="hidden" name="faq" :value="JSON.stringify(faq)">
 
     <!-- Basic Information -->
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
@@ -94,9 +119,9 @@ ob_start();
             </div>
             <div class="md:col-span-2">
                 <label for="hero_image" class="block text-sm font-medium text-gray-300 mb-2">Hero Image</label>
-                <?php if (!empty($leadMagnet['hero_image'])): ?>
+                <?php if (!empty($leadMagnet['hero_image_path'])): ?>
                     <div class="mb-3 flex items-center space-x-3">
-                        <img src="<?= h($leadMagnet['hero_image']) ?>" alt="Current hero image" class="h-16 w-auto rounded-lg border border-gray-600">
+                        <img src="<?= h(imageUrl($leadMagnet['hero_image_path'])) ?>" alt="Current hero image" class="h-16 w-auto rounded-lg border border-gray-600">
                         <span class="text-sm text-gray-400">Current image</span>
                     </div>
                 <?php endif; ?>
@@ -107,16 +132,128 @@ ob_start();
         </div>
     </div>
 
+    <!-- Cover Image -->
+    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-white mb-6">Book Cover</h3>
+        <p class="text-gray-400 text-sm mb-4">This image is displayed as a 3D book mockup on the landing page.</p>
+        <?php if (!empty($leadMagnet['cover_image_path'])): ?>
+            <div class="mb-4 flex items-center space-x-4">
+                <img src="<?= h(imageUrl($leadMagnet['cover_image_path'])) ?>" alt="Current cover" class="h-32 w-auto rounded-lg border border-gray-600">
+                <span class="text-sm text-gray-400">Current cover</span>
+            </div>
+        <?php endif; ?>
+        <input type="file" name="cover_image" accept="image/*"
+            class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
+        <p class="text-xs text-gray-500 mt-2">Leave empty to keep the current cover. Upload a new image to replace it.</p>
+    </div>
+
     <!-- Features -->
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
         <h3 class="text-lg font-semibold text-white mb-6">Features Section</h3>
-        <div>
-            <label for="features_headline" class="block text-sm font-medium text-gray-300 mb-2">Features Headline</label>
-            <input type="text" name="features_headline" id="features_headline"
-                value="<?= h($leadMagnet['features_headline'] ?? '') ?>"
-                class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                placeholder="e.g., What You'll Learn">
+        <div class="space-y-6">
+            <div>
+                <label for="features_headline" class="block text-sm font-medium text-gray-300 mb-2">Features Headline</label>
+                <input type="text" name="features_headline" id="features_headline"
+                    value="<?= h($leadMagnet['features_headline'] ?? '') ?>"
+                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="e.g., What You'll Learn">
+            </div>
+
+            <!-- Dynamic features -->
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-3">Features</label>
+                <div class="space-y-3">
+                    <template x-for="(feature, index) in features" :key="index">
+                        <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-1 space-y-2">
+                                    <input type="text" x-model="feature.title"
+                                        class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                        placeholder="Feature title">
+                                    <input type="text" x-model="feature.description"
+                                        class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                        placeholder="Feature description">
+                                </div>
+                                <button type="button" @click="features.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-400 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                <button type="button" @click="features.push({title: '', description: ''})"
+                    class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <span>Add feature</span>
+                </button>
+                <input type="hidden" name="features" :value="JSON.stringify(features)">
+            </div>
         </div>
+    </div>
+
+    <!-- Target Audience -->
+    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-white mb-6">Target Audience</h3>
+        <p class="text-gray-400 text-sm mb-4">Define who this lead magnet is for. These appear as persona cards on the landing page.</p>
+        <div class="space-y-3">
+            <template x-for="(persona, index) in targetAudience" :key="index">
+                <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-1 space-y-2">
+                            <div class="flex items-center space-x-2">
+                                <input type="text" x-model="persona.icon" maxlength="4"
+                                    class="w-16 px-3 py-2 bg-gray-700 border border-gray-600 text-white text-center rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    placeholder="&#x1F4BC;">
+                                <input type="text" x-model="persona.title"
+                                    class="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    placeholder="Persona title">
+                            </div>
+                            <input type="text" x-model="persona.description"
+                                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                placeholder="Why this persona benefits from the guide">
+                        </div>
+                        <button type="button" @click="targetAudience.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-400 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
+        <button type="button" @click="targetAudience.push({icon: '', title: '', description: ''})"
+            class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>Add persona</span>
+        </button>
+    </div>
+
+    <!-- FAQ -->
+    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-white mb-6">FAQ</h3>
+        <p class="text-gray-400 text-sm mb-4">Common questions prospects might have before downloading. Displayed as an accordion on the landing page.</p>
+        <div class="space-y-3">
+            <template x-for="(item, index) in faq" :key="index">
+                <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-1 space-y-2">
+                            <input type="text" x-model="item.question"
+                                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                placeholder="Question">
+                            <textarea x-model="item.answer" rows="2"
+                                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                placeholder="Answer"></textarea>
+                        </div>
+                        <button type="button" @click="faq.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-400 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
+        <button type="button" @click="faq.push({question: '', answer: ''})"
+            class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>Add FAQ item</span>
+        </button>
     </div>
 
     <!-- PDF File -->
@@ -148,10 +285,10 @@ ob_start();
                     placeholder="e.g., Here's your free guide!">
             </div>
             <div>
-                <label for="email_body" class="block text-sm font-medium text-gray-300 mb-2">Email Body</label>
-                <textarea name="email_body" id="email_body" rows="6"
+                <label for="email_body_html" class="block text-sm font-medium text-gray-300 mb-2">Email Body</label>
+                <textarea name="email_body_html" id="email_body_html" rows="6"
                     class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    placeholder="The email content that will be sent with the download link..."><?= h($leadMagnet['email_body'] ?? '') ?></textarea>
+                    placeholder="The email content that will be sent with the download link..."><?= h($leadMagnet['email_body_html'] ?? '') ?></textarea>
                 <p class="text-xs text-gray-500 mt-2">Use {{download_link}} to insert the PDF download link. Use {{name}} to insert the recipient's name.</p>
             </div>
         </div>
@@ -180,6 +317,7 @@ ob_start();
         </button>
     </div>
 </form>
+</div>
 
 <script>
     // Sync color picker with text input
@@ -188,7 +326,7 @@ ob_start();
     });
 
     tinymce.init({
-        selector: '#email_body',
+        selector: '#email_body_html',
         height: 300,
         menubar: false,
         plugins: 'lists link code',

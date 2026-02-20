@@ -44,6 +44,31 @@ class OpenAIService {
         }
     }
 
+    /**
+     * Generate an image using DALL-E.
+     *
+     * @param string $prompt Image description
+     * @param string $size   Image size
+     * @return string|null Temporary URL of the generated image (valid ~1 hour)
+     */
+    public function generateImage(string $prompt, string $size = '1024x1792'): ?string {
+        $payload = [
+            'model' => 'dall-e-3',
+            'prompt' => $prompt,
+            'n' => 1,
+            'size' => $size,
+            'quality' => 'standard',
+        ];
+
+        try {
+            $response = $this->makeRequest('POST', '/images/generations', $payload);
+            return $response['data'][0]['url'] ?? null;
+        } catch (\Exception $e) {
+            error_log('OpenAI DALL-E error: ' . $e->getMessage());
+            return null;
+        }
+    }
+
     private function makeRequest(string $method, string $endpoint, ?array $data = null): array {
         $url = $this->apiBase . $endpoint;
 

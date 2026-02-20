@@ -31,6 +31,8 @@ $data = [
     'hero_bg_color' => sanitize($_POST['hero_bg_color'] ?? '#1e40af'),
     'features_headline' => sanitize($_POST['features_headline'] ?? ''),
     'features' => $_POST['features'] ?? null,
+    'target_audience' => $_POST['target_audience'] ?? null,
+    'faq' => $_POST['faq'] ?? null,
     'email_subject' => sanitize($_POST['email_subject'] ?? ''),
     'email_body_html' => $_POST['email_body_html'] ?? null,
     'brevo_list_id' => sanitize($_POST['brevo_list_id'] ?? ''),
@@ -51,6 +53,20 @@ if (!empty($_FILES['pdf_file']['name']) && $_FILES['pdf_file']['error'] === UPLO
     }
     $data['pdf_filename'] = uploadPrivateFile($_FILES['pdf_file']['tmp_name'], 'pdfs', 'lm', 'pdf');
     $data['pdf_original_name'] = $pdfOriginalName;
+}
+
+// Handle cover image replacement
+if (!empty($_FILES['cover_image']['name']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
+    $ext = strtolower(pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION));
+    if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
+        flashMessage('error', 'Only images (jpg, png, webp, gif) are allowed.');
+        redirect('/admin/lead-magnets/rediger?id=' . $id);
+    }
+    // Delete old cover image
+    if ($leadMagnet['cover_image_path']) {
+        deleteUploadedFile($leadMagnet['cover_image_path']);
+    }
+    $data['cover_image_path'] = uploadPublicFile($_FILES['cover_image']['tmp_name'], 'lead-magnets', 'lm_cover', $ext);
 }
 
 // Handle hero image replacement

@@ -252,6 +252,7 @@ if ($routingMode === 'tenant') {
         ],
         'POST' => [
             '/admin/lead-magnets/ai-generate' => 'admin/lead-magnets/ai-generate',
+            '/admin/lead-magnets/ai-cover' => 'admin/lead-magnets/ai-cover',
             '/admin/lead-magnets/gem' => 'admin/lead-magnets/store',
             '/admin/lead-magnets/opdater' => 'admin/lead-magnets/update',
             '/admin/lead-magnets/slet' => 'admin/lead-magnets/delete',

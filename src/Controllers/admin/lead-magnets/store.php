@@ -40,10 +40,23 @@ $heroImagePath = null;
 if (!empty($_FILES['hero_image']['name']) && $_FILES['hero_image']['error'] === UPLOAD_ERR_OK) {
     $ext = strtolower(pathinfo($_FILES['hero_image']['name'], PATHINFO_EXTENSION));
     if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
-        flashMessage('error', 'Kun billeder (jpg, png, webp, gif) er tilladt.');
-        redirect('/admin/lead-magnets/create');
+        flashMessage('error', 'Only images (jpg, png, webp, gif) are allowed.');
+        redirect('/admin/lead-magnets/opret');
     }
     $heroImagePath = uploadPublicFile($_FILES['hero_image']['tmp_name'], 'lead-magnets', 'lm_hero', $ext);
+}
+
+// Handle cover image — check for AI-generated (pre-uploaded) first, then manual upload
+$coverImagePath = null;
+if (!empty($_POST['cover_image_path_existing'])) {
+    $coverImagePath = $_POST['cover_image_path_existing'];
+} elseif (!empty($_FILES['cover_image']['name']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
+    $ext = strtolower(pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION));
+    if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
+        flashMessage('error', 'Only images (jpg, png, webp, gif) are allowed.');
+        redirect('/admin/lead-magnets/opret');
+    }
+    $coverImagePath = uploadPublicFile($_FILES['cover_image']['tmp_name'], 'lead-magnets', 'lm_cover', $ext);
 }
 
 $id = LeadMagnet::create([
@@ -57,8 +70,11 @@ $id = LeadMagnet::create([
     'hero_cta_text' => sanitize($_POST['hero_cta_text'] ?? 'Download Free'),
     'hero_bg_color' => sanitize($_POST['hero_bg_color'] ?? '#1e40af'),
     'hero_image_path' => $heroImagePath,
+    'cover_image_path' => $coverImagePath,
     'features_headline' => sanitize($_POST['features_headline'] ?? ''),
     'features' => $_POST['features'] ?? null,
+    'target_audience' => $_POST['target_audience'] ?? null,
+    'faq' => $_POST['faq'] ?? null,
     'pdf_filename' => $pdfFilename,
     'pdf_original_name' => $pdfOriginalName,
     'email_subject' => sanitize($_POST['email_subject'] ?? ''),
