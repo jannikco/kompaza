@@ -46,8 +46,8 @@ class Ebook {
     public static function create($data) {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            INSERT INTO ebooks (tenant_id, slug, title, subtitle, description, hero_headline, hero_subheadline, cover_image_path, features, pdf_filename, pdf_original_name, page_count, price_dkk, meta_description, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO ebooks (tenant_id, slug, title, subtitle, description, hero_headline, hero_subheadline, hero_bg_color, hero_cta_text, features_headline, key_metrics, cover_image_path, features, chapters, target_audience, testimonials, faq, pdf_filename, pdf_original_name, page_count, price_dkk, meta_description, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->execute([
             $data['tenant_id'],
@@ -57,8 +57,16 @@ class Ebook {
             $data['description'] ?? null,
             $data['hero_headline'] ?? null,
             $data['hero_subheadline'] ?? null,
+            $data['hero_bg_color'] ?? null,
+            $data['hero_cta_text'] ?? null,
+            $data['features_headline'] ?? null,
+            $data['key_metrics'] ?? null,
             $data['cover_image_path'] ?? null,
             $data['features'] ?? null,
+            $data['chapters'] ?? null,
+            $data['target_audience'] ?? null,
+            $data['testimonials'] ?? null,
+            $data['faq'] ?? null,
             $data['pdf_filename'] ?? null,
             $data['pdf_original_name'] ?? null,
             $data['page_count'] ?? null,

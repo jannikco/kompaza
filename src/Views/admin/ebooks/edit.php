@@ -51,6 +51,110 @@ ob_start();
         </div>
     </div>
 
+    <!-- Landing Page (Sales Page Mode) -->
+    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6" x-data="{ open: <?= !empty($ebook['hero_headline']) ? 'true' : 'false' ?> }">
+        <button type="button" @click="open = !open" class="flex items-center justify-between w-full text-left">
+            <h3 class="text-lg font-semibold text-white">Landing Page</h3>
+            <svg class="w-5 h-5 text-gray-400 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <p class="text-xs text-gray-500 mt-1">Set a Hero Headline to enable the full sales page layout.</p>
+        <div x-show="open" x-collapse x-cloak class="mt-6 space-y-6">
+            <!-- Hero -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="hero_headline" class="block text-sm font-medium text-gray-300 mb-2">Hero Headline</label>
+                    <input type="text" name="hero_headline" id="hero_headline"
+                        value="<?= h($ebook['hero_headline'] ?? '') ?>"
+                        class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        placeholder="Main headline for the hero section">
+                </div>
+                <div>
+                    <label for="hero_cta_text" class="block text-sm font-medium text-gray-300 mb-2">CTA Button Text</label>
+                    <input type="text" name="hero_cta_text" id="hero_cta_text"
+                        value="<?= h($ebook['hero_cta_text'] ?? '') ?>"
+                        class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        placeholder="e.g., Buy Now, Get Your Copy">
+                </div>
+                <div class="md:col-span-2">
+                    <label for="hero_subheadline" class="block text-sm font-medium text-gray-300 mb-2">Hero Subheadline</label>
+                    <textarea name="hero_subheadline" id="hero_subheadline" rows="2"
+                        class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        placeholder="Supporting text below the headline"><?= h($ebook['hero_subheadline'] ?? '') ?></textarea>
+                </div>
+                <div>
+                    <label for="hero_bg_color" class="block text-sm font-medium text-gray-300 mb-2">Hero Background Color</label>
+                    <div class="flex items-center gap-3">
+                        <input type="color" name="hero_bg_color" id="hero_bg_color"
+                            value="<?= h($ebook['hero_bg_color'] ?? '#1e40af') ?>"
+                            class="w-12 h-10 rounded cursor-pointer border border-gray-600">
+                        <span class="text-sm text-gray-400"><?= h($ebook['hero_bg_color'] ?? 'Default: brand color') ?></span>
+                    </div>
+                </div>
+                <div>
+                    <label for="features_headline" class="block text-sm font-medium text-gray-300 mb-2">Features Section Headline</label>
+                    <input type="text" name="features_headline" id="features_headline"
+                        value="<?= h($ebook['features_headline'] ?? '') ?>"
+                        class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        placeholder="Default: What You'll Learn">
+                </div>
+            </div>
+
+            <!-- Features JSON -->
+            <div>
+                <label for="features" class="block text-sm font-medium text-gray-300 mb-2">Features (JSON)</label>
+                <textarea name="features" id="features" rows="5"
+                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono text-sm"
+                    placeholder='[{"icon": "🎯", "title": "Feature Title", "description": "Description"}]'><?= h($ebook['features'] ?? '') ?></textarea>
+                <p class="text-xs text-gray-500 mt-1">JSON array. Each item: {"icon": "emoji", "title": "...", "description": "..."}</p>
+            </div>
+
+            <!-- Key Metrics JSON -->
+            <div>
+                <label for="key_metrics" class="block text-sm font-medium text-gray-300 mb-2">Key Metrics (JSON)</label>
+                <textarea name="key_metrics" id="key_metrics" rows="3"
+                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono text-sm"
+                    placeholder='[{"value": "120+", "label": "Pages"}]'><?= h($ebook['key_metrics'] ?? '') ?></textarea>
+                <p class="text-xs text-gray-500 mt-1">JSON array. Each item: {"value": "120+", "label": "Pages"}. Auto-generated from page count if empty.</p>
+            </div>
+
+            <!-- Chapters JSON -->
+            <div>
+                <label for="chapters" class="block text-sm font-medium text-gray-300 mb-2">Chapters (JSON)</label>
+                <textarea name="chapters" id="chapters" rows="5"
+                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono text-sm"
+                    placeholder='[{"title": "Chapter Title", "description": "What this chapter covers"}]'><?= h($ebook['chapters'] ?? '') ?></textarea>
+                <p class="text-xs text-gray-500 mt-1">JSON array. Each item: {"title": "...", "description": "..."}</p>
+            </div>
+
+            <!-- Target Audience JSON -->
+            <div>
+                <label for="target_audience" class="block text-sm font-medium text-gray-300 mb-2">Target Audience (JSON)</label>
+                <textarea name="target_audience" id="target_audience" rows="4"
+                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono text-sm"
+                    placeholder='[{"icon": "👩‍💼", "title": "Persona", "description": "Why this is for them"}]'><?= h($ebook['target_audience'] ?? '') ?></textarea>
+                <p class="text-xs text-gray-500 mt-1">JSON array. Each item: {"icon": "emoji", "title": "...", "description": "..."}</p>
+            </div>
+
+            <!-- Testimonials JSON -->
+            <div>
+                <label for="testimonials" class="block text-sm font-medium text-gray-300 mb-2">Testimonials (JSON)</label>
+                <textarea name="testimonials" id="testimonials" rows="4"
+                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono text-sm"
+                    placeholder='[{"quote": "Great book!", "name": "John Doe", "title": "CEO"}]'><?= h($ebook['testimonials'] ?? '') ?></textarea>
+                <p class="text-xs text-gray-500 mt-1">JSON array. Each item: {"quote": "...", "name": "...", "title": "..."}</p>
+            </div>
+
+            <!-- FAQ JSON -->
+            <div>
+                <label for="faq" class="block text-sm font-medium text-gray-300 mb-2">FAQ (JSON)</label>
+                <textarea name="faq" id="faq" rows="4"
+                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono text-sm"
+                    placeholder='[{"question": "Is this for beginners?", "answer": "Yes, absolutely!"}]'><?= h($ebook['faq'] ?? '') ?></textarea>
+                <p class="text-xs text-gray-500 mt-1">JSON array. Each item: {"question": "...", "answer": "..."}</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Files & Media -->
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
         <h3 class="text-lg font-semibold text-white mb-6">Files & Media</h3>
