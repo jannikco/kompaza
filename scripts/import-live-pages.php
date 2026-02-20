@@ -132,9 +132,9 @@ function transformHtml(string $html): string
     $html = preg_replace('/<!-- Matomo -->\s*<script>.*?<\/script>/s', '', $html);
     // Remove Matomo tag manager
     $html = preg_replace('/<!-- Matomo Tag Manager -->.*?<!-- End Matomo Tag Manager -->/s', '', $html);
-    // Remove standalone matomo/analytics script blocks
-    $html = preg_replace('/<script[^>]*>.*?mtm\.push.*?<\/script>/s', '', $html);
-    $html = preg_replace('/<script[^>]*>.*?_paq\.push.*?<\/script>/s', '', $html);
+    // Remove standalone matomo/analytics script blocks (non-greedy, single script tag only)
+    $html = preg_replace('/<script[^>]*>\s*var\s+_paq\b[^<]*<\/script>/s', '', $html);
+    $html = preg_replace('/<script[^>]*>[^<]*mtm\.push[^<]*<\/script>/s', '', $html);
     // Remove matomo noscript tags
     $html = preg_replace('/<noscript>.*?matomo.*?<\/noscript>/si', '', $html);
 
