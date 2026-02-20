@@ -507,7 +507,20 @@ info("Migrated " . ($stats['certificates'] ?? 0) . " certificates");
 echo "\n12. Migrating course_orders → orders...\n";
 $courseOrders = $sourceDb->query("SELECT * FROM course_orders")->fetchAll();
 foreach ($courseOrders as $co) {
-    $newUserId = $userMap[$co['user_id']] ?? null;
+    // course_orders may not have user_id - look up by email if needed
+    $newUserId = null;
+    if (isset($co['user_id']) && $co['user_id']) {
+        $newUserId = $userMap[$co['user_id']] ?? null;
+    } elseif (!empty($co['email'])) {
+        // Try to find mapped user by email
+        foreach ($userMap as $oldId => $newId) {
+            if (!$dryRun && $newId) {
+                $u = $targetDb->prepare("SELECT id FROM users WHERE id = ? AND email = ?");
+                $u->execute([$newId, $co['email']]);
+                if ($u->fetch()) { $newUserId = $newId; break; }
+            }
+        }
+    }
 
     // Map payment_status: completed → paid
     $paymentStatus = match($co['payment_status'] ?? 'pending') {
