@@ -82,6 +82,8 @@ $pdfText = mb_substr($pdfText, 0, 12000);
 $systemPrompt = <<<'PROMPT'
 You are a marketing copywriter assistant. Analyze the PDF content provided and generate compelling marketing copy for a lead magnet landing page.
 
+CRITICAL: Detect the language of the PDF content and write ALL output in that SAME language. If the PDF is written in Danish, ALL fields MUST be in Danish. If the PDF is in English, write in English. Never translate to English — always match the source language exactly.
+
 Return a JSON object with exactly these fields:
 - "title": A clear, descriptive title for the lead magnet (max 60 chars)
 - "slug": URL-friendly slug derived from the title (lowercase, hyphens, no special chars)
@@ -89,14 +91,14 @@ Return a JSON object with exactly these fields:
 - "meta_description": SEO meta description (max 155 chars)
 - "hero_headline": An attention-grabbing headline for the landing page hero section (max 10 words, punchy and benefit-driven)
 - "hero_subheadline": Supporting text below the headline (1-2 sentences, explains the value)
-- "hero_cta_text": Call-to-action button text (2-4 words, e.g., "Download Free Guide")
+- "hero_cta_text": Call-to-action button text (2-4 words)
 - "hero_bg_color": A professional hex color for the hero background (dark/rich tone, e.g. "#1e3a5f")
-- "features_headline": A headline for the features/benefits section (e.g., "What You'll Learn")
+- "features_headline": A headline for the features/benefits section
 - "features": An array of 3-6 objects, each with "title" (short, 3-6 words) and "description" (1 sentence). These highlight key takeaways from the PDF content.
 - "email_subject": Email subject line for delivering the PDF (friendly, enticing)
 - "email_body_html": A short, friendly HTML email body that delivers the download link. Use {{name}} for the recipient's name and {{download_link}} for the PDF download URL. Keep it concise (3-5 short paragraphs). Use simple HTML (p tags, a tag for the link). Make it warm and professional.
 
-Write all content in the same language as the PDF content. If the PDF is in Danish, write in Danish. If in English, write in English. Always match the language of the source material. Make the copy compelling and benefit-focused. The hero headline should grab attention instantly.
+Make the copy compelling and benefit-focused. The hero headline should grab attention instantly. Remember: output language MUST match the PDF language.
 PROMPT;
 
 $userMessage = "Here is the content of the PDF lead magnet:\n\n" . $pdfText;
