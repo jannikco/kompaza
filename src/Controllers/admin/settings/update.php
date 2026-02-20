@@ -43,21 +43,16 @@ $data = [
 
 // Handle logo upload
 if (!empty($_FILES['logo']['name']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
-    $imgOriginal = $_FILES['logo']['name'];
-    $ext = strtolower(pathinfo($imgOriginal, PATHINFO_EXTENSION));
+    $ext = strtolower(pathinfo($_FILES['logo']['name'], PATHINFO_EXTENSION));
     if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'])) {
         flashMessage('error', 'Kun billeder (jpg, png, webp, gif, svg) er tilladt til logo.');
         redirect('/admin/settings');
     }
     // Delete old logo
     if (!empty($tenant['logo_path'])) {
-        $oldLogo = PUBLIC_PATH . $tenant['logo_path'];
-        if (file_exists($oldLogo)) unlink($oldLogo);
+        deleteUploadedFile($tenant['logo_path']);
     }
-    $logoFilename = generateUniqueId('logo_') . '.' . $ext;
-    $uploadPath = tenantUploadPath('branding');
-    move_uploaded_file($_FILES['logo']['tmp_name'], $uploadPath . '/' . $logoFilename);
-    $data['logo_path'] = '/uploads/' . $tenantId . '/branding/' . $logoFilename;
+    $data['logo_path'] = uploadPublicFile($_FILES['logo']['tmp_name'], 'branding', 'logo', $ext);
 }
 
 Tenant::update($tenantId, $data);

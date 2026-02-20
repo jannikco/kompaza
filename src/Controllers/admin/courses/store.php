@@ -33,10 +33,7 @@ if (!empty($_FILES['cover_image']['name']) && $_FILES['cover_image']['error'] ==
         flashMessage('error', 'Only images (jpg, png, webp, gif) are allowed.');
         redirect('/admin/kurser/opret');
     }
-    $imgFilename = generateUniqueId('course_') . '.' . $ext;
-    $uploadPath = tenantUploadPath('courses');
-    move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadPath . '/' . $imgFilename);
-    $coverImagePath = '/uploads/' . $tenantId . '/courses/' . $imgFilename;
+    $coverImagePath = uploadPublicFile($_FILES['cover_image']['tmp_name'], 'courses', 'course', $ext);
 }
 
 // Handle instructor image upload
@@ -44,10 +41,7 @@ $instructorImagePath = null;
 if (!empty($_FILES['instructor_image']['name']) && $_FILES['instructor_image']['error'] === UPLOAD_ERR_OK) {
     $ext = strtolower(pathinfo($_FILES['instructor_image']['name'], PATHINFO_EXTENSION));
     if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
-        $imgFilename = generateUniqueId('instr_') . '.' . $ext;
-        $uploadPath = tenantUploadPath('courses');
-        move_uploaded_file($_FILES['instructor_image']['tmp_name'], $uploadPath . '/' . $imgFilename);
-        $instructorImagePath = '/uploads/' . $tenantId . '/courses/' . $imgFilename;
+        $instructorImagePath = uploadPublicFile($_FILES['instructor_image']['tmp_name'], 'courses', 'instr', $ext);
     }
 }
 

@@ -44,32 +44,24 @@ if (!empty($_FILES['pdf_file']['name']) && $_FILES['pdf_file']['error'] === UPLO
     }
     // Delete old PDF
     if ($ebook['pdf_filename']) {
-        $oldPath = tenantStoragePath() . '/' . $ebook['pdf_filename'];
-        if (file_exists($oldPath)) unlink($oldPath);
+        deleteUploadedFile($ebook['pdf_filename']);
     }
-    $pdfFilename = generateUniqueId('ebook_') . '.pdf';
-    move_uploaded_file($_FILES['pdf_file']['tmp_name'], tenantStoragePath() . '/' . $pdfFilename);
-    $data['pdf_filename'] = $pdfFilename;
+    $data['pdf_filename'] = uploadPrivateFile($_FILES['pdf_file']['tmp_name'], 'pdfs', 'ebook', 'pdf');
     $data['pdf_original_name'] = $pdfOriginalName;
 }
 
 // Handle cover image replacement
 if (!empty($_FILES['cover_image']['name']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
-    $imgOriginal = $_FILES['cover_image']['name'];
-    $ext = strtolower(pathinfo($imgOriginal, PATHINFO_EXTENSION));
+    $ext = strtolower(pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION));
     if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
         flashMessage('error', 'Kun billeder (jpg, png, webp, gif) er tilladt.');
         redirect('/admin/eboger/edit?id=' . $id);
     }
     // Delete old image
     if ($ebook['cover_image_path']) {
-        $oldImg = PUBLIC_PATH . $ebook['cover_image_path'];
-        if (file_exists($oldImg)) unlink($oldImg);
+        deleteUploadedFile($ebook['cover_image_path']);
     }
-    $imgFilename = generateUniqueId('ebook_cover_') . '.' . $ext;
-    $uploadPath = tenantUploadPath('ebooks');
-    move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadPath . '/' . $imgFilename);
-    $data['cover_image_path'] = '/uploads/' . $tenantId . '/ebooks/' . $imgFilename;
+    $data['cover_image_path'] = uploadPublicFile($_FILES['cover_image']['tmp_name'], 'ebooks', 'ebook_cover', $ext);
 }
 
 Ebook::update($id, $data);

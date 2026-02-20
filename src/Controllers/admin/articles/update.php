@@ -43,21 +43,16 @@ $data = [
 
 // Handle featured image replacement
 if (!empty($_FILES['featured_image']['name']) && $_FILES['featured_image']['error'] === UPLOAD_ERR_OK) {
-    $imgOriginal = $_FILES['featured_image']['name'];
-    $ext = strtolower(pathinfo($imgOriginal, PATHINFO_EXTENSION));
+    $ext = strtolower(pathinfo($_FILES['featured_image']['name'], PATHINFO_EXTENSION));
     if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
         flashMessage('error', 'Kun billeder (jpg, png, webp, gif) er tilladt.');
         redirect('/admin/artikler/edit?id=' . $id);
     }
     // Delete old image
     if ($article['featured_image']) {
-        $oldImg = PUBLIC_PATH . $article['featured_image'];
-        if (file_exists($oldImg)) unlink($oldImg);
+        deleteUploadedFile($article['featured_image']);
     }
-    $imgFilename = generateUniqueId('art_') . '.' . $ext;
-    $uploadPath = tenantUploadPath('articles');
-    move_uploaded_file($_FILES['featured_image']['tmp_name'], $uploadPath . '/' . $imgFilename);
-    $data['featured_image'] = '/uploads/' . $tenantId . '/articles/' . $imgFilename;
+    $data['featured_image'] = uploadPublicFile($_FILES['featured_image']['tmp_name'], 'articles', 'art', $ext);
 }
 
 Article::update($id, $data);

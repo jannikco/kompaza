@@ -57,10 +57,11 @@ $data = [
 if (!empty($_FILES['cover_image']['name']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
     $ext = strtolower(pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION));
     if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
-        $imgFilename = generateUniqueId('course_') . '.' . $ext;
-        $uploadPath = tenantUploadPath('courses');
-        move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadPath . '/' . $imgFilename);
-        $data['cover_image_path'] = '/uploads/' . $tenantId . '/courses/' . $imgFilename;
+        // Delete old cover image
+        if (!empty($course['cover_image_path'])) {
+            deleteUploadedFile($course['cover_image_path']);
+        }
+        $data['cover_image_path'] = uploadPublicFile($_FILES['cover_image']['tmp_name'], 'courses', 'course', $ext);
     }
 }
 
@@ -68,10 +69,11 @@ if (!empty($_FILES['cover_image']['name']) && $_FILES['cover_image']['error'] ==
 if (!empty($_FILES['instructor_image']['name']) && $_FILES['instructor_image']['error'] === UPLOAD_ERR_OK) {
     $ext = strtolower(pathinfo($_FILES['instructor_image']['name'], PATHINFO_EXTENSION));
     if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
-        $imgFilename = generateUniqueId('instr_') . '.' . $ext;
-        $uploadPath = tenantUploadPath('courses');
-        move_uploaded_file($_FILES['instructor_image']['tmp_name'], $uploadPath . '/' . $imgFilename);
-        $data['instructor_image_path'] = '/uploads/' . $tenantId . '/courses/' . $imgFilename;
+        // Delete old instructor image
+        if (!empty($course['instructor_image_path'])) {
+            deleteUploadedFile($course['instructor_image_path']);
+        }
+        $data['instructor_image_path'] = uploadPublicFile($_FILES['instructor_image']['tmp_name'], 'courses', 'instr', $ext);
     }
 }
 

@@ -29,24 +29,18 @@ if (!empty($_FILES['pdf_file']['name']) && $_FILES['pdf_file']['error'] === UPLO
         flashMessage('error', 'Kun PDF-filer er tilladt.');
         redirect('/admin/eboger/create');
     }
-    $pdfFilename = generateUniqueId('ebook_') . '.pdf';
-    $storagePath = tenantStoragePath();
-    move_uploaded_file($_FILES['pdf_file']['tmp_name'], $storagePath . '/' . $pdfFilename);
+    $pdfFilename = uploadPrivateFile($_FILES['pdf_file']['tmp_name'], 'pdfs', 'ebook', 'pdf');
 }
 
 // Handle cover image upload
 $coverImagePath = null;
 if (!empty($_FILES['cover_image']['name']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
-    $imgOriginal = $_FILES['cover_image']['name'];
-    $ext = strtolower(pathinfo($imgOriginal, PATHINFO_EXTENSION));
+    $ext = strtolower(pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION));
     if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
         flashMessage('error', 'Kun billeder (jpg, png, webp, gif) er tilladt.');
         redirect('/admin/eboger/create');
     }
-    $imgFilename = generateUniqueId('ebook_cover_') . '.' . $ext;
-    $uploadPath = tenantUploadPath('ebooks');
-    move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadPath . '/' . $imgFilename);
-    $coverImagePath = '/uploads/' . $tenantId . '/ebooks/' . $imgFilename;
+    $coverImagePath = uploadPublicFile($_FILES['cover_image']['tmp_name'], 'ebooks', 'ebook_cover', $ext);
 }
 
 $id = Ebook::create([

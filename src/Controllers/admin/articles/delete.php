@@ -22,8 +22,7 @@ if (!$article) {
 
 // Delete associated image
 if ($article['featured_image']) {
-    $imgPath = PUBLIC_PATH . $article['featured_image'];
-    if (file_exists($imgPath)) unlink($imgPath);
+    deleteUploadedFile($article['featured_image']);
 }
 
 Article::delete($id, $tenantId);

@@ -266,6 +266,94 @@ function tenantStoragePath($subdir = '') {
     return $path;
 }
 
+function uploadPublicFile($tmpFile, $category, $prefix, $ext) {
+    $tenantId = currentTenantId();
+    $filename = generateUniqueId($prefix . '_') . '.' . $ext;
+
+    if (\App\Services\S3Service::isConfigured()) {
+        $key = "tenants/{$tenantId}/{$category}/{$filename}";
+        $contentType = mime_content_type($tmpFile) ?: 'application/octet-stream';
+        $s3 = new \App\Services\S3Service();
+        if ($s3->putObject($key, $tmpFile, $contentType, 'public-read')) {
+            return $s3->getPublicUrl($key);
+        }
+    }
+
+    // Fallback to local upload
+    $uploadPath = tenantUploadPath($category);
+    move_uploaded_file($tmpFile, $uploadPath . '/' . $filename);
+    return '/uploads/' . $tenantId . '/' . $category . '/' . $filename;
+}
+
+function uploadPrivateFile($tmpFile, $category, $prefix, $ext) {
+    $tenantId = currentTenantId();
+    $filename = generateUniqueId($prefix . '_') . '.' . $ext;
+
+    if (\App\Services\S3Service::isConfigured()) {
+        $key = "tenants/{$tenantId}/private/{$category}/{$filename}";
+        $contentType = mime_content_type($tmpFile) ?: 'application/octet-stream';
+        $s3 = new \App\Services\S3Service();
+        if ($s3->putObject($key, $tmpFile, $contentType)) {
+            return $key;
+        }
+    }
+
+    // Fallback to local upload
+    $storagePath = tenantStoragePath();
+    move_uploaded_file($tmpFile, $storagePath . '/' . $filename);
+    return $filename;
+}
+
+function deleteUploadedFile($pathOrKey) {
+    if (!$pathOrKey) return;
+
+    if (str_starts_with($pathOrKey, 'http')) {
+        // S3 URL — extract key from public domain URL
+        $publicDomain = S3_PUBLIC_DOMAIN;
+        $pos = strpos($pathOrKey, $publicDomain);
+        if ($pos !== false) {
+            $key = ltrim(substr($pathOrKey, $pos + strlen($publicDomain)), '/');
+            if (\App\Services\S3Service::isConfigured()) {
+                $s3 = new \App\Services\S3Service();
+                $s3->deleteObject($key);
+            }
+        }
+    } elseif (str_starts_with($pathOrKey, '/uploads/')) {
+        // Local public file
+        $localPath = PUBLIC_PATH . $pathOrKey;
+        if (file_exists($localPath)) unlink($localPath);
+    } else {
+        // S3 key (private files)
+        if (\App\Services\S3Service::isConfigured()) {
+            $s3 = new \App\Services\S3Service();
+            $s3->deleteObject($pathOrKey);
+        }
+        // Also try local path for backward compat (plain filename = local PDF)
+        $tenantId = currentTenantId();
+        $localPath = STORAGE_PATH . '/pdfs/' . $tenantId . '/' . $pathOrKey;
+        if (file_exists($localPath)) unlink($localPath);
+    }
+}
+
+function getPrivateFileUrl($pathOrKey) {
+    $tenantId = currentTenantId();
+
+    // Check if file exists locally first
+    $localPath = STORAGE_PATH . '/pdfs/' . $tenantId . '/' . $pathOrKey;
+    if (file_exists($localPath)) {
+        return ['type' => 'local', 'path' => $localPath];
+    }
+
+    // Treat as S3 key — return presigned URL
+    if (\App\Services\S3Service::isConfigured()) {
+        $s3 = new \App\Services\S3Service();
+        $url = $s3->getPresignedUrl($pathOrKey);
+        return ['type' => 's3', 'url' => $url];
+    }
+
+    return null;
+}
+
 function tenantFeature($feature) {
     $tenant = currentTenant();
     if (!$tenant) return false;

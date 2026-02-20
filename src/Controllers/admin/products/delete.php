@@ -22,8 +22,7 @@ if (!$product) {
 
 // Delete associated image
 if ($product['image_path']) {
-    $imgPath = PUBLIC_PATH . $product['image_path'];
-    if (file_exists($imgPath)) unlink($imgPath);
+    deleteUploadedFile($product['image_path']);
 }
 
 Product::delete($id, $tenantId);

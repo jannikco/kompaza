@@ -22,12 +22,10 @@ if (!$leadMagnet) {
 
 // Delete associated files
 if ($leadMagnet['pdf_filename']) {
-    $pdfPath = tenantStoragePath() . '/' . $leadMagnet['pdf_filename'];
-    if (file_exists($pdfPath)) unlink($pdfPath);
+    deleteUploadedFile($leadMagnet['pdf_filename']);
 }
 if ($leadMagnet['hero_image_path']) {
-    $imgPath = PUBLIC_PATH . $leadMagnet['hero_image_path'];
-    if (file_exists($imgPath)) unlink($imgPath);
+    deleteUploadedFile($leadMagnet['hero_image_path']);
 }
 
 LeadMagnet::delete($id, $tenantId);

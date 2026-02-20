@@ -29,24 +29,18 @@ if (!empty($_FILES['pdf_file']['name']) && $_FILES['pdf_file']['error'] === UPLO
         flashMessage('error', 'Kun PDF-filer er tilladt.');
         redirect('/admin/lead-magnets/create');
     }
-    $pdfFilename = generateUniqueId('lm_') . '.pdf';
-    $storagePath = tenantStoragePath();
-    move_uploaded_file($_FILES['pdf_file']['tmp_name'], $storagePath . '/' . $pdfFilename);
+    $pdfFilename = uploadPrivateFile($_FILES['pdf_file']['tmp_name'], 'pdfs', 'lm', 'pdf');
 }
 
 // Handle hero image upload
 $heroImagePath = null;
 if (!empty($_FILES['hero_image']['name']) && $_FILES['hero_image']['error'] === UPLOAD_ERR_OK) {
-    $imgOriginal = $_FILES['hero_image']['name'];
-    $ext = strtolower(pathinfo($imgOriginal, PATHINFO_EXTENSION));
+    $ext = strtolower(pathinfo($_FILES['hero_image']['name'], PATHINFO_EXTENSION));
     if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
         flashMessage('error', 'Kun billeder (jpg, png, webp, gif) er tilladt.');
         redirect('/admin/lead-magnets/create');
     }
-    $imgFilename = generateUniqueId('lm_hero_') . '.' . $ext;
-    $uploadPath = tenantUploadPath('lead-magnets');
-    move_uploaded_file($_FILES['hero_image']['tmp_name'], $uploadPath . '/' . $imgFilename);
-    $heroImagePath = '/uploads/' . $tenantId . '/lead-magnets/' . $imgFilename;
+    $heroImagePath = uploadPublicFile($_FILES['hero_image']['tmp_name'], 'lead-magnets', 'lm_hero', $ext);
 }
 
 $id = LeadMagnet::create([

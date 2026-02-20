@@ -23,16 +23,12 @@ if (!$title) {
 // Handle featured image upload
 $featuredImage = null;
 if (!empty($_FILES['featured_image']['name']) && $_FILES['featured_image']['error'] === UPLOAD_ERR_OK) {
-    $imgOriginal = $_FILES['featured_image']['name'];
-    $ext = strtolower(pathinfo($imgOriginal, PATHINFO_EXTENSION));
+    $ext = strtolower(pathinfo($_FILES['featured_image']['name'], PATHINFO_EXTENSION));
     if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
         flashMessage('error', 'Kun billeder (jpg, png, webp, gif) er tilladt.');
         redirect('/admin/artikler/create');
     }
-    $imgFilename = generateUniqueId('art_') . '.' . $ext;
-    $uploadPath = tenantUploadPath('articles');
-    move_uploaded_file($_FILES['featured_image']['tmp_name'], $uploadPath . '/' . $imgFilename);
-    $featuredImage = '/uploads/' . $tenantId . '/articles/' . $imgFilename;
+    $featuredImage = uploadPublicFile($_FILES['featured_image']['tmp_name'], 'articles', 'art', $ext);
 }
 
 // Set published_at if publishing and not explicitly set

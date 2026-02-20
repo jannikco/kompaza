@@ -22,12 +22,10 @@ if (!$ebook) {
 
 // Delete associated files
 if ($ebook['pdf_filename']) {
-    $pdfPath = tenantStoragePath() . '/' . $ebook['pdf_filename'];
-    if (file_exists($pdfPath)) unlink($pdfPath);
+    deleteUploadedFile($ebook['pdf_filename']);
 }
 if ($ebook['cover_image_path']) {
-    $imgPath = PUBLIC_PATH . $ebook['cover_image_path'];
-    if (file_exists($imgPath)) unlink($imgPath);
+    deleteUploadedFile($ebook['cover_image_path']);
 }
 
 Ebook::delete($id, $tenantId);

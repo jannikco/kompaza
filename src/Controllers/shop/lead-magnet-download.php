@@ -31,10 +31,10 @@ if (!$leadMagnet || empty($leadMagnet['pdf_filename'])) {
     exit;
 }
 
-// Build the file path
-$filePath = STORAGE_PATH . '/pdfs/' . $tenantId . '/' . $leadMagnet['pdf_filename'];
+// Resolve file location (local or S3)
+$fileInfo = getPrivateFileUrl($leadMagnet['pdf_filename']);
 
-if (!file_exists($filePath)) {
+if (!$fileInfo) {
     http_response_code(404);
     view('errors/404');
     exit;
@@ -46,13 +46,18 @@ DownloadToken::incrementDownloads($tokenRecord['id']);
 // Determine the download filename
 $downloadName = $leadMagnet['pdf_original_name'] ?? $leadMagnet['pdf_filename'];
 
-// Serve the PDF file
-header('Content-Type: application/pdf');
-header('Content-Disposition: attachment; filename="' . basename($downloadName) . '"');
-header('Content-Length: ' . filesize($filePath));
-header('Cache-Control: no-cache, no-store, must-revalidate');
-header('Pragma: no-cache');
-header('Expires: 0');
-
-readfile($filePath);
-exit;
+if ($fileInfo['type'] === 'local') {
+    // Serve local file
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: attachment; filename="' . basename($downloadName) . '"');
+    header('Content-Length: ' . filesize($fileInfo['path']));
+    header('Cache-Control: no-cache, no-store, must-revalidate');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+    readfile($fileInfo['path']);
+    exit;
+} else {
+    // Redirect to S3 presigned URL
+    header('Location: ' . $fileInfo['url']);
+    exit;
+}

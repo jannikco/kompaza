@@ -48,21 +48,16 @@ $data = [
 
 // Handle image replacement
 if (!empty($_FILES['image']['name']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-    $imgOriginal = $_FILES['image']['name'];
-    $ext = strtolower(pathinfo($imgOriginal, PATHINFO_EXTENSION));
+    $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
     if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
         flashMessage('error', 'Kun billeder (jpg, png, webp, gif) er tilladt.');
         redirect('/admin/produkter/rediger?id=' . $id);
     }
     // Delete old image
     if ($product['image_path']) {
-        $oldImg = PUBLIC_PATH . $product['image_path'];
-        if (file_exists($oldImg)) unlink($oldImg);
+        deleteUploadedFile($product['image_path']);
     }
-    $imgFilename = generateUniqueId('prod_') . '.' . $ext;
-    $uploadPath = tenantUploadPath('products');
-    move_uploaded_file($_FILES['image']['tmp_name'], $uploadPath . '/' . $imgFilename);
-    $data['image_path'] = '/uploads/' . $tenantId . '/products/' . $imgFilename;
+    $data['image_path'] = uploadPublicFile($_FILES['image']['tmp_name'], 'products', 'prod', $ext);
 }
 
 Product::update($id, $data);
