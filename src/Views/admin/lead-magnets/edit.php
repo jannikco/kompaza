@@ -18,6 +18,31 @@ if (!empty($leadMagnet['features'])) {
     $existingFeatures = json_decode($leadMagnet['features'], true) ?: [];
 }
 
+$existingChapters = [];
+if (!empty($leadMagnet['chapters'])) {
+    $existingChapters = json_decode($leadMagnet['chapters'], true) ?: [];
+}
+
+$existingKeyStatistics = [];
+if (!empty($leadMagnet['key_statistics'])) {
+    $existingKeyStatistics = json_decode($leadMagnet['key_statistics'], true) ?: [];
+}
+
+$existingBeforeAfter = ['before' => [], 'after' => []];
+if (!empty($leadMagnet['before_after'])) {
+    $existingBeforeAfter = json_decode($leadMagnet['before_after'], true) ?: ['before' => [], 'after' => []];
+}
+
+$existingTestimonialTemplates = [];
+if (!empty($leadMagnet['testimonial_templates'])) {
+    $existingTestimonialTemplates = json_decode($leadMagnet['testimonial_templates'], true) ?: [];
+}
+
+$existingSocialProof = [];
+if (!empty($leadMagnet['social_proof'])) {
+    $existingSocialProof = json_decode($leadMagnet['social_proof'], true) ?: [];
+}
+
 ob_start();
 ?>
 
@@ -34,16 +59,27 @@ ob_start();
 
 <div x-data="{
     features: <?= h(json_encode($existingFeatures)) ?>,
+    chapters: <?= h(json_encode($existingChapters)) ?>,
+    keyStatistics: <?= h(json_encode($existingKeyStatistics)) ?>,
     targetAudience: <?= h(json_encode($existingTargetAudience)) ?>,
-    faq: <?= h(json_encode($existingFaq)) ?>
+    faq: <?= h(json_encode($existingFaq)) ?>,
+    beforeAfter: <?= h(json_encode($existingBeforeAfter)) ?>,
+    authorBio: <?= h(json_encode($leadMagnet['author_bio'] ?? '')) ?>,
+    testimonialTemplates: <?= h(json_encode($existingTestimonialTemplates)) ?>,
+    socialProof: <?= h(json_encode($existingSocialProof)) ?>
 }">
 <form method="POST" action="/admin/lead-magnets/opdater" enctype="multipart/form-data" class="space-y-8">
     <?= csrfField() ?>
     <input type="hidden" name="id" value="<?= $leadMagnet['id'] ?>">
 
-    <!-- Hidden fields for target audience and FAQ as JSON -->
+    <!-- Hidden JSON fields -->
     <input type="hidden" name="target_audience" :value="JSON.stringify(targetAudience)">
     <input type="hidden" name="faq" :value="JSON.stringify(faq)">
+    <input type="hidden" name="chapters" :value="JSON.stringify(chapters)">
+    <input type="hidden" name="key_statistics" :value="JSON.stringify(keyStatistics)">
+    <input type="hidden" name="before_after" :value="JSON.stringify(beforeAfter)">
+    <input type="hidden" name="testimonial_templates" :value="JSON.stringify(testimonialTemplates)">
+    <input type="hidden" name="social_proof" :value="JSON.stringify(socialProof)">
 
     <!-- Basic Information -->
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
@@ -147,6 +183,41 @@ ob_start();
         <p class="text-xs text-gray-500 mt-2">Leave empty to keep the current cover. Upload a new image to replace it.</p>
     </div>
 
+    <!-- Social Proof Bar -->
+    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-white mb-2">Social Proof Bar</h3>
+        <p class="text-gray-400 text-sm mb-6">Customizable metrics bar shown below the hero. Leave empty to use defaults.</p>
+        <div class="space-y-3">
+            <template x-for="(proof, index) in socialProof" :key="index">
+                <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-1">
+                            <div class="grid grid-cols-3 gap-2">
+                                <input type="text" x-model="proof.icon" maxlength="4"
+                                    class="px-3 py-2 bg-gray-700 border border-gray-600 text-white text-center rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    placeholder="Icon">
+                                <input type="text" x-model="proof.value"
+                                    class="px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    placeholder="e.g., 10,000+">
+                                <input type="text" x-model="proof.label"
+                                    class="px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    placeholder="Label">
+                            </div>
+                        </div>
+                        <button type="button" @click="socialProof.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-400 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
+        <button type="button" @click="socialProof.push({value: '', label: '', icon: ''})"
+            class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>Add metric</span>
+        </button>
+    </div>
+
     <!-- Features -->
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
         <h3 class="text-lg font-semibold text-white mb-6">Features Section</h3>
@@ -158,8 +229,6 @@ ob_start();
                     class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="e.g., What You'll Learn">
             </div>
-
-            <!-- Dynamic features -->
             <div>
                 <label class="block text-sm font-medium text-gray-300 mb-3">Features</label>
                 <div class="space-y-3">
@@ -189,6 +258,74 @@ ob_start();
                 <input type="hidden" name="features" :value="JSON.stringify(features)">
             </div>
         </div>
+    </div>
+
+    <!-- Chapters -->
+    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-white mb-2">Chapters / Table of Contents</h3>
+        <p class="text-gray-400 text-sm mb-6">Displayed as a numbered list on the landing page.</p>
+        <div class="space-y-3">
+            <template x-for="(chapter, index) in chapters" :key="index">
+                <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-10 h-10 bg-indigo-500/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                            <span class="text-indigo-400 font-bold text-sm" x-text="chapter.number || (index + 1)"></span>
+                        </div>
+                        <div class="flex-1 space-y-2">
+                            <input type="text" x-model="chapter.title"
+                                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                placeholder="Chapter title">
+                            <input type="text" x-model="chapter.description"
+                                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                placeholder="Brief description">
+                        </div>
+                        <button type="button" @click="chapters.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-400 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
+        <button type="button" @click="chapters.push({number: chapters.length + 1, title: '', description: ''})"
+            class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>Add chapter</span>
+        </button>
+    </div>
+
+    <!-- Key Statistics -->
+    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-white mb-2">Key Statistics</h3>
+        <p class="text-gray-400 text-sm mb-6">Bold stat cards displayed on the landing page.</p>
+        <div class="space-y-3">
+            <template x-for="(stat, index) in keyStatistics" :key="index">
+                <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-1">
+                            <div class="grid grid-cols-3 gap-2">
+                                <input type="text" x-model="stat.icon" maxlength="4"
+                                    class="px-3 py-2 bg-gray-700 border border-gray-600 text-white text-center rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    placeholder="Icon">
+                                <input type="text" x-model="stat.value"
+                                    class="px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    placeholder="e.g., 50+">
+                                <input type="text" x-model="stat.label"
+                                    class="px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    placeholder="Label">
+                            </div>
+                        </div>
+                        <button type="button" @click="keyStatistics.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-400 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
+        <button type="button" @click="keyStatistics.push({value: '', label: '', icon: ''})"
+            class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>Add statistic</span>
+        </button>
     </div>
 
     <!-- Target Audience -->
@@ -223,6 +360,94 @@ ob_start();
             class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             <span>Add persona</span>
+        </button>
+    </div>
+
+    <!-- Before/After Transformation -->
+    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-white mb-2">Before/After Transformation</h3>
+        <p class="text-gray-400 text-sm mb-6">Show the contrast between current situation and outcome after reading.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-red-400 mb-3">Before (Pain Points)</label>
+                <div class="space-y-2">
+                    <template x-for="(item, index) in beforeAfter.before" :key="'before-'+index">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-red-400 flex-shrink-0">&#x2717;</span>
+                            <input type="text" x-model="beforeAfter.before[index]"
+                                class="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                placeholder="Pain point...">
+                            <button type="button" @click="beforeAfter.before.splice(index, 1)" class="p-1 text-gray-500 hover:text-red-400 transition">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                    </template>
+                </div>
+                <button type="button" @click="beforeAfter.before.push('')"
+                    class="mt-2 text-xs text-red-400 hover:text-red-300 transition">+ Add pain point</button>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-green-400 mb-3">After (Outcomes)</label>
+                <div class="space-y-2">
+                    <template x-for="(item, index) in beforeAfter.after" :key="'after-'+index">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-green-400 flex-shrink-0">&#x2713;</span>
+                            <input type="text" x-model="beforeAfter.after[index]"
+                                class="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                placeholder="Positive outcome...">
+                            <button type="button" @click="beforeAfter.after.splice(index, 1)" class="p-1 text-gray-500 hover:text-green-400 transition">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                    </template>
+                </div>
+                <button type="button" @click="beforeAfter.after.push('')"
+                    class="mt-2 text-xs text-green-400 hover:text-green-300 transition">+ Add outcome</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Author Bio -->
+    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-white mb-2">Author Bio</h3>
+        <p class="text-gray-400 text-sm mb-4">A short bio displayed on the landing page. Builds trust and authority.</p>
+        <textarea x-model="authorBio" name="author_bio" rows="3"
+            class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+            placeholder="Write a short author bio..."></textarea>
+    </div>
+
+    <!-- Testimonial Templates -->
+    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-white mb-2">Testimonials</h3>
+        <p class="text-gray-400 text-sm mb-6">Edit these to match real feedback from your audience.</p>
+        <div class="space-y-3">
+            <template x-for="(testimonial, index) in testimonialTemplates" :key="index">
+                <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-1 space-y-2">
+                            <textarea x-model="testimonial.quote" rows="2"
+                                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                placeholder="Testimonial quote..."></textarea>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" x-model="testimonial.name"
+                                    class="px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    placeholder="Name">
+                                <input type="text" x-model="testimonial.title"
+                                    class="px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    placeholder="Job title">
+                            </div>
+                        </div>
+                        <button type="button" @click="testimonialTemplates.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-400 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
+        <button type="button" @click="testimonialTemplates.push({quote: '', name: '', title: ''})"
+            class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>Add testimonial</span>
         </button>
     </div>
 

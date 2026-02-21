@@ -39,8 +39,8 @@ class LeadMagnet {
     public static function create($data) {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            INSERT INTO lead_magnets (tenant_id, slug, title, subtitle, meta_description, hero_headline, hero_subheadline, hero_cta_text, hero_bg_color, hero_image_path, cover_image_path, features_headline, features, target_audience, faq, pdf_filename, pdf_original_name, email_subject, email_body_html, brevo_list_id, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO lead_magnets (tenant_id, slug, title, subtitle, meta_description, hero_headline, hero_subheadline, hero_cta_text, hero_bg_color, hero_image_path, cover_image_path, features_headline, features, chapters, key_statistics, target_audience, faq, before_after, author_bio, testimonial_templates, social_proof, pdf_filename, pdf_original_name, email_subject, email_body_html, brevo_list_id, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->execute([
             $data['tenant_id'],
@@ -56,8 +56,14 @@ class LeadMagnet {
             $data['cover_image_path'] ?? null,
             $data['features_headline'] ?? null,
             $data['features'] ?? null,
+            $data['chapters'] ?? null,
+            $data['key_statistics'] ?? null,
             $data['target_audience'] ?? null,
             $data['faq'] ?? null,
+            $data['before_after'] ?? null,
+            $data['author_bio'] ?? null,
+            $data['testimonial_templates'] ?? null,
+            $data['social_proof'] ?? null,
             $data['pdf_filename'] ?? null,
             $data['pdf_original_name'] ?? null,
             $data['email_subject'] ?? null,

@@ -17,30 +17,30 @@ ob_start();
 
     <!-- Step indicator -->
     <div class="mb-8">
-        <div class="flex items-center justify-center space-x-4">
-            <template x-for="(s, i) in [{n:1, label:'Upload PDF'}, {n:2, label:'Book Cover'}, {n:3, label:'Details'}]" :key="i">
+        <div class="flex items-center justify-center space-x-2 sm:space-x-4 flex-wrap gap-y-2">
+            <template x-for="(s, i) in stepLabels" :key="i">
                 <div class="flex items-center">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition"
+                    <div class="flex items-center space-x-1.5">
+                        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition"
                              :class="step >= s.n ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-400'">
                             <template x-if="step > s.n">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                             </template>
                             <template x-if="step <= s.n">
                                 <span x-text="s.n"></span>
                             </template>
                         </div>
-                        <span class="text-sm" :class="step >= s.n ? 'text-white' : 'text-gray-500'" x-text="s.label"></span>
+                        <span class="text-xs hidden sm:inline" :class="step >= s.n ? 'text-white' : 'text-gray-500'" x-text="s.label"></span>
                     </div>
-                    <template x-if="i < 2">
-                        <div class="w-12 h-px mx-3" :class="step > s.n ? 'bg-indigo-600' : 'bg-gray-700'"></div>
+                    <template x-if="i < stepLabels.length - 1">
+                        <div class="w-6 sm:w-10 h-px mx-1 sm:mx-2" :class="step > s.n ? 'bg-indigo-600' : 'bg-gray-700'"></div>
                     </template>
                 </div>
             </template>
         </div>
     </div>
 
-    <!-- Step 1: Upload PDF for AI generation -->
+    <!-- Step 1: Upload PDF + AI Generate -->
     <div x-show="step === 1" x-transition>
         <div class="max-w-2xl mx-auto">
             <div class="bg-gray-800 border border-gray-700 rounded-xl p-8 text-center">
@@ -90,16 +90,20 @@ ob_start();
                     </div>
                 </div>
 
-                <!-- Loading state -->
+                <!-- Loading state with progress phases -->
                 <div x-show="loading" class="py-8">
                     <div class="flex items-center justify-center space-x-3 mb-4">
                         <svg class="animate-spin w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span class="text-white font-medium">AI is analyzing your PDF...</span>
+                        <span class="text-white font-medium" x-text="loadingPhase"></span>
                     </div>
-                    <p class="text-gray-500 text-sm">This may take 15-30 seconds</p>
+                    <p class="text-gray-500 text-sm">This may take 30-45 seconds</p>
+                    <!-- Progress bar -->
+                    <div class="mt-4 max-w-xs mx-auto bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                        <div class="bg-indigo-500 h-full rounded-full transition-all duration-1000" :style="'width: ' + loadingProgress + '%'"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -112,6 +116,17 @@ ob_start();
                 <h2 class="text-2xl font-bold text-white mb-2">Book Cover</h2>
                 <p class="text-gray-400">Add a cover image for the 3D book mockup on your landing page.</p>
             </div>
+
+            <!-- Partial success warning -->
+            <template x-if="partialWarning">
+                <div class="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl flex items-start space-x-3">
+                    <svg class="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                    <div>
+                        <p class="text-yellow-300 font-medium">Some AI sections could not be generated</p>
+                        <p class="text-gray-400 text-sm">You can fill in the missing sections manually in later steps.</p>
+                    </div>
+                </div>
+            </template>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Option 1: Upload a cover -->
@@ -174,7 +189,6 @@ ob_start();
                             class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent mb-3"
                             placeholder="Describe the visual style for your cover..."></textarea>
 
-                        <!-- Generate button -->
                         <div x-show="!coverLoading && !coverPreview">
                             <button type="button" @click="generateCover()"
                                 :disabled="!coverPrompt.trim()"
@@ -184,7 +198,6 @@ ob_start();
                             </button>
                         </div>
 
-                        <!-- Loading state -->
                         <div x-show="coverLoading" class="text-center py-4">
                             <div class="flex items-center justify-center space-x-2 mb-2">
                                 <svg class="animate-spin w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24">
@@ -196,7 +209,6 @@ ob_start();
                             <p class="text-gray-500 text-xs">This takes about 15-20 seconds</p>
                         </div>
 
-                        <!-- Preview with Accept/Retry -->
                         <div x-show="coverPreview && !coverLoading">
                             <img :src="coverPreview" class="max-h-48 mx-auto rounded-lg mb-3" alt="AI cover preview">
                             <div class="flex items-center space-x-2">
@@ -217,7 +229,6 @@ ob_start();
                 </div>
             </div>
 
-            <!-- Navigation -->
             <div class="flex items-center justify-between mt-8">
                 <button type="button" @click="step = 1" class="px-4 py-2 text-sm text-gray-400 hover:text-white transition">
                     &larr; Back
@@ -236,31 +247,37 @@ ob_start();
         </div>
     </div>
 
-    <!-- Step 3: Full form (pre-filled by AI or blank) -->
-    <div x-show="step === 3" x-transition>
-        <template x-if="aiGenerated">
-            <div class="mb-6 p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-start space-x-3">
-                <svg class="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                <div>
-                    <p class="text-indigo-300 font-medium">AI-generated content</p>
-                    <p class="text-gray-400 text-sm">Review and edit the fields below before saving.</p>
+    <!-- Steps 3-6 are inside the form -->
+    <form method="POST" action="/admin/lead-magnets/gem" enctype="multipart/form-data"
+          x-show="step >= 3" x-transition>
+        <?= csrfField() ?>
+
+        <!-- Hidden fields for pre-uploaded data -->
+        <input type="hidden" name="pdf_filename_existing" :value="pdfFilename">
+        <input type="hidden" name="pdf_original_name_existing" :value="pdfOriginalName">
+        <input type="hidden" name="cover_image_path_existing" :value="coverImagePath">
+
+        <!-- Hidden JSON fields -->
+        <input type="hidden" name="features" :value="JSON.stringify(features)">
+        <input type="hidden" name="chapters" :value="JSON.stringify(chapters)">
+        <input type="hidden" name="key_statistics" :value="JSON.stringify(keyStatistics)">
+        <input type="hidden" name="target_audience" :value="JSON.stringify(targetAudience)">
+        <input type="hidden" name="faq" :value="JSON.stringify(faq)">
+        <input type="hidden" name="before_after" :value="JSON.stringify(beforeAfter)">
+        <input type="hidden" name="testimonial_templates" :value="JSON.stringify(testimonialTemplates)">
+        <input type="hidden" name="social_proof" :value="JSON.stringify(socialProof)">
+
+        <!-- Step 3: Basic Info & Hero -->
+        <div x-show="step === 3" x-transition class="space-y-8">
+            <template x-if="aiGenerated">
+                <div class="p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-start space-x-3">
+                    <svg class="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    <div>
+                        <p class="text-indigo-300 font-medium">AI-generated content</p>
+                        <p class="text-gray-400 text-sm">Review and edit the fields below before saving.</p>
+                    </div>
                 </div>
-            </div>
-        </template>
-
-        <form method="POST" action="/admin/lead-magnets/gem" enctype="multipart/form-data" class="space-y-8">
-            <?= csrfField() ?>
-
-            <!-- Hidden fields for pre-uploaded PDF -->
-            <input type="hidden" name="pdf_filename_existing" :value="pdfFilename">
-            <input type="hidden" name="pdf_original_name_existing" :value="pdfOriginalName">
-
-            <!-- Hidden fields for cover image (from AI generation) -->
-            <input type="hidden" name="cover_image_path_existing" :value="coverImagePath">
-
-            <!-- Hidden fields for target audience and FAQ as JSON -->
-            <input type="hidden" name="target_audience" :value="JSON.stringify(targetAudience)">
-            <input type="hidden" name="faq" :value="JSON.stringify(faq)">
+            </template>
 
             <!-- Basic Information -->
             <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
@@ -349,6 +366,20 @@ ob_start();
                 </div>
             </template>
 
+            <!-- Navigation -->
+            <div class="flex items-center justify-between">
+                <button type="button" @click="step = 2" class="px-4 py-2 text-sm text-gray-400 hover:text-white transition">
+                    &larr; Back to Cover
+                </button>
+                <button type="button" @click="step = 4" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition">
+                    Next: Content Sections &rarr;
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 4: Content Sections -->
+        <div x-show="step === 4" x-transition class="space-y-8">
+
             <!-- Features -->
             <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
                 <h3 class="text-lg font-semibold text-white mb-6">Features Section</h3>
@@ -359,8 +390,6 @@ ob_start();
                             class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             placeholder="e.g., What You'll Learn">
                     </div>
-
-                    <!-- Dynamic features -->
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-3">Features</label>
                         <div class="space-y-3">
@@ -387,16 +416,96 @@ ob_start();
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                             <span>Add feature</span>
                         </button>
-                        <!-- Serialized features JSON for the backend -->
-                        <input type="hidden" name="features" :value="JSON.stringify(features)">
                     </div>
                 </div>
             </div>
 
+            <!-- Chapters / Table of Contents -->
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+                <h3 class="text-lg font-semibold text-white mb-2">Chapters / Table of Contents</h3>
+                <p class="text-gray-400 text-sm mb-6">Displayed as a numbered list on the landing page showing what the PDF covers.</p>
+                <div class="space-y-3">
+                    <template x-for="(chapter, index) in chapters" :key="index">
+                        <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-10 h-10 bg-indigo-500/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                                    <span class="text-indigo-400 font-bold text-sm" x-text="chapter.number || (index + 1)"></span>
+                                </div>
+                                <div class="flex-1 space-y-2">
+                                    <input type="text" x-model="chapter.title"
+                                        class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                        placeholder="Chapter title">
+                                    <input type="text" x-model="chapter.description"
+                                        class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                        placeholder="Brief description">
+                                </div>
+                                <button type="button" @click="chapters.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-400 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                <button type="button" @click="chapters.push({number: chapters.length + 1, title: '', description: ''})"
+                    class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <span>Add chapter</span>
+                </button>
+            </div>
+
+            <!-- Key Statistics -->
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+                <h3 class="text-lg font-semibold text-white mb-2">Key Statistics</h3>
+                <p class="text-gray-400 text-sm mb-6">Bold stat cards displayed on the landing page. Use real numbers from your PDF where possible.</p>
+                <div class="space-y-3">
+                    <template x-for="(stat, index) in keyStatistics" :key="index">
+                        <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-1">
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <input type="text" x-model="stat.icon" maxlength="4"
+                                            class="px-3 py-2 bg-gray-700 border border-gray-600 text-white text-center rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                            placeholder="Icon">
+                                        <input type="text" x-model="stat.value"
+                                            class="px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                            placeholder="e.g., 50+">
+                                        <input type="text" x-model="stat.label"
+                                            class="px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                            placeholder="Label">
+                                    </div>
+                                </div>
+                                <button type="button" @click="keyStatistics.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-400 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                <button type="button" @click="keyStatistics.push({value: '', label: '', icon: ''})"
+                    class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <span>Add statistic</span>
+                </button>
+            </div>
+
+            <!-- Navigation -->
+            <div class="flex items-center justify-between">
+                <button type="button" @click="step = 3" class="px-4 py-2 text-sm text-gray-400 hover:text-white transition">
+                    &larr; Back
+                </button>
+                <button type="button" @click="step = 5" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition">
+                    Next: Trust & Audience &rarr;
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 5: Trust & Audience -->
+        <div x-show="step === 5" x-transition class="space-y-8">
+
             <!-- Target Audience -->
             <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-                <h3 class="text-lg font-semibold text-white mb-6">Target Audience</h3>
-                <p class="text-gray-400 text-sm mb-4">Define who this lead magnet is for. These appear as persona cards on the landing page.</p>
+                <h3 class="text-lg font-semibold text-white mb-2">Target Audience</h3>
+                <p class="text-gray-400 text-sm mb-6">Define who this lead magnet is for. These appear as persona cards on the landing page.</p>
                 <div class="space-y-3">
                     <template x-for="(persona, index) in targetAudience" :key="index">
                         <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
@@ -428,10 +537,135 @@ ob_start();
                 </button>
             </div>
 
+            <!-- Before/After Transformation -->
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+                <h3 class="text-lg font-semibold text-white mb-2">Before/After Transformation</h3>
+                <p class="text-gray-400 text-sm mb-6">Show the contrast between the reader's current situation and the outcome after reading your PDF.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Before -->
+                    <div>
+                        <label class="block text-sm font-medium text-red-400 mb-3">Before (Pain Points)</label>
+                        <div class="space-y-2">
+                            <template x-for="(item, index) in beforeAfter.before" :key="'before-'+index">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-red-400 flex-shrink-0">&#x2717;</span>
+                                    <input type="text" x-model="beforeAfter.before[index]"
+                                        class="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                        placeholder="Pain point...">
+                                    <button type="button" @click="beforeAfter.before.splice(index, 1)" class="p-1 text-gray-500 hover:text-red-400 transition">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                        <button type="button" @click="beforeAfter.before.push('')"
+                            class="mt-2 text-xs text-red-400 hover:text-red-300 transition">+ Add pain point</button>
+                    </div>
+                    <!-- After -->
+                    <div>
+                        <label class="block text-sm font-medium text-green-400 mb-3">After (Outcomes)</label>
+                        <div class="space-y-2">
+                            <template x-for="(item, index) in beforeAfter.after" :key="'after-'+index">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-green-400 flex-shrink-0">&#x2713;</span>
+                                    <input type="text" x-model="beforeAfter.after[index]"
+                                        class="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        placeholder="Positive outcome...">
+                                    <button type="button" @click="beforeAfter.after.splice(index, 1)" class="p-1 text-gray-500 hover:text-green-400 transition">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                        <button type="button" @click="beforeAfter.after.push('')"
+                            class="mt-2 text-xs text-green-400 hover:text-green-300 transition">+ Add outcome</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Author Bio -->
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+                <h3 class="text-lg font-semibold text-white mb-2">Author Bio</h3>
+                <p class="text-gray-400 text-sm mb-4">A short bio displayed on the landing page. Builds trust and authority.</p>
+                <textarea x-model="authorBio" name="author_bio" rows="3"
+                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                    placeholder="Write a short author bio..."></textarea>
+            </div>
+
+            <!-- Testimonial Templates -->
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+                <h3 class="text-lg font-semibold text-white mb-2">Testimonial Templates</h3>
+                <p class="text-gray-400 text-sm mb-6">Edit these to match real feedback. AI-generated as starting points.</p>
+                <div class="space-y-3">
+                    <template x-for="(testimonial, index) in testimonialTemplates" :key="index">
+                        <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-1 space-y-2">
+                                    <textarea x-model="testimonial.quote" rows="2"
+                                        class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                        placeholder="Testimonial quote..."></textarea>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <input type="text" x-model="testimonial.name"
+                                            class="px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                            placeholder="Name">
+                                        <input type="text" x-model="testimonial.title"
+                                            class="px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                            placeholder="Job title">
+                                    </div>
+                                </div>
+                                <button type="button" @click="testimonialTemplates.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-400 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                <button type="button" @click="testimonialTemplates.push({quote: '', name: '', title: ''})"
+                    class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <span>Add testimonial</span>
+                </button>
+            </div>
+
+            <!-- Social Proof -->
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+                <h3 class="text-lg font-semibold text-white mb-2">Social Proof Bar</h3>
+                <p class="text-gray-400 text-sm mb-6">Customizable metrics bar shown below the hero. Replaces the default "PDF Guide / 100% Free / Instant Access".</p>
+                <div class="space-y-3">
+                    <template x-for="(proof, index) in socialProof" :key="index">
+                        <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-1">
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <input type="text" x-model="proof.icon" maxlength="4"
+                                            class="px-3 py-2 bg-gray-700 border border-gray-600 text-white text-center rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                            placeholder="Icon">
+                                        <input type="text" x-model="proof.value"
+                                            class="px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                            placeholder="e.g., 10,000+">
+                                        <input type="text" x-model="proof.label"
+                                            class="px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                            placeholder="Label">
+                                    </div>
+                                </div>
+                                <button type="button" @click="socialProof.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-400 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                <button type="button" @click="socialProof.push({value: '', label: '', icon: ''})"
+                    class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <span>Add metric</span>
+                </button>
+            </div>
+
             <!-- FAQ -->
             <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-                <h3 class="text-lg font-semibold text-white mb-6">FAQ</h3>
-                <p class="text-gray-400 text-sm mb-4">Common questions prospects might have before downloading. Displayed as an accordion on the landing page.</p>
+                <h3 class="text-lg font-semibold text-white mb-2">FAQ</h3>
+                <p class="text-gray-400 text-sm mb-6">Common questions prospects might have before downloading. Displayed as an accordion on the landing page.</p>
                 <div class="space-y-3">
                     <template x-for="(item, index) in faq" :key="index">
                         <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
@@ -458,12 +692,26 @@ ob_start();
                 </button>
             </div>
 
+            <!-- Navigation -->
+            <div class="flex items-center justify-between">
+                <button type="button" @click="step = 4" class="px-4 py-2 text-sm text-gray-400 hover:text-white transition">
+                    &larr; Back
+                </button>
+                <button type="button" @click="goToStep6()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition">
+                    Next: Email & Publish &rarr;
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 6: Email & Publishing -->
+        <div x-show="step === 6" x-transition class="space-y-8">
+
             <!-- PDF File -->
             <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
                 <h3 class="text-lg font-semibold text-white mb-6">Downloadable PDF</h3>
                 <div>
                     <template x-if="pdfFilename">
-                        <div class="flex items-center space-x-3 mb-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                        <div class="flex items-center space-x-3 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
                             <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                             <span class="text-green-300 text-sm">PDF uploaded: <span x-text="pdfOriginalName" class="font-medium"></span></span>
                         </div>
@@ -514,8 +762,8 @@ ob_start();
 
             <!-- Submit -->
             <div class="flex items-center justify-between">
-                <button type="button" @click="step = 2" class="px-4 py-2 text-sm text-gray-400 hover:text-white transition">
-                    &larr; Back to Cover
+                <button type="button" @click="step = 5" class="px-4 py-2 text-sm text-gray-400 hover:text-white transition">
+                    &larr; Back
                 </button>
                 <div class="flex items-center space-x-4">
                     <a href="/admin/lead-magnets" class="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
@@ -526,24 +774,41 @@ ob_start();
                     </button>
                 </div>
             </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </div>
 
 <script>
 function leadMagnetWizard() {
     return {
         step: <?= $aiConfigured ? '1' : '3' ?>,
+        stepLabels: [
+            {n: 1, label: 'Upload PDF'},
+            {n: 2, label: 'Book Cover'},
+            {n: 3, label: 'Basic Info'},
+            {n: 4, label: 'Content'},
+            {n: 5, label: 'Trust'},
+            {n: 6, label: 'Publish'}
+        ],
         loading: false,
+        loadingPhase: 'Analyzing your PDF...',
+        loadingProgress: 0,
         error: '',
         context: '',
         pdfFile: null,
         pdfFilename: '',
         pdfOriginalName: '',
         aiGenerated: false,
+        partialWarning: false,
         features: [],
+        chapters: [],
+        keyStatistics: [],
         targetAudience: [],
         faq: [],
+        beforeAfter: { before: [], after: [] },
+        authorBio: '',
+        testimonialTemplates: [],
+        socialProof: [],
 
         // Cover state
         coverMode: '',
@@ -556,11 +821,8 @@ function leadMagnetWizard() {
         coverError: '',
 
         init() {
-            if (this.step === 3) {
-                this.$nextTick(() => this.initEmailEditor());
-            }
             this.$watch('step', (val) => {
-                if (val === 3) {
+                if (val === 6) {
                     this.$nextTick(() => this.initEmailEditor());
                 }
             });
@@ -594,10 +856,38 @@ function leadMagnetWizard() {
             email_body_html: '',
         },
 
+        goToStep6() {
+            this.step = 6;
+        },
+
+        startLoadingAnimation() {
+            this.loadingProgress = 0;
+            this.loadingPhase = 'Analyzing your PDF...';
+
+            setTimeout(() => { this.loadingProgress = 20; }, 500);
+            setTimeout(() => {
+                this.loadingPhase = 'Analyzing content structure...';
+                this.loadingProgress = 35;
+            }, 5000);
+            setTimeout(() => {
+                this.loadingPhase = 'Generating landing page sections...';
+                this.loadingProgress = 55;
+            }, 12000);
+            setTimeout(() => {
+                this.loadingPhase = 'Building trust elements...';
+                this.loadingProgress = 70;
+            }, 20000);
+            setTimeout(() => {
+                this.loadingPhase = 'Almost done...';
+                this.loadingProgress = 85;
+            }, 30000);
+        },
+
         async generateWithAI() {
             if (!this.pdfFile) return;
             this.loading = true;
             this.error = '';
+            this.startLoadingAnimation();
 
             const formData = new FormData();
             formData.append('pdf_file', this.pdfFile);
@@ -622,7 +912,10 @@ function leadMagnetWizard() {
 
                 if (result.ai_generated && result.data) {
                     this.aiGenerated = true;
+                    this.partialWarning = result.partial || false;
                     const d = result.data;
+
+                    // Basic info & hero
                     this.formData.title = d.title || '';
                     this.formData.slug = d.slug || '';
                     this.formData.subtitle = d.subtitle || '';
@@ -635,22 +928,29 @@ function leadMagnetWizard() {
                     this.formData.email_subject = d.email_subject || '';
                     this.formData.email_body_html = d.email_body_html || '';
 
-                    if (d.features && Array.isArray(d.features)) {
-                        this.features = d.features;
+                    // Content sections
+                    if (d.features && Array.isArray(d.features)) this.features = d.features;
+                    if (d.chapters && Array.isArray(d.chapters)) this.chapters = d.chapters;
+                    if (d.key_statistics && Array.isArray(d.key_statistics)) this.keyStatistics = d.key_statistics;
+
+                    // Trust sections
+                    if (d.target_audience && Array.isArray(d.target_audience)) this.targetAudience = d.target_audience;
+                    if (d.faq && Array.isArray(d.faq)) this.faq = d.faq;
+                    if (d.before_after && typeof d.before_after === 'object') {
+                        this.beforeAfter = {
+                            before: d.before_after.before || [],
+                            after: d.before_after.after || []
+                        };
                     }
-                    if (d.target_audience && Array.isArray(d.target_audience)) {
-                        this.targetAudience = d.target_audience;
-                    }
-                    if (d.faq && Array.isArray(d.faq)) {
-                        this.faq = d.faq;
-                    }
-                    if (d.cover_prompt) {
-                        this.coverPrompt = d.cover_prompt;
-                    }
+                    if (d.author_bio) this.authorBio = d.author_bio;
+                    if (d.testimonial_templates && Array.isArray(d.testimonial_templates)) this.testimonialTemplates = d.testimonial_templates;
+                    if (d.social_proof && Array.isArray(d.social_proof)) this.socialProof = d.social_proof;
+
+                    if (d.cover_prompt) this.coverPrompt = d.cover_prompt;
                 }
 
-                // Go to step 2 (cover) instead of step 3
-                this.step = 2;
+                this.loadingProgress = 100;
+                setTimeout(() => { this.step = 2; }, 300);
 
             } catch (e) {
                 this.error = 'Network error. Please try again.';
@@ -684,7 +984,7 @@ function leadMagnetWizard() {
                 this.coverImagePath = result.cover_image_path;
                 this.coverImageUrl = result.cover_image_url;
                 this.coverPreview = result.cover_image_url;
-                this.coverFile = null; // Clear any manual upload
+                this.coverFile = null;
 
             } catch (e) {
                 this.coverError = 'Network error. Please try again.';

@@ -79,43 +79,12 @@ if (empty($pdfText)) {
 // Truncate to ~12k chars to fit within context
 $pdfText = mb_substr($pdfText, 0, 12000);
 
-$systemPrompt = <<<'PROMPT'
-You are a marketing copywriter assistant. Analyze the PDF content provided and generate compelling marketing copy for a lead magnet landing page.
-
-CRITICAL: Detect the language of the PDF content and write ALL output in that SAME language. If the PDF is written in Danish, ALL fields MUST be in Danish. If the PDF is in English, write in English. Never translate to English — always match the source language exactly.
-
-Return a JSON object with exactly these fields:
-- "title": A clear, descriptive title for the lead magnet (max 60 chars)
-- "slug": URL-friendly slug derived from the title (lowercase, hyphens, no special chars)
-- "subtitle": A supporting subtitle (1 sentence, max 120 chars)
-- "meta_description": SEO meta description (max 155 chars)
-- "hero_headline": An attention-grabbing headline for the landing page hero section (max 10 words, punchy and benefit-driven)
-- "hero_subheadline": Supporting text below the headline (1-2 sentences, explains the value)
-- "hero_cta_text": Call-to-action button text (2-4 words)
-- "hero_bg_color": A professional hex color for the hero background (dark/rich tone, e.g. "#1e3a5f")
-- "features_headline": A headline for the features/benefits section
-- "features": An array of 3-6 objects, each with "title" (short, 3-6 words) and "description" (1 sentence). These highlight key takeaways from the PDF content.
-- "target_audience": An array of exactly 3 objects, each with "icon" (a single relevant emoji), "title" (short persona name, 3-5 words), and "description" (1 sentence explaining why this persona benefits from the PDF). These represent who the lead magnet is for.
-- "faq": An array of exactly 3 objects, each with "question" and "answer". These are common questions a prospect might have before downloading. Keep answers concise (1-2 sentences).
-- "cover_prompt": A DALL-E image generation prompt describing an ideal abstract book cover for this PDF. Focus on visual elements, colors, mood, and abstract shapes only. Do NOT include any text or typography in the description. Example: "Abstract geometric shapes in deep blue and gold gradients, flowing lines suggesting growth and progress, minimalist professional design"
-- "email_subject": Email subject line for delivering the PDF (friendly, enticing)
-- "email_body_html": A short, friendly HTML email body that delivers the download link. Use {{name}} for the recipient's name and {{download_link}} for the PDF download URL. Keep it concise (3-5 short paragraphs). Use simple HTML (p tags, a tag for the link). Make it warm and professional.
-
-Make the copy compelling and benefit-focused. The hero headline should grab attention instantly. Remember: output language MUST match the PDF language (except cover_prompt which should be in English for DALL-E).
-PROMPT;
-
-$userMessage = "Here is the content of the PDF lead magnet:\n\n" . $pdfText;
-
-// Append optional context from user
 $context = trim($_POST['context'] ?? '');
-if (!empty($context)) {
-    $userMessage .= "\n\nAdditional context from the author about the target audience and goals:\n" . $context;
-}
 
 $openai = new OpenAIService();
-$result = $openai->chatCompletion($systemPrompt, $userMessage);
+$result = $openai->generateLeadMagnetContent($pdfText, $context);
 
-if (!$result) {
+if (!$result['success']) {
     echo json_encode([
         'success' => true,
         'ai_generated' => false,
@@ -127,17 +96,32 @@ if (!$result) {
     exit;
 }
 
-// Ensure features is a JSON string for the form
-if (isset($result['features']) && is_array($result['features'])) {
-    $result['features_json'] = json_encode($result['features']);
-}
+$data = $result['data'];
 
-// Ensure target_audience and faq are arrays
-if (isset($result['target_audience']) && is_array($result['target_audience'])) {
-    $result['target_audience_json'] = json_encode($result['target_audience']);
+// Ensure array fields have _json variants for backward compat
+if (isset($data['features']) && is_array($data['features'])) {
+    $data['features_json'] = json_encode($data['features']);
 }
-if (isset($result['faq']) && is_array($result['faq'])) {
-    $result['faq_json'] = json_encode($result['faq']);
+if (isset($data['target_audience']) && is_array($data['target_audience'])) {
+    $data['target_audience_json'] = json_encode($data['target_audience']);
+}
+if (isset($data['faq']) && is_array($data['faq'])) {
+    $data['faq_json'] = json_encode($data['faq']);
+}
+if (isset($data['chapters']) && is_array($data['chapters'])) {
+    $data['chapters_json'] = json_encode($data['chapters']);
+}
+if (isset($data['key_statistics']) && is_array($data['key_statistics'])) {
+    $data['key_statistics_json'] = json_encode($data['key_statistics']);
+}
+if (isset($data['before_after']) && is_array($data['before_after'])) {
+    $data['before_after_json'] = json_encode($data['before_after']);
+}
+if (isset($data['testimonial_templates']) && is_array($data['testimonial_templates'])) {
+    $data['testimonial_templates_json'] = json_encode($data['testimonial_templates']);
+}
+if (isset($data['social_proof']) && is_array($data['social_proof'])) {
+    $data['social_proof_json'] = json_encode($data['social_proof']);
 }
 
 echo json_encode([
@@ -145,5 +129,7 @@ echo json_encode([
     'ai_generated' => true,
     'pdf_filename' => $pdfFilename,
     'pdf_original_name' => $pdfOriginalName,
-    'data' => $result,
+    'data' => $data,
+    'partial' => $result['partial'] ?? false,
+    'errors' => $result['errors'] ?? [],
 ]);
