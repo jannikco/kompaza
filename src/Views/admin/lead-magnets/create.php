@@ -344,6 +344,20 @@ ob_start();
         <input type="hidden" name="hero_badge" :value="formData.hero_badge">
         <input type="hidden" name="hero_headline_accent" :value="formData.hero_headline_accent">
 
+        <!-- Hidden fields for formData (always in DOM regardless of step) -->
+        <input type="hidden" name="title" :value="formData.title">
+        <input type="hidden" name="slug" :value="formData.slug">
+        <input type="hidden" name="subtitle" :value="formData.subtitle">
+        <input type="hidden" name="meta_description" :value="formData.meta_description">
+        <input type="hidden" name="hero_headline" :value="formData.hero_headline">
+        <input type="hidden" name="hero_subheadline" :value="formData.hero_subheadline">
+        <input type="hidden" name="hero_cta_text" :value="formData.hero_cta_text">
+        <input type="hidden" name="hero_bg_color" :value="formData.hero_bg_color">
+        <input type="hidden" name="features_headline" :value="formData.features_headline">
+        <input type="hidden" name="email_subject" :value="formData.email_subject">
+        <input type="hidden" name="author_bio" :value="authorBio">
+
+
         <!-- ==================== STEP 3: Review Content (Accordion) ==================== -->
         <template x-if="step === 3">
             <div class="space-y-4 max-w-4xl mx-auto">
@@ -377,25 +391,25 @@ ob_start();
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                                    <input type="text" name="title" required x-model="formData.title"
+                                    <input type="text" x-model="formData.title"
                                         class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                         placeholder="e.g., 10 Tips for Better Marketing">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Slug</label>
-                                    <input type="text" name="slug" required x-model="formData.slug"
+                                    <input type="text" x-model="formData.slug"
                                         class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                         placeholder="10-tips-for-better-marketing">
                                 </div>
                                 <div class="md:col-span-2">
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Subtitle</label>
-                                    <input type="text" name="subtitle" x-model="formData.subtitle"
+                                    <input type="text" x-model="formData.subtitle"
                                         class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                         placeholder="A short subtitle">
                                 </div>
                                 <div class="md:col-span-2">
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Meta Description</label>
-                                    <input type="text" name="meta_description" maxlength="160" x-model="formData.meta_description"
+                                    <input type="text" maxlength="160" x-model="formData.meta_description"
                                         class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                         placeholder="SEO description (max 160 characters)">
                                 </div>
@@ -422,20 +436,20 @@ ob_start();
                         <div class="px-6 pb-6 border-t border-gray-100 pt-4 space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Hero Headline</label>
-                                <input type="text" name="hero_headline" x-model="formData.hero_headline"
+                                <input type="text" x-model="formData.hero_headline"
                                     class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                     placeholder="Main headline">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Hero Subheadline</label>
-                                <input type="text" name="hero_subheadline" x-model="formData.hero_subheadline"
+                                <input type="text" x-model="formData.hero_subheadline"
                                     class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                     placeholder="Supporting text">
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">CTA Text</label>
-                                    <input type="text" name="hero_cta_text" x-model="formData.hero_cta_text"
+                                    <input type="text" x-model="formData.hero_cta_text"
                                         class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                         placeholder="Download Free Guide">
                                 </div>
@@ -456,7 +470,7 @@ ob_start();
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
                                     <div class="flex items-center space-x-3">
-                                        <input type="color" name="hero_bg_color" x-model="formData.hero_bg_color"
+                                        <input type="color" x-model="formData.hero_bg_color"
                                             class="w-12 h-10 bg-white border border-gray-300 rounded-lg cursor-pointer">
                                         <input type="text" x-model="formData.hero_bg_color"
                                             class="flex-1 px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
@@ -527,7 +541,7 @@ ob_start();
                         <div class="px-6 pb-6 border-t border-gray-100 pt-4 space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Features Headline</label>
-                                <input type="text" name="features_headline" x-model="formData.features_headline"
+                                <input type="text" x-model="formData.features_headline"
                                     class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                     placeholder="e.g., What You'll Learn">
                             </div>
@@ -762,7 +776,7 @@ ob_start();
                     </button>
                     <div x-show="openSection === 'author'" x-collapse>
                         <div class="px-6 pb-6 border-t border-gray-100 pt-4">
-                            <textarea x-model="authorBio" name="author_bio" rows="3"
+                            <textarea x-model="authorBio" rows="3"
                                 class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
                                 placeholder="Write a short author bio..."></textarea>
                         </div>
@@ -939,7 +953,7 @@ ob_start();
                     <div class="space-y-6">
                         <div>
                             <label for="email_subject" class="block text-sm font-medium text-gray-700 mb-2">Email Subject</label>
-                            <input type="text" name="email_subject" id="email_subject" x-model="formData.email_subject"
+                            <input type="text" id="email_subject" x-model="formData.email_subject"
                                 class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                 placeholder="e.g., Here's your free guide!">
                         </div>
