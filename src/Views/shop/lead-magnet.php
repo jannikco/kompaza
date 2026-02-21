@@ -12,8 +12,8 @@ if (strlen($hexClean) === 3) {
 $r = hexdec(substr($hexClean, 0, 2));
 $g = hexdec(substr($hexClean, 2, 2));
 $b = hexdec(substr($hexClean, 4, 2));
-$heroBgDarker  = sprintf('#%02x%02x%02x', max(0, $r - 25), max(0, $g - 25), max(0, $b - 25));
-$heroBgLighter = sprintf('#%02x%02x%02x', min(255, $r + 25), min(255, $g + 25), min(255, $b + 25));
+$heroBgDarker  = sprintf('#%02x%02x%02x', max(0, $r - 40), max(0, $g - 40), max(0, $b - 40));
+$heroBgLighter = sprintf('#%02x%02x%02x', min(255, $r + 40), min(255, $g + 40), min(255, $b + 40));
 
 $features = [];
 if (!empty($leadMagnet['features'])) {
@@ -73,10 +73,10 @@ $heroBadge = $leadMagnet['hero_badge'] ?? '';
 $heroAccent = $leadMagnet['hero_headline_accent'] ?? '';
 $heroHeadline = $leadMagnet['hero_headline'] ?? $leadMagnet['title'];
 
-// Helper: wraps accent words in <span class="text-brand">
+// Helper: wraps accent words in gradient-highlighted span
 function heroHeadlineWithAccent($headline, $accent) {
     if (empty($accent)) return h($headline);
-    return str_replace(h($accent), '<span class="text-brand">' . h($accent) . '</span>', h($headline));
+    return str_replace(h($accent), '<span class="text-brand-gradient accent-blur-in">' . h($accent) . '</span>', h($headline));
 }
 
 // Section headings helper — falls back to English defaults for existing lead magnets
@@ -158,12 +158,12 @@ ob_start();
         pointer-events: none;
     }
 
-    /* CTA button shimmer */
+    /* CTA button shimmer + ripple */
     @keyframes shimmer {
         0% { transform: translateX(-100%); }
         100% { transform: translateX(100%); }
     }
-    .btn-shimmer { position: relative; overflow: hidden; }
+    .btn-shimmer { position: relative; overflow: hidden; will-change: transform; }
     .btn-shimmer::after {
         content: '';
         position: absolute;
@@ -172,10 +172,81 @@ ob_start();
         background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
         animation: shimmer 3s ease-in-out infinite;
     }
+    .btn-shimmer:active {
+        transform: scale(0.97) translateY(1px) !important;
+        box-shadow: 0 2px 8px rgba(99,102,241,0.5), 0 1px 2px rgba(0,0,0,0.2) !important;
+    }
+    .btn-shimmer .ripple {
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
+        transform: scale(0);
+        background: rgba(255,255,255,0.25);
+        opacity: 0;
+        transition: transform 0.5s, opacity 0.7s;
+    }
 
-    /* Form card colored glow */
+    /* Enhanced glassmorphic form card */
     .form-glow {
-        box-shadow: 0 25px 60px -12px rgba(0,0,0,0.25), 0 0 40px -15px <?= h($heroBgColor) ?>40;
+        border: 1.5px solid rgba(255,255,255,0.18);
+        box-shadow:
+            0 25px 60px -12px rgba(0,0,0,0.25),
+            0 0 40px -15px <?= h($heroBgColor) ?>40,
+            0 0 0 4px rgba(99,102,241,0.08),
+            0 2px 32px 2px rgba(125,211,252,0.12) inset;
+        backdrop-filter: blur(12px) saturate(1.15);
+        transition: box-shadow 0.35s cubic-bezier(.42,1.4,.42,1.0);
+    }
+    .form-glow:focus-within {
+        box-shadow:
+            0 40px 80px -16px rgba(30,64,175,0.23),
+            0 0 60px -10px rgba(99,102,241,0.5),
+            0 0 0 6px rgba(125,211,252,0.3),
+            0 2px 48px 4px rgba(165,180,252,0.2) inset;
+    }
+
+    /* Hero form input styling */
+    .hero-input {
+        background: rgba(255,255,255,0.6) !important;
+        border: none !important;
+        border-bottom: 2px solid #e2e8f0 !important;
+        border-radius: 8px 8px 0 0 !important;
+        transition: border-color 0.3s, background 0.3s, box-shadow 0.3s !important;
+    }
+    .hero-input:focus {
+        background: rgba(255,255,255,0.9) !important;
+        border-bottom-color: <?= h($heroBgColor) ?> !important;
+        box-shadow: 0 2px 0 0 <?= h($heroBgColor) ?> !important;
+    }
+
+    /* Gradient accent text for headline highlight */
+    .text-brand-gradient {
+        background: linear-gradient(90deg, #7dd3fc 20%, #a78bfa 50%, #7dd3fc 80%);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: gradientText 4s ease-in-out infinite;
+        filter: drop-shadow(0 2px 12px rgba(99,102,241,0.3));
+    }
+    @keyframes gradientText {
+        0%, 100% { background-position: 0% center; }
+        50% { background-position: 200% center; }
+    }
+
+    /* Headline accent blur-in entrance */
+    @keyframes accentBlurIn {
+        0% { opacity: 0; filter: blur(8px); }
+        100% { opacity: 1; filter: blur(0); }
+    }
+    .accent-blur-in {
+        animation: accentBlurIn 1s cubic-bezier(.6,1.5,.5,1.1) 0.8s both;
+    }
+
+    /* Hero headline text shadow for depth */
+    .hero-headline {
+        letter-spacing: -0.02em;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.2), 0 1px 0 rgba(0,0,0,0.15);
     }
 
     /* Floating decorative orbs */
@@ -201,13 +272,13 @@ ob_start();
     <div class="absolute inset-0 opacity-[0.04]">
         <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg%20width%3D%2230%22%20height%3D%2230%22%20viewBox%3D%220%200%2030%2030%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%200L30%2030M30%200L0%2030%22%20stroke%3D%22%23fff%22%20stroke-width%3D%220.5%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E'); background-size: 30px 30px;"></div>
     </div>
-    <!-- Floating decorative orbs -->
-    <div class="absolute top-10 right-20 w-64 h-64 rounded-full bg-white/5 blur-3xl pointer-events-none" style="animation: floatOrb1 20s ease-in-out infinite;"></div>
-    <div class="absolute bottom-10 left-10 w-48 h-48 rounded-full bg-white/5 blur-3xl pointer-events-none" style="animation: floatOrb2 25s ease-in-out infinite;"></div>
-    <div class="absolute top-1/2 left-1/3 w-40 h-40 rounded-full bg-white/[0.03] blur-3xl pointer-events-none" style="animation: floatOrb3 22s ease-in-out infinite;"></div>
+    <!-- Floating decorative orbs (parallax-enabled) -->
+    <div id="parallax-orb1" class="absolute top-10 right-20 w-64 h-64 rounded-full bg-white/5 blur-3xl pointer-events-none" style="animation: floatOrb1 20s ease-in-out infinite; transition: transform 0.15s ease-out;"></div>
+    <div id="parallax-orb2" class="absolute bottom-10 left-10 w-48 h-48 rounded-full bg-white/5 blur-3xl pointer-events-none" style="animation: floatOrb2 25s ease-in-out infinite; transition: transform 0.15s ease-out;"></div>
+    <div id="parallax-orb3" class="absolute top-1/2 left-1/3 w-40 h-40 rounded-full bg-white/[0.03] blur-3xl pointer-events-none" style="animation: floatOrb3 22s ease-in-out infinite; transition: transform 0.15s ease-out;"></div>
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <div id="hero-parallax" class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <!-- Left: Text content with staggered entrance -->
             <div>
                 <!-- Badge -->
@@ -220,15 +291,15 @@ ob_start();
                 <!-- Desktop: book + text side-by-side -->
                 <?php if ($coverImage): ?>
                     <div class="hidden lg:flex items-start gap-8 animate-stagger-2">
-                        <div class="book-mockup flex-shrink-0 relative">
+                        <div class="book-mockup flex-shrink-0 relative" id="parallax-book">
                             <div class="book-glow"></div>
-                            <div class="book-mockup-inner book-float book-3d rounded-lg overflow-hidden">
+                            <div class="book-mockup-inner book-float book-3d rounded-lg overflow-hidden" style="transition: transform 0.15s ease-out;">
                                 <img src="<?= h($coverImage) ?>" alt="<?= h($leadMagnet['title']) ?>"
                                      class="w-44 h-auto">
                             </div>
                         </div>
                         <div>
-                            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
+                            <h1 class="hero-headline text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
                                 <?= heroHeadlineWithAccent($heroHeadline, $heroAccent) ?>
                             </h1>
                             <?php if (!empty($leadMagnet['hero_subheadline'])): ?>
@@ -244,7 +315,7 @@ ob_start();
                     </div>
                 <?php else: ?>
                     <div class="hidden lg:block animate-stagger-2">
-                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
+                        <h1 class="hero-headline text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
                             <?= heroHeadlineWithAccent($heroHeadline, $heroAccent) ?>
                         </h1>
                         <?php if (!empty($leadMagnet['hero_subheadline'])): ?>
@@ -272,7 +343,7 @@ ob_start();
                             </div>
                         </div>
                     <?php endif; ?>
-                    <h1 class="animate-stagger-2 text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+                    <h1 class="hero-headline animate-stagger-2 text-3xl sm:text-4xl font-extrabold text-white leading-tight">
                         <?= heroHeadlineWithAccent($heroHeadline, $heroAccent) ?>
                     </h1>
                     <?php if (!empty($leadMagnet['hero_subheadline'])): ?>
@@ -313,23 +384,24 @@ ob_start();
                             <div>
                                 <label for="name" class="block text-sm font-medium text-gray-700 mb-1"><?= h($sh('form_name_label', 'Full Name')) ?></label>
                                 <input type="text" id="name" name="name" required
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 ring-brand focus:border-transparent"
+                                       class="hero-input w-full px-4 py-3 rounded-lg text-sm focus:outline-none"
                                        placeholder="John Smith">
                             </div>
                             <div>
                                 <label for="email" class="block text-sm font-medium text-gray-700 mb-1"><?= h($sh('form_email_label', 'Email Address')) ?></label>
                                 <input type="email" id="email" name="email" required
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 ring-brand focus:border-transparent"
+                                       class="hero-input w-full px-4 py-3 rounded-lg text-sm focus:outline-none"
                                        placeholder="john@company.com">
                             </div>
                         </div>
 
                         <div x-show="error" x-cloak class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm" x-text="error"></div>
 
-                        <button type="submit" :disabled="loading"
+                        <button type="submit" :disabled="loading" onclick="heroRipple(event)"
                                 class="btn-shimmer mt-6 w-full btn-brand px-6 py-3.5 text-white font-semibold rounded-lg transform hover:scale-[1.02] shadow-lg transition text-base disabled:opacity-50">
                             <span class="relative z-10" x-show="!loading"><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
                             <span class="relative z-10" x-show="loading" x-cloak><?= h($sh('form_sending', 'Sending...')) ?></span>
+                            <span class="ripple"></span>
                         </button>
 
                         <p class="mt-4 text-xs text-gray-400 text-center"><?= h($sh('form_privacy', 'We respect your privacy. Unsubscribe at any time.')) ?></p>
@@ -651,5 +723,57 @@ ob_start();
         </div>
     </div>
 </section>
+
+<script>
+// Mouse parallax on hero section (desktop only)
+(function() {
+    const hero = document.getElementById('hero-parallax');
+    if (!hero || window.innerWidth < 1024) return;
+
+    const book = document.getElementById('parallax-book');
+    const orb1 = document.getElementById('parallax-orb1');
+    const orb2 = document.getElementById('parallax-orb2');
+    const orb3 = document.getElementById('parallax-orb3');
+
+    document.getElementById('hero').addEventListener('mousemove', function(e) {
+        const rect = this.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+        if (book) {
+            const inner = book.querySelector('.book-mockup-inner');
+            if (inner) inner.style.transform = 'translateY(-5px) rotateY(' + (-15 + x * 12) + 'deg) rotateX(' + (y * 8) + 'deg)';
+        }
+        if (orb1) orb1.style.transform = 'translate(' + (x * 30) + 'px, ' + (y * 15) + 'px)';
+        if (orb2) orb2.style.transform = 'translate(' + (x * 20) + 'px, ' + (y * 10) + 'px)';
+        if (orb3) orb3.style.transform = 'translate(' + (x * 10) + 'px, ' + (y * 10) + 'px)';
+    });
+
+    document.getElementById('hero').addEventListener('mouseleave', function() {
+        if (book) {
+            const inner = book.querySelector('.book-mockup-inner');
+            if (inner) inner.style.transform = '';
+        }
+        if (orb1) orb1.style.transform = '';
+        if (orb2) orb2.style.transform = '';
+        if (orb3) orb3.style.transform = '';
+    });
+})();
+
+// Button ripple effect
+function heroRipple(e) {
+    var btn = e.currentTarget;
+    var ripple = btn.querySelector('.ripple');
+    if (!ripple) return;
+    var rect = btn.getBoundingClientRect();
+    var size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+    ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+    ripple.style.opacity = '1';
+    ripple.style.transform = 'scale(1)';
+    setTimeout(function() { ripple.style.opacity = '0'; ripple.style.transform = 'scale(0)'; }, 450);
+}
+</script>
 
 <?php $content = ob_get_clean(); include VIEWS_PATH . '/shop/layout.php'; ?>
