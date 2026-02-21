@@ -83,6 +83,10 @@ function heroHeadlineWithAccent($headline, $accent) {
 $sectionHeadings = json_decode($leadMagnet['section_headings'] ?? '', true) ?: [];
 $sh = fn($key, $default) => $sectionHeadings[$key] ?? $default;
 
+// Brand-tinted section backgrounds
+$bgLight = "background: rgba($r,$g,$b,0.02);";
+$bgMedium = "background: rgba($r,$g,$b,0.05);";
+
 ob_start();
 ?>
 
@@ -262,6 +266,107 @@ ob_start();
         0%, 100% { transform: translate(0, 0); }
         50% { transform: translate(-15px, -25px); }
     }
+
+    /* Section heading decorative underline */
+    .section-heading {
+        position: relative;
+        display: inline-block;
+        padding-bottom: 16px;
+    }
+    .section-heading::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 48px;
+        height: 4px;
+        border-radius: 2px;
+        background: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);
+    }
+
+    /* Wave divider */
+    .wave-divider {
+        display: block;
+        width: 100%;
+        height: 48px;
+        line-height: 0;
+    }
+    @media (min-width: 1024px) {
+        .wave-divider { height: 72px; }
+    }
+    .wave-divider svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Feature card hover lift */
+    .feature-card {
+        background: #fff;
+        border-left: 4px solid rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);
+        border-top: none;
+        border-right: none;
+        border-bottom: none;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .feature-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 40px -12px rgba(0,0,0,0.15);
+    }
+
+    /* Testimonial card */
+    .testimonial-card {
+        border-top: 3px solid rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .testimonial-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 40px -12px rgba(0,0,0,0.15);
+    }
+
+    /* Scroll-triggered reveal animation */
+    .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.revealed {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Sticky mobile CTA bar */
+    .sticky-cta-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 40;
+        background: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);
+        transform: translateY(100%);
+        transition: transform 0.35s ease;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+    }
+    .sticky-cta-bar.visible {
+        transform: translateY(0);
+    }
+    @media (min-width: 1024px) {
+        .sticky-cta-bar { display: none !important; }
+    }
+
+    /* Mid-page CTA banner */
+    .mid-cta-banner {
+        position: relative;
+        overflow: hidden;
+    }
+    .mid-cta-banner .cta-pattern {
+        position: absolute;
+        inset: 0;
+        opacity: 0.04;
+        background-image: url('data:image/svg+xml,%3Csvg%20width%3D%2230%22%20height%3D%2230%22%20viewBox%3D%220%200%2030%2030%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%200L30%2030M30%200L0%2030%22%20stroke%3D%22%23fff%22%20stroke-width%3D%220.5%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E');
+        background-size: 30px 30px;
+    }
 </style>
 
 <!-- 1. Hero Section (Premium) -->
@@ -361,6 +466,16 @@ ob_start();
             <!-- Right: Signup Form -->
             <div class="flex justify-center lg:justify-end animate-stagger-4">
                 <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 w-full max-w-lg ring-1 ring-white/20 form-glow" id="signup-form" x-data="{ loading: false, error: '' }">
+                    <!-- Trust: avatar stack + social proof -->
+                    <div class="flex items-center space-x-3 mb-5">
+                        <div class="flex -space-x-2">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.7);">J</div>
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.85);">M</div>
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style="background: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);">S</div>
+                        </div>
+                        <span class="text-sm text-gray-600"><?= h($sh('form_social_proof', 'Join 2,500+ readers')) ?></span>
+                    </div>
+
                     <h2 class="text-xl font-bold text-gray-900 mb-2"><?= h($sh('form_title', 'Get Your Free Copy')) ?></h2>
                     <p class="text-gray-500 text-sm mb-6"><?= h($sh('form_subtitle', 'Enter your details below and we\'ll send it straight to your inbox.')) ?></p>
 
@@ -404,7 +519,17 @@ ob_start();
                             <span class="ripple"></span>
                         </button>
 
-                        <p class="mt-4 text-xs text-gray-400 text-center"><?= h($sh('form_privacy', 'We respect your privacy. Unsubscribe at any time.')) ?></p>
+                        <!-- Trust badges row -->
+                        <div class="mt-4 flex items-center justify-center space-x-4 text-xs text-gray-400">
+                            <span class="flex items-center space-x-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                <span>Secure</span>
+                            </span>
+                            <span class="text-gray-300">|</span>
+                            <span>No spam, ever</span>
+                            <span class="text-gray-300">|</span>
+                            <span>Unsubscribe anytime</span>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -412,56 +537,80 @@ ob_start();
     </div>
 </section>
 
+<!-- Wave: Hero → Social Proof -->
+<div class="wave-divider" style="background: linear-gradient(-45deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>, <?= h($heroBgColor) ?>, <?= h($heroBgLighter) ?>); background-size: 400% 400%; animation: gradientShift 15s ease infinite;">
+    <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,0 C300,48 900,0 1200,48 L1200,48 L0,48 Z" fill="rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.06)"/>
+    </svg>
+</div>
+
 <!-- 2. Social Proof Bar -->
-<section class="bg-gray-50 border-y border-gray-200">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div class="grid grid-cols-3 gap-4 text-center">
+<section style="background: linear-gradient(135deg, rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.06), rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.12));">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
+        <div class="reveal grid grid-cols-3 gap-4 text-center">
             <?php if (!empty($socialProof)): ?>
                 <?php foreach ($socialProof as $proof): ?>
-                    <div class="flex flex-col items-center space-y-1">
+                    <div class="flex flex-col items-center space-y-2">
                         <?php if (!empty($proof['icon'])): ?>
-                            <span class="text-2xl"><?= h($proof['icon']) ?></span>
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.1);">
+                                <span class="text-2xl"><?= h($proof['icon']) ?></span>
+                            </div>
                         <?php endif; ?>
-                        <span class="text-sm font-bold text-gray-900"><?= h($proof['value'] ?? '') ?></span>
-                        <span class="text-xs text-gray-500"><?= h($proof['label'] ?? '') ?></span>
+                        <span class="text-2xl sm:text-3xl font-extrabold" style="color: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);"><?= h($proof['value'] ?? '') ?></span>
+                        <span class="text-sm font-medium text-gray-600"><?= h($proof['label'] ?? '') ?></span>
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
-                <div class="flex flex-col items-center space-y-1">
-                    <svg class="w-6 h-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <span class="text-sm font-semibold text-gray-900"><?= h($sh('default_proof_1', 'PDF Guide')) ?></span>
+                <div class="flex flex-col items-center space-y-2">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.1);">
+                        <svg class="w-6 h-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </div>
+                    <span class="text-2xl sm:text-3xl font-extrabold" style="color: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);"><?= h($sh('default_proof_1', 'PDF Guide')) ?></span>
                 </div>
-                <div class="flex flex-col items-center space-y-1">
-                    <svg class="w-6 h-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span class="text-sm font-semibold text-gray-900"><?= h($sh('default_proof_2', '100% Free')) ?></span>
+                <div class="flex flex-col items-center space-y-2">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.1);">
+                        <svg class="w-6 h-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <span class="text-2xl sm:text-3xl font-extrabold" style="color: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);"><?= h($sh('default_proof_2', '100% Free')) ?></span>
                 </div>
-                <div class="flex flex-col items-center space-y-1">
-                    <svg class="w-6 h-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    <span class="text-sm font-semibold text-gray-900"><?= h($sh('default_proof_3', 'Instant Access')) ?></span>
+                <div class="flex flex-col items-center space-y-2">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.1);">
+                        <svg class="w-6 h-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <span class="text-2xl sm:text-3xl font-extrabold" style="color: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);"><?= h($sh('default_proof_3', 'Instant Access')) ?></span>
                 </div>
             <?php endif; ?>
         </div>
     </div>
 </section>
 
+<!-- Wave: Social Proof → Features -->
+<?php if (!empty($features)): ?>
+<div class="wave-divider" style="background: linear-gradient(135deg, rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.06), rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.12));">
+    <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,48 C200,0 400,48 600,24 C800,0 1000,48 1200,0 L1200,48 L0,48 Z" fill="rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.02)"/>
+    </svg>
+</div>
+<?php endif; ?>
+
 <!-- 3. Features Section -->
 <?php if (!empty($features)): ?>
-<section class="py-16 lg:py-20 bg-white">
+<section class="py-20 lg:py-28" style="<?= $bgLight ?>">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">
+        <div class="reveal text-center mb-12">
+            <h2 class="section-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900">
                 <?= h($leadMagnet['features_headline'] ?? 'What\'s Inside') ?>
             </h2>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div class="reveal grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <?php foreach ($features as $i => $feature): ?>
                 <?php
                     $featureTitle = is_array($feature) ? ($feature['title'] ?? '') : $feature;
                     $featureDesc = is_array($feature) ? ($feature['description'] ?? '') : '';
                     $featureIcon = is_array($feature) ? ($feature['icon'] ?? null) : null;
                 ?>
-                <div class="bg-gray-50 rounded-xl p-6 border border-gray-100 hover:shadow-md transition">
-                    <div class="w-10 h-10 rounded-lg bg-brand/10 flex items-center justify-center mb-4">
+                <div class="feature-card rounded-xl p-6 shadow-sm">
+                    <div class="w-12 h-12 rounded-lg bg-brand/10 flex items-center justify-center mb-4">
                         <?php if ($featureIcon): ?>
                             <span class="text-brand text-lg"><?= h($featureIcon) ?></span>
                         <?php else: ?>
@@ -479,15 +628,30 @@ ob_start();
 </section>
 <?php endif; ?>
 
+<!-- Wave: Features → Chapters -->
+<?php if (!empty($features) && !empty($chapters)): ?>
+<div class="wave-divider" style="<?= $bgLight ?>">
+    <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,0 C150,48 350,0 600,32 C850,64 1050,0 1200,48 L1200,48 L0,48 Z" fill="rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.05)"/>
+    </svg>
+</div>
+<?php elseif (!empty($chapters)): ?>
+<div class="wave-divider" style="background: linear-gradient(135deg, rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.06), rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.12));">
+    <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,0 C150,48 350,0 600,32 C850,64 1050,0 1200,48 L1200,48 L0,48 Z" fill="rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.05)"/>
+    </svg>
+</div>
+<?php endif; ?>
+
 <!-- 4. Chapters / Table of Contents -->
 <?php if (!empty($chapters)): ?>
-<section class="py-16 lg:py-20 bg-gray-50">
+<section class="py-20 lg:py-28" style="<?= $bgMedium ?>">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900"><?= h($sh('toc_title', 'Table of Contents')) ?></h2>
-            <p class="mt-3 text-gray-500"><?= h($sh('toc_subtitle', 'A preview of what you\'ll find inside')) ?></p>
+        <div class="reveal text-center mb-12">
+            <h2 class="section-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900"><?= h($sh('toc_title', 'Table of Contents')) ?></h2>
+            <p class="mt-6 text-gray-500"><?= h($sh('toc_subtitle', 'A preview of what you\'ll find inside')) ?></p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+        <div class="reveal grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
             <?php foreach ($chapters as $chapter): ?>
                 <div class="flex items-start space-x-4 bg-white rounded-xl p-5 border border-gray-200 hover:shadow-md transition">
                     <div class="w-10 h-10 rounded-lg bg-brand/10 flex items-center justify-center flex-shrink-0">
@@ -506,16 +670,54 @@ ob_start();
 </section>
 <?php endif; ?>
 
+<!-- Mid-Page CTA Banner #1 (after Chapters/TOC) -->
+<?php if (!empty($chapters)): ?>
+<div class="wave-divider" style="<?= $bgMedium ?>">
+    <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,48 C300,0 900,48 1200,0 L1200,48 L0,48 Z" fill="<?= h($heroBgColor) ?>"/>
+    </svg>
+</div>
+<section class="mid-cta-banner py-16 lg:py-20" style="background: linear-gradient(135deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>);">
+    <div class="cta-pattern"></div>
+    <div class="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="reveal">
+            <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3"><?= h($sh('mid_cta_1', 'Don\'t Miss Out')) ?></h2>
+            <p class="text-white/70 mb-8 max-w-lg mx-auto"><?= h($sh('mid_cta_1_sub', 'Get instant access to strategies that drive real results.')) ?></p>
+            <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
+               class="inline-flex items-center justify-center px-8 py-3.5 bg-white text-gray-900 font-semibold rounded-lg transform hover:scale-[1.02] shadow-lg transition text-base">
+                <?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?>
+            </a>
+        </div>
+    </div>
+</section>
+<?php
+    // Track which bg comes next for the wave after mid-CTA
+    $nextAfterMidCta1 = !empty($keyStatistics) ? $bgLight : (!empty($beforeAfter) ? $bgMedium : (!empty($targetAudience) ? $bgLight : $bgMedium));
+?>
+<div class="wave-divider" style="background: linear-gradient(135deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>);">
+    <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,0 C300,48 900,0 1200,48 L1200,48 L0,48 Z" fill="rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,<?= !empty($keyStatistics) ? '0.02' : '0.05' ?>)"/>
+    </svg>
+</div>
+<?php endif; ?>
+
 <!-- 5. Key Statistics -->
 <?php if (!empty($keyStatistics)): ?>
-<section class="py-16 lg:py-20 bg-white">
+<?php if (empty($chapters)): ?>
+<div class="wave-divider" style="<?= (!empty($features) ? $bgLight : 'background: linear-gradient(135deg, rgba('.$r.','.$g.','.$b.',0.06), rgba('.$r.','.$g.','.$b.',0.12));') ?>">
+    <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,48 C200,0 400,48 600,24 C800,0 1000,48 1200,0 L1200,48 L0,48 Z" fill="rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.02)"/>
+    </svg>
+</div>
+<?php endif; ?>
+<section class="py-20 lg:py-28" style="<?= $bgLight ?>">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900"><?= h($sh('stats_title', 'By the Numbers')) ?></h2>
+        <div class="reveal text-center mb-12">
+            <h2 class="section-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900"><?= h($sh('stats_title', 'By the Numbers')) ?></h2>
         </div>
-        <div class="grid grid-cols-2 md:grid-cols-<?= min(count($keyStatistics), 4) ?> gap-6 max-w-3xl mx-auto">
+        <div class="reveal grid grid-cols-2 md:grid-cols-<?= min(count($keyStatistics), 4) ?> gap-6 max-w-3xl mx-auto">
             <?php foreach ($keyStatistics as $stat): ?>
-                <div class="text-center p-6 bg-gray-50 rounded-xl border border-gray-100">
+                <div class="text-center p-6 bg-white rounded-xl shadow-sm" style="border-left: 4px solid rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);">
                     <?php if (!empty($stat['icon'])): ?>
                         <div class="text-3xl mb-2"><?= h($stat['icon']) ?></div>
                     <?php endif; ?>
@@ -530,12 +732,21 @@ ob_start();
 
 <!-- 6. Before/After Transformation -->
 <?php if ($beforeAfter && (!empty($beforeAfter['before']) || !empty($beforeAfter['after']))): ?>
-<section class="py-16 lg:py-20 bg-gray-50">
+<?php
+    // Wave from previous section
+    $prevBg = !empty($keyStatistics) ? $bgLight : (!empty($chapters) ? 'background: rgba('.$r.','.$g.','.$b.',0.02);' : $bgLight);
+?>
+<div class="wave-divider" style="<?= $prevBg ?>">
+    <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,0 C150,48 350,0 600,32 C850,64 1050,0 1200,48 L1200,48 L0,48 Z" fill="rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.05)"/>
+    </svg>
+</div>
+<section class="py-20 lg:py-28" style="<?= $bgMedium ?>">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900"><?= h($sh('transformation_title', 'The Transformation')) ?></h2>
+        <div class="reveal text-center mb-12">
+            <h2 class="section-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900"><?= h($sh('transformation_title', 'The Transformation')) ?></h2>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div class="reveal grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             <?php if (!empty($beforeAfter['before'])): ?>
                 <div class="bg-white rounded-xl p-8 border border-red-100">
                     <div class="flex items-center space-x-2 mb-6">
@@ -579,14 +790,22 @@ ob_start();
 
 <!-- 7. Target Audience — "Who Is This For?" -->
 <?php if (!empty($targetAudience)): ?>
-<section class="py-16 lg:py-20 bg-white">
+<?php
+    $prevBgAudience = ($beforeAfter && (!empty($beforeAfter['before']) || !empty($beforeAfter['after']))) ? $bgMedium : (!empty($keyStatistics) ? $bgLight : $bgMedium);
+?>
+<div class="wave-divider" style="<?= $prevBgAudience ?>">
+    <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,48 C200,0 400,48 600,24 C800,0 1000,48 1200,0 L1200,48 L0,48 Z" fill="rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.02)"/>
+    </svg>
+</div>
+<section class="py-20 lg:py-28" style="<?= $bgLight ?>">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900"><?= h($sh('audience_title', 'Who Is This For?')) ?></h2>
+        <div class="reveal text-center mb-12">
+            <h2 class="section-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900"><?= h($sh('audience_title', 'Who Is This For?')) ?></h2>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+        <div class="reveal grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <?php foreach ($targetAudience as $persona): ?>
-                <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 text-center hover:shadow-md transition">
+                <div class="feature-card rounded-xl p-6 shadow-sm text-center">
                     <?php if (!empty($persona['icon'])): ?>
                         <div class="text-4xl mb-4"><?= h($persona['icon']) ?></div>
                     <?php endif; ?>
@@ -599,11 +818,48 @@ ob_start();
 </section>
 <?php endif; ?>
 
+<!-- Mid-Page CTA Banner #2 (after Target Audience) -->
+<?php if (!empty($targetAudience)): ?>
+<div class="wave-divider" style="<?= $bgLight ?>">
+    <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,0 C150,48 350,0 600,32 C850,64 1050,0 1200,48 L1200,48 L0,48 Z" fill="<?= h($heroBgColor) ?>"/>
+    </svg>
+</div>
+<section class="mid-cta-banner py-16 lg:py-20" style="background: linear-gradient(135deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>);">
+    <div class="cta-pattern"></div>
+    <div class="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="reveal">
+            <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3"><?= h($sh('mid_cta_2', 'Ready to Take the Next Step?')) ?></h2>
+            <p class="text-white/70 mb-8 max-w-lg mx-auto"><?= h($sh('mid_cta_2_sub', 'Join thousands of others who have already downloaded this guide.')) ?></p>
+            <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
+               class="inline-flex items-center justify-center px-8 py-3.5 bg-white text-gray-900 font-semibold rounded-lg transform hover:scale-[1.02] shadow-lg transition text-base">
+                <?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?>
+            </a>
+        </div>
+    </div>
+</section>
+<div class="wave-divider" style="background: linear-gradient(135deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>);">
+    <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,0 C300,48 900,0 1200,48 L1200,48 L0,48 Z" fill="rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.05)"/>
+    </svg>
+</div>
+<?php endif; ?>
+
 <!-- 8. Author Bio -->
 <?php if (!empty($authorBio)): ?>
-<section class="py-16 lg:py-20 bg-gray-50">
+<?php if (empty($targetAudience)): ?>
+<?php
+    $prevBgAuthor = ($beforeAfter && (!empty($beforeAfter['before']) || !empty($beforeAfter['after']))) ? $bgMedium : $bgLight;
+?>
+<div class="wave-divider" style="<?= $prevBgAuthor ?>">
+    <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,48 C200,0 400,48 600,24 C800,0 1000,48 1200,0 L1200,48 L0,48 Z" fill="rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.05)"/>
+    </svg>
+</div>
+<?php endif; ?>
+<section class="py-20 lg:py-28" style="<?= $bgMedium ?>">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white rounded-xl p-8 border border-gray-200">
+        <div class="reveal bg-white rounded-xl p-8 border border-gray-200 shadow-sm">
             <div class="flex items-start space-x-4">
                 <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center flex-shrink-0">
                     <svg class="w-7 h-7 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
@@ -620,17 +876,28 @@ ob_start();
 
 <!-- 9. Testimonials -->
 <?php if (!empty($testimonials)): ?>
-<section class="py-16 lg:py-20 bg-white">
+<?php
+    $prevBgTestimonials = !empty($authorBio) ? $bgMedium : (!empty($targetAudience) ? $bgMedium : $bgLight);
+?>
+<div class="wave-divider" style="<?= $prevBgTestimonials ?>">
+    <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,0 C300,48 900,0 1200,48 L1200,48 L0,48 Z" fill="rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.02)"/>
+    </svg>
+</div>
+<section class="py-20 lg:py-28" style="<?= $bgLight ?>">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900"><?= h($sh('testimonials_title', 'What Readers Say')) ?></h2>
+        <div class="reveal text-center mb-12">
+            <h2 class="section-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900"><?= h($sh('testimonials_title', 'What Readers Say')) ?></h2>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-<?= min(count($testimonials), 3) ?> gap-8 max-w-4xl mx-auto">
+        <div class="reveal grid grid-cols-1 md:grid-cols-<?= min(count($testimonials), 3) ?> gap-8 max-w-4xl mx-auto">
             <?php foreach ($testimonials as $testimonial): ?>
-                <div class="bg-gray-50 rounded-xl p-6 border border-gray-100">
-                    <svg class="w-8 h-8 text-brand/20 mb-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H14.017zM0 21v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151C7.563 6.068 6 8.789 6 11h4v10H0z"/>
-                    </svg>
+                <div class="testimonial-card bg-white rounded-xl p-6 shadow-sm">
+                    <!-- Star rating -->
+                    <div class="flex space-x-0.5 mb-4">
+                        <?php for ($s = 0; $s < 5; $s++): ?>
+                            <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <?php endfor; ?>
+                    </div>
                     <p class="text-gray-700 mb-4 italic">"<?= h($testimonial['quote'] ?? '') ?>"</p>
                     <div class="flex items-center space-x-3">
                         <div class="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center">
@@ -652,12 +919,20 @@ ob_start();
 
 <!-- 10. FAQ Accordion -->
 <?php if (!empty($faqItems)): ?>
-<section class="py-16 lg:py-20 bg-gray-50">
+<?php
+    $prevBgFaq = !empty($testimonials) ? $bgLight : (!empty($authorBio) ? $bgMedium : $bgLight);
+?>
+<div class="wave-divider" style="<?= $prevBgFaq ?>">
+    <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,48 C200,0 400,48 600,24 C800,0 1000,48 1200,0 L1200,48 L0,48 Z" fill="rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.05)"/>
+    </svg>
+</div>
+<section class="py-20 lg:py-28" style="<?= $bgMedium ?>">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900"><?= h($sh('faq_title', 'Frequently Asked Questions')) ?></h2>
+        <div class="reveal text-center mb-12">
+            <h2 class="section-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900"><?= h($sh('faq_title', 'Frequently Asked Questions')) ?></h2>
         </div>
-        <div class="space-y-4" x-data="{ openFaq: null }">
+        <div class="reveal space-y-4" x-data="{ openFaq: null }">
             <?php foreach ($faqItems as $index => $faq): ?>
                 <div class="border border-gray-200 rounded-xl overflow-hidden bg-white">
                     <button type="button"
@@ -689,6 +964,16 @@ ob_start();
 </section>
 <?php endif; ?>
 
+<!-- Wave: → Bottom CTA -->
+<?php
+    $prevBgBottom = !empty($faqItems) ? $bgMedium : (!empty($testimonials) ? $bgLight : $bgMedium);
+?>
+<div class="wave-divider" style="<?= $prevBgBottom ?>">
+    <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,0 C150,48 350,0 600,32 C850,64 1050,0 1200,48 L1200,48 L0,48 Z" fill="<?= h($heroBgColor) ?>"/>
+    </svg>
+</div>
+
 <!-- 11. Bottom CTA -->
 <section class="relative overflow-hidden py-16 lg:py-20" style="background: linear-gradient(-45deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>, <?= h($heroBgColor) ?>, <?= h($heroBgLighter) ?>); background-size: 400% 400%; animation: gradientShift 15s ease infinite;">
     <div class="absolute inset-0 bg-gradient-to-br from-black/30 to-transparent"></div>
@@ -699,7 +984,7 @@ ob_start();
     <div class="absolute top-5 right-16 w-48 h-48 rounded-full bg-white/5 blur-3xl pointer-events-none" style="animation: floatOrb1 20s ease-in-out infinite;"></div>
     <div class="absolute bottom-5 left-8 w-36 h-36 rounded-full bg-white/5 blur-3xl pointer-events-none" style="animation: floatOrb2 25s ease-in-out infinite;"></div>
     <div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col lg:flex-row items-center justify-center lg:space-x-12 text-center lg:text-left">
+        <div class="reveal flex flex-col lg:flex-row items-center justify-center lg:space-x-12 text-center lg:text-left">
             <?php if ($coverImage): ?>
                 <div class="hidden lg:block flex-shrink-0 mb-8 lg:mb-0">
                     <div class="book-mockup relative">
@@ -723,6 +1008,17 @@ ob_start();
         </div>
     </div>
 </section>
+
+<!-- Sticky Mobile CTA Bar -->
+<div id="sticky-cta" class="sticky-cta-bar lg:hidden">
+    <div class="px-4 py-3 flex items-center justify-between">
+        <span class="text-white font-semibold text-sm truncate mr-3"><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
+        <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
+           class="flex-shrink-0 bg-white text-gray-900 font-semibold text-sm px-5 py-2.5 rounded-lg shadow transition hover:bg-gray-100">
+            Get It Now
+        </a>
+    </div>
+</div>
 
 <script>
 // Mouse parallax on hero section (desktop only)
@@ -774,6 +1070,44 @@ function heroRipple(e) {
     ripple.style.transform = 'scale(1)';
     setTimeout(function() { ripple.style.opacity = '0'; ripple.style.transform = 'scale(0)'; }, 450);
 }
+
+// Scroll-triggered reveal animations
+(function() {
+    var reveals = document.querySelectorAll('.reveal');
+    if (!reveals.length || !('IntersectionObserver' in window)) {
+        // Fallback: show everything immediately
+        reveals.forEach(function(el) { el.classList.add('revealed'); });
+        return;
+    }
+    var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '-60px 0px' });
+    reveals.forEach(function(el) { observer.observe(el); });
+})();
+
+// Sticky mobile CTA bar
+(function() {
+    var signupForm = document.getElementById('signup-form');
+    var stickyCta = document.getElementById('sticky-cta');
+    if (!signupForm || !stickyCta || !('IntersectionObserver' in window)) return;
+    // Only on mobile
+    if (window.innerWidth >= 1024) return;
+    var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                stickyCta.classList.remove('visible');
+            } else {
+                stickyCta.classList.add('visible');
+            }
+        });
+    }, { threshold: 0 });
+    observer.observe(signupForm);
+})();
 </script>
 
 <?php $content = ob_get_clean(); include VIEWS_PATH . '/shop/layout.php'; ?>
