@@ -56,8 +56,8 @@ ob_start();
     <!-- Text Content (shown for text, video_text, download types) -->
     <div x-show="lessonType !== 'video'" x-cloak class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Lesson Content</h3>
-        <textarea id="lesson_editor" name="text_content" rows="15"
-                  class="w-full bg-white border border-gray-300 text-gray-900 rounded-lg text-sm"><?= h($_POST['text_content'] ?? '') ?></textarea>
+        <input type="hidden" name="text_content" id="lesson_editor-hidden" value="<?= h($_POST['text_content'] ?? '') ?>">
+        <div id="lesson_editor-quill" class="bg-white"><?= $_POST['text_content'] ?? '' ?></div>
     </div>
 
     <!-- Settings -->
@@ -79,24 +79,7 @@ ob_start();
     </div>
 </form>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    if (typeof tinymce !== 'undefined') {
-        tinymce.init({
-            selector: '#lesson_editor',
-            height: 400,
-            skin: 'oxide',
-            content_css: 'default',
-            menubar: false,
-            plugins: 'lists link image code table hr wordcount',
-            toolbar: 'undo redo | formatselect | bold italic underline | bullist numlist | link image | code',
-            branding: false,
-            promotion: false,
-            content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1f2937; background: #ffffff; }',
-        });
-    }
-});
-</script>
+<script>initRichEditor('lesson_editor-quill', 'lesson_editor-hidden', { height: 400 });</script>
 
 <?php
 $content = ob_get_clean();

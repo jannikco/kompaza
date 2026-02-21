@@ -59,7 +59,8 @@ ob_start();
             </div>
             <div class="md:col-span-2">
                 <label for="editor" class="block text-sm font-medium text-gray-700 mb-1.5">Full Description</label>
-                <textarea id="editor" name="description" rows="10" class="w-full bg-white border border-gray-300 text-gray-900 rounded-lg text-sm"><?= h($course['description'] ?? '') ?></textarea>
+                <input type="hidden" name="description" id="editor-hidden" value="<?= h($course['description'] ?? '') ?>">
+                <div id="editor-quill" class="bg-white"><?= $course['description'] ?? '' ?></div>
             </div>
         </div>
     </div>
@@ -366,24 +367,7 @@ $courseQuizzes = \App\Models\Quiz::getByCourseId($course['id'], currentTenantId(
     <?php endif; ?>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    if (typeof tinymce !== 'undefined') {
-        tinymce.init({
-            selector: '#editor',
-            height: 300,
-            skin: 'oxide',
-            content_css: 'default',
-            menubar: false,
-            plugins: 'lists link image code table hr wordcount',
-            toolbar: 'undo redo | formatselect | bold italic underline | bullist numlist | link image | code',
-            branding: false,
-            promotion: false,
-            content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1f2937; background: #ffffff; }',
-        });
-    }
-});
-</script>
+<script>initRichEditor('editor-quill', 'editor-hidden', { height: 300 });</script>
 
 <?php
 $content = ob_get_clean();

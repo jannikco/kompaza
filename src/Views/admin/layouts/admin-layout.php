@@ -6,7 +6,8 @@
     <title><?= h($pageTitle ?? 'Admin') ?> — <?= h($tenant['company_name'] ?? $tenant['name'] ?? 'Kompaza') ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tinymce@6.8.4/tinymce.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
     <style>
         [x-cloak] { display: none !important; }
     </style>

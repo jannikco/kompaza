@@ -1,27 +1,52 @@
 // Kompaza - Global JavaScript
 
-// Initialize TinyMCE for rich text editors
-function initEditor(selector = '#editor', options = {}) {
-    const defaults = {
-        selector: selector,
-        height: 400,
-        menubar: false,
-        plugins: [
-            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
-            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-            'insertdatetime', 'media', 'table', 'help', 'wordcount'
-        ],
-        toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | link image | code',
-        content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 16px; color: #e5e7eb; background-color: #374151; }',
-        skin: 'oxide-dark',
-        content_css: 'dark',
-        branding: false,
-        promotion: false,
-    };
+// Initialize Quill rich text editor
+function initRichEditor(containerId, hiddenFieldId, options = {}) {
+    const container = document.getElementById(containerId);
+    if (!container) return null;
 
-    if (typeof tinymce !== 'undefined') {
-        tinymce.init({ ...defaults, ...options });
+    const toolbarFull = [
+        [{ 'header': [1, 2, 3, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'color': [] }, { 'background': [] }],
+        [{ 'align': [] }],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        [{ 'indent': '-1'}, { 'indent': '+1' }],
+        ['link', 'image'],
+        ['blockquote', 'code-block'],
+        ['clean']
+    ];
+
+    const toolbarSimple = [
+        ['bold', 'italic'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        ['link'],
+        ['clean']
+    ];
+
+    const quill = new Quill('#' + containerId, {
+        theme: 'snow',
+        modules: {
+            toolbar: options.simple ? toolbarSimple : toolbarFull
+        },
+        placeholder: options.placeholder || ''
+    });
+
+    if (options.height) {
+        quill.root.style.minHeight = (options.height - 42) + 'px';
     }
+
+    if (hiddenFieldId) {
+        const hidden = document.getElementById(hiddenFieldId);
+        if (hidden) {
+            hidden.value = quill.root.innerHTML;
+            quill.on('text-change', function() {
+                hidden.value = quill.root.innerHTML;
+            });
+        }
+    }
+
+    return quill;
 }
 
 // Auto-generate slug from title

@@ -43,8 +43,8 @@ ob_start();
 
             <div class="md:col-span-2">
                 <label for="editor" class="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
-                <textarea id="editor" name="description" rows="10"
-                          class="w-full px-4 py-3 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg text-sm"><?= h($product['description'] ?? '') ?></textarea>
+                <input type="hidden" name="description" id="editor-hidden" value="<?= h($product['description'] ?? '') ?>">
+                <div id="editor-quill" class="bg-white"><?= $product['description'] ?? '' ?></div>
             </div>
         </div>
     </div>
@@ -235,25 +235,7 @@ ob_start();
     <?= csrfField() ?>
 </form>
 
-<!-- TinyMCE Initialization -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    if (typeof tinymce !== 'undefined') {
-        tinymce.init({
-            selector: '#editor',
-            height: 400,
-            skin: 'oxide',
-            content_css: 'default',
-            menubar: false,
-            plugins: 'lists link image code table hr wordcount',
-            toolbar: 'undo redo | formatselect | bold italic underline strikethrough | alignleft aligncenter alignright | bullist numlist | link image | table hr | code',
-            branding: false,
-            promotion: false,
-            content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1f2937; background: #ffffff; }',
-        });
-    }
-});
-</script>
+<script>initRichEditor('editor-quill', 'editor-hidden', { height: 400 });</script>
 
 <?php
 $content = ob_get_clean();

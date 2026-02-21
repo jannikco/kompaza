@@ -511,9 +511,8 @@ ob_start();
             </div>
             <div>
                 <label for="email_body_html" class="block text-sm font-medium text-gray-700 mb-2">Email Body</label>
-                <textarea name="email_body_html" id="email_body_html" rows="6"
-                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    placeholder="The email content that will be sent with the download link..."><?= h($leadMagnet['email_body_html'] ?? '') ?></textarea>
+                <input type="hidden" name="email_body_html" id="email_body_html-hidden" value="<?= h($leadMagnet['email_body_html'] ?? '') ?>">
+                <div id="email_body_html-editor" class="bg-white"><?= $leadMagnet['email_body_html'] ?? '' ?></div>
                 <p class="text-xs text-gray-500 mt-2">Use {{download_link}} to insert the PDF download link. Use {{name}} to insert the recipient's name.</p>
             </div>
         </div>
@@ -550,18 +549,7 @@ ob_start();
         document.getElementById('hero_bg_color_text').value = this.value;
     });
 
-    tinymce.init({
-        selector: '#email_body_html',
-        height: 300,
-        menubar: false,
-        plugins: 'lists link code',
-        toolbar: 'undo redo | bold italic | bullist numlist | link | removeformat | code',
-        skin: 'oxide',
-        content_css: 'default',
-        content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1f2937; background: #ffffff; }',
-        branding: false,
-        promotion: false
-    });
+    initRichEditor('email_body_html-editor', 'email_body_html-hidden', { simple: true, height: 300 });
 </script>
 
 <?php

@@ -6,7 +6,7 @@ Multi-tenant SaaS platform combining content marketing, lead generation, order m
 ## Tech Stack
 - **Backend:** PHP 8.2+, custom MVC (same pattern as PrintWorks/connect2print)
 - **Database:** MariaDB/MySQL 8.0+
-- **Frontend:** Tailwind CSS (CDN), Alpine.js (CDN), TinyMCE (CDN for rich text)
+- **Frontend:** Tailwind CSS (CDN), Alpine.js (CDN), Quill v2 (CDN for rich text)
 - **Dependencies:** Composer with only `vlucas/phpdotenv`
 - **Server:** nginx + PHP-FPM on app1.profectify.com
 - **Email:** Brevo API (raw cURL, no SDK)

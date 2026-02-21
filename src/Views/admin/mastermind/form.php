@@ -45,8 +45,8 @@ ob_start();
             </div>
             <div class="md:col-span-2">
                 <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Full Description</label>
-                <textarea name="description" id="description" rows="10"
-                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"><?= $program['description'] ?? '' ?></textarea>
+                <input type="hidden" name="description" id="description-hidden" value="<?= h($program['description'] ?? '') ?>">
+                <div id="description-editor" class="bg-white"><?= $program['description'] ?? '' ?></div>
             </div>
             <div>
                 <label for="cover_image" class="block text-sm font-medium text-gray-700 mb-2">Cover Image</label>
@@ -80,17 +80,6 @@ ob_start();
     </div>
 </form>
 
-<script>
-tinymce.init({
-    selector: '#description',
-    height: 400,
-    menubar: false,
-    plugins: 'lists link',
-    toolbar: 'undo redo | bold italic | bullist numlist | link',
-    skin: 'oxide',
-    content_css: 'default',
-    body_class: 'bg-white text-gray-900',
-});
-</script>
+<script>initRichEditor('description-editor', 'description-hidden', { simple: true, height: 400 });</script>
 
 <?php $content = ob_get_clean(); include VIEWS_PATH . '/admin/layouts/admin-layout.php'; ?>

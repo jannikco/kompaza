@@ -108,7 +108,7 @@ ob_start();
                         </div>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <button @click="editing = !editing; $nextTick(() => { if(editing) { tinymce.init({ selector: '#step-body-<?= $step['id'] ?>', height: 300, menubar: false, plugins: 'lists link', toolbar: 'undo redo | bold italic | bullist numlist | link', skin: 'oxide', content_css: 'default' }); } else { tinymce.get('step-body-<?= $step['id'] ?>') && tinymce.get('step-body-<?= $step['id'] ?>').remove(); } })"
+                        <button @click="editing = !editing; if(editing) { $nextTick(() => { if(!window['_quill_step_<?= $step['id'] ?>']) { window['_quill_step_<?= $step['id'] ?>'] = initRichEditor('step-body-editor-<?= $step['id'] ?>', 'step-body-hidden-<?= $step['id'] ?>', { simple: true, height: 300 }); } }) }"
                             class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">
                             <span x-text="editing ? 'Cancel' : 'Edit'"></span>
                         </button>
@@ -161,8 +161,8 @@ ob_start();
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Email Body</label>
-                            <textarea name="body_html" id="step-body-<?= $step['id'] ?>" rows="6"
-                                class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"><?= h($step['body_html'] ?? '') ?></textarea>
+                            <input type="hidden" name="body_html" id="step-body-hidden-<?= $step['id'] ?>" value="<?= h($step['body_html'] ?? '') ?>">
+                            <div id="step-body-editor-<?= $step['id'] ?>" class="bg-white"><?= $step['body_html'] ?? '' ?></div>
                         </div>
                         <div class="flex justify-end">
                             <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition">
@@ -178,7 +178,7 @@ ob_start();
 
     <!-- Add Step Form -->
     <div x-show="showAddStep" x-cloak class="mt-6 bg-indigo-50 border border-indigo-200 rounded-lg p-5"
-         x-init="$watch('showAddStep', val => { if(val) { $nextTick(() => { tinymce.init({ selector: '#new-step-body', height: 300, menubar: false, plugins: 'lists link', toolbar: 'undo redo | bold italic | bullist numlist | link', skin: 'oxide', content_css: 'default' }); }); } else { tinymce.get('new-step-body') && tinymce.get('new-step-body').remove(); } })">
+         x-init="$watch('showAddStep', val => { if(val) { $nextTick(() => { if(!window._quillNewStep) { window._quillNewStep = initRichEditor('new-step-body-editor', 'new-step-body-hidden', { simple: true, height: 300 }); } }); } })">
         <h4 class="text-sm font-semibold text-gray-900 mb-4">Add New Step</h4>
         <form method="POST" action="/admin/email-sequences/step-store" class="space-y-4">
             <?= csrfField() ?>
@@ -203,9 +203,8 @@ ob_start();
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Email Body</label>
-                <textarea name="body_html" id="new-step-body" rows="6"
-                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    placeholder="Write your email content here..."></textarea>
+                <input type="hidden" name="body_html" id="new-step-body-hidden">
+                <div id="new-step-body-editor" class="bg-white"></div>
             </div>
             <div class="flex items-center justify-end space-x-3">
                 <button type="button" @click="showAddStep = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">

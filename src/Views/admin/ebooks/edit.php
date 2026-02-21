@@ -43,9 +43,8 @@ ob_start();
             </div>
             <div class="md:col-span-2">
                 <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                <textarea name="description" id="description" rows="8"
-                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    placeholder="Detailed description of the ebook..."><?= h($ebook['description'] ?? '') ?></textarea>
+                <input type="hidden" name="description" id="description-hidden" value="<?= h($ebook['description'] ?? '') ?>">
+                <div id="description-editor" class="bg-white"><?= $ebook['description'] ?? '' ?></div>
                 <p class="text-xs text-gray-500 mt-2">Supports rich text formatting via the editor.</p>
             </div>
         </div>
@@ -242,24 +241,7 @@ ob_start();
     </div>
 </form>
 
-<script>
-    tinymce.init({
-        selector: '#description',
-        skin: 'oxide',
-        content_css: 'default',
-        height: 400,
-        menubar: false,
-        plugins: [
-            'advlist', 'autolink', 'lists', 'link', 'charmap',
-            'searchreplace', 'visualblocks', 'code', 'fullscreen',
-            'table', 'help', 'wordcount'
-        ],
-        toolbar: 'undo redo | blocks | bold italic | bullist numlist | link | removeformat | code',
-        content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 16px; color: #1f2937; background: #ffffff; }',
-        branding: false,
-        promotion: false
-    });
-</script>
+<script>initRichEditor('description-editor', 'description-hidden', { height: 400, simple: true });</script>
 
 <?php
 $content = ob_get_clean();

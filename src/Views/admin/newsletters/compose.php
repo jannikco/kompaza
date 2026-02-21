@@ -26,8 +26,8 @@
             </div>
             <div>
                 <label for="body_html" class="block text-sm font-medium text-gray-700 mb-2">Body *</label>
-                <textarea name="body_html" id="body_html" rows="12"
-                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"><?= h($newsletter['body_html'] ?? '') ?></textarea>
+                <input type="hidden" name="body_html" id="body_html-hidden" value="<?= h($newsletter['body_html'] ?? '') ?>">
+                <div id="body_html-editor" class="bg-white"><?= $newsletter['body_html'] ?? '' ?></div>
             </div>
         </div>
     </div>
@@ -94,23 +94,12 @@
 <?php endif; ?>
 
 <script>
-    tinymce.init({
-        selector: '#body_html',
-        height: 400,
-        menubar: false,
-        plugins: 'lists link',
-        toolbar: 'undo redo | bold italic | bullist numlist | link',
-        skin: 'oxide',
-        content_css: 'default',
-        content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #e5e7eb; }',
-    });
+    window._quillNewsletter = initRichEditor('body_html-editor', 'body_html-hidden', { simple: true, height: 400 });
 
     // Send test email
     const sendTestBtn = document.getElementById('sendTestBtn');
     if (sendTestBtn) {
         sendTestBtn.addEventListener('click', function() {
-            // Save draft first via TinyMCE, then submit test form
-            tinymce.triggerSave();
             document.getElementById('sendTestForm').submit();
         });
     }
@@ -133,7 +122,6 @@
         });
 
         confirmSendBtn.addEventListener('click', function() {
-            tinymce.triggerSave();
             document.getElementById('sendAllForm').submit();
         });
 
