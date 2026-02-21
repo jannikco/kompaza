@@ -3,7 +3,7 @@
 <style>
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
 
-    html { overflow-x: hidden; }
+    html, body { overflow-x: hidden; max-width: 100vw; }
     .mono { font-family: 'JetBrains Mono', monospace; }
     .dark-bg { background: #0f172a; }
     .dark-alt-bg { background: #1e293b; }
