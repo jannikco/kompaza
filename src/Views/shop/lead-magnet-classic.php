@@ -122,7 +122,10 @@
 
                 <button type="submit" :disabled="loading"
                         class="mt-6 w-full btn-brand px-10 py-4 text-white font-bold rounded-full shadow-md transition text-lg uppercase tracking-wide disabled:opacity-50">
-                    <span x-show="!loading"><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
+                    <span x-show="!loading" class="inline-flex items-center justify-center space-x-2">
+                        <span><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </span>
                     <span x-show="loading" x-cloak><?= h($sh('form_sending', 'Sending...')) ?></span>
                 </button>
 
