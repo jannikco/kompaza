@@ -548,7 +548,7 @@ if ($routingMode === 'tenant') {
     }
 
     // Before 404: check if path matches a redirect
-    if (!$controller && $method === 'GET') {
+    if (!$controller && in_array($method, ['GET', 'HEAD'])) {
         $redirect = \App\Models\Redirect::findByPath($request, $tenant['id']);
         if ($redirect) {
             \App\Models\Redirect::incrementHits($redirect['id']);
