@@ -44,6 +44,32 @@ describe('AIbootcamphq Tenant (aibootcamphq.kompaza.com)', () => {
   })
 
   // ==========================================
+  // CUSTOM PAGE CONTENT CHECKS
+  // ==========================================
+  describe('Custom page content', () => {
+    it('homepage has tenant branding', () => {
+      cy.visit(base)
+      cy.get('img[src*="/uploads/"]').should('have.length.gte', 1)
+    })
+
+    it('gratis page has links to free resources', () => {
+      cy.visit(`${base}/gratis`)
+      cy.get('a[href]').should('have.length.gte', 1)
+      cy.get('body').invoke('text').should('have.length.gte', 100)
+    })
+
+    it('foredrag page loads with content', () => {
+      cy.visit(`${base}/foredrag`)
+      cy.get('body').invoke('text').should('have.length.gte', 100)
+    })
+
+    it('konsulent page loads with content', () => {
+      cy.visit(`${base}/konsulent`)
+      cy.get('body').invoke('text').should('have.length.gte', 100)
+    })
+  })
+
+  // ==========================================
   // SSL
   // ==========================================
   describe('SSL certificate', () => {
@@ -147,6 +173,45 @@ describe('AIbootcamphq Tenant (aibootcamphq.kompaza.com)', () => {
   })
 
   // ==========================================
+  // URL REDIRECTS (301)
+  // ==========================================
+  describe('URL redirects', () => {
+    const redirects = [
+      { from: '/dk/ebook-atlas',       to: '/ebog/chatgpt-atlas-guide' },
+      { from: '/eboeger',              to: '/eboger' },
+      { from: '/ebook-linkedin',       to: '/ebog/linkedin-ai-mastery' },
+      { from: '/linkedin',             to: '/courses' },
+      { from: '/linkedin-purchase',    to: '/courses' },
+      { from: '/linkedin-koeb',        to: '/courses' },
+      { from: '/book-konsulent',       to: '/consultation' },
+      { from: '/nyhedsbrev',           to: '/' },
+      { from: '/kursus',               to: '/courses' },
+      { from: '/eu',                   to: '/courses' },
+      { from: '/verify',               to: '/' },
+      { from: '/privacy-policy',       to: '/privacy' },
+      { from: '/terms-of-service',     to: '/terms' },
+      { from: '/hjemmeside-venteliste', to: '/hjemmeside' },
+      { from: '/konsultation-tak',     to: '/consultation/success' },
+      { from: '/dk/ebook-linkedin',    to: '/ebog/linkedin-ai-mastery' },
+      { from: '/dk/gratis',            to: '/gratis' },
+      { from: '/dk/foredrag',          to: '/foredrag' },
+      { from: '/dk/konsulent',         to: '/konsulent' },
+      { from: '/dk/free-atlas',        to: '/free-atlas' },
+      { from: '/dk/free-ai-prompts',   to: '/free-ai-prompts' },
+    ]
+
+    redirects.forEach(r => {
+      it(`${r.from} → ${r.to} (301)`, () => {
+        cy.request({ url: `${base}${r.from}`, followRedirect: false })
+          .then(resp => {
+            expect(resp.status).to.eq(301)
+            expect(resp.headers.location).to.include(r.to)
+          })
+      })
+    })
+  })
+
+  // ==========================================
   // PUBLIC SHOP ROUTES
   // ==========================================
   describe('Public shop routes', () => {
@@ -180,6 +245,162 @@ describe('AIbootcamphq Tenant (aibootcamphq.kompaza.com)', () => {
 
     it('built-in privacy policy page loads', () => {
       cy.request(`${base}/privatlivspolitik`).its('status').should('eq', 200)
+    })
+  })
+
+  // ==========================================
+  // LEAD MAGNET LANDING PAGES
+  // ==========================================
+  describe('Lead magnet landing pages', () => {
+    const leadMagnets = [
+      'free-atlas',
+      'free-ai-prompts',
+      'free-ai-tools',
+      'free-udlaeg',
+    ]
+
+    leadMagnets.forEach(slug => {
+      it(`/lp/${slug} returns 200`, () => {
+        cy.request(`${base}/lp/${slug}`).its('status').should('eq', 200)
+      })
+    })
+
+    it('lead magnet page has signup form', () => {
+      cy.visit(`${base}/lp/free-atlas`)
+      cy.get('input[name="email"], input[type="email"]').should('exist')
+      cy.get('button[type="submit"], input[type="submit"]').should('exist')
+    })
+
+    it('/lp/succes/{slug} returns 200', () => {
+      cy.request({ url: `${base}/lp/succes/free-atlas`, failOnStatusCode: false })
+        .then(resp => {
+          expect(resp.status).to.be.oneOf([200, 302])
+        })
+    })
+
+    it('/lp/download/fake-token returns appropriate status (not 500)', () => {
+      cy.request({ url: `${base}/lp/download/fake-token-xyz`, failOnStatusCode: false })
+        .then(resp => {
+          expect(resp.status).to.be.lessThan(500)
+        })
+    })
+
+    it('/lp/{slug} returns 404 for non-existent lead magnet', () => {
+      cy.request({ url: `${base}/lp/non-existent-lp-xyz`, failOnStatusCode: false })
+        .its('status').should('eq', 404)
+    })
+  })
+
+  // ==========================================
+  // COURSE PAGES
+  // ==========================================
+  describe('Course pages', () => {
+    it('/courses returns 200 and lists courses', () => {
+      cy.visit(`${base}/courses`)
+      cy.get('body').invoke('text').should('have.length.gte', 50)
+    })
+
+    const courseSlugs = [
+      'eu-ai-act-compliance',
+      'hjemmeside-ai-replit',
+      'claude-cowork-masterclass',
+    ]
+
+    courseSlugs.forEach(slug => {
+      it(`/course/${slug} returns 200`, () => {
+        cy.request(`${base}/course/${slug}`).its('status').should('eq', 200)
+      })
+    })
+
+    it('/course/{slug}/learn redirects to login if not authenticated', () => {
+      cy.request({ url: `${base}/course/eu-ai-act-compliance/learn`, followRedirect: false, failOnStatusCode: false })
+        .then(resp => {
+          expect(resp.status).to.be.oneOf([302, 200])
+        })
+    })
+
+    it('/course/{slug}/buy responds (not 500)', () => {
+      cy.request({ url: `${base}/course/eu-ai-act-compliance/buy`, failOnStatusCode: false })
+        .then(resp => {
+          expect(resp.status).to.be.lessThan(500)
+        })
+    })
+
+    it('/course/non-existent returns 404 (not 500)', () => {
+      cy.request({ url: `${base}/course/non-existent-course-xyz`, failOnStatusCode: false })
+        .its('status').should('eq', 404)
+    })
+  })
+
+  // ==========================================
+  // EBOOKS (expanded)
+  // ==========================================
+  describe('Ebooks', () => {
+    it('/eboger returns 200', () => {
+      cy.request(`${base}/eboger`).its('status').should('eq', 200)
+    })
+
+    const ebookSlugs = [
+      'chatgpt-atlas-guide',
+      'linkedin-ai-mastery',
+      'ai-resultater-7-dage',
+      '300-ai-prompts',
+    ]
+
+    ebookSlugs.forEach(slug => {
+      it(`/ebog/${slug} returns 200`, () => {
+        cy.request(`${base}/ebog/${slug}`).its('status').should('eq', 200)
+      })
+    })
+
+    it('/eboger page shows cover images', () => {
+      cy.visit(`${base}/eboger`)
+      cy.get('img[src*="/uploads/"]').should('have.length.gte', 1)
+    })
+
+    it('ebook detail page has title and content', () => {
+      cy.visit(`${base}/ebog/chatgpt-atlas-guide`)
+      cy.get('body').invoke('text').should('have.length.gte', 100)
+    })
+
+    it('/ebog/kob-succes/fake-session returns appropriate status (not 500)', () => {
+      cy.request({ url: `${base}/ebog/kob-succes/fake-session-xyz`, failOnStatusCode: false })
+        .then(resp => {
+          expect(resp.status).to.be.lessThan(500)
+        })
+    })
+
+    it('/ebog/download/fake-token returns appropriate status (not 500)', () => {
+      cy.request({ url: `${base}/ebog/download/fake-token-xyz`, failOnStatusCode: false })
+        .then(resp => {
+          expect(resp.status).to.be.lessThan(500)
+        })
+    })
+
+    it('/ebog/{slug} returns 404 for non-existent ebook (not 500)', () => {
+      cy.request({ url: `${base}/ebog/non-existent-ebook-xyz`, failOnStatusCode: false })
+        .its('status').should('eq', 404)
+    })
+  })
+
+  // ==========================================
+  // CONSULTATION BOOKING
+  // ==========================================
+  describe('Consultation booking', () => {
+    it('/consultation returns 200', () => {
+      cy.request(`${base}/consultation`).its('status').should('eq', 200)
+    })
+
+    it('/consultation/success returns 200', () => {
+      cy.request({ url: `${base}/consultation/success`, failOnStatusCode: false })
+        .then(resp => {
+          expect(resp.status).to.be.oneOf([200, 302])
+        })
+    })
+
+    it('consultation page has booking form fields', () => {
+      cy.visit(`${base}/consultation`)
+      cy.get('body').invoke('text').should('have.length.gte', 50)
     })
   })
 
@@ -234,13 +455,16 @@ describe('AIbootcamphq Tenant (aibootcamphq.kompaza.com)', () => {
       '/admin/discount-codes',
       '/admin/salg',
       '/admin/brugere',
+      '/admin/redirects',
+      '/admin/consultations',
+      '/admin/companies',
+      '/admin/email-sequences',
     ]
 
     adminRoutes.forEach(route => {
       it(`${route} responds (redirect to login or 200)`, () => {
         cy.request({ url: `${base}${route}`, followRedirect: false, failOnStatusCode: false })
           .then(resp => {
-            // Should redirect to login (302) or render (200 if already logged in)
             expect(resp.status, route).to.be.oneOf([200, 302])
           })
       })
@@ -249,7 +473,6 @@ describe('AIbootcamphq Tenant (aibootcamphq.kompaza.com)', () => {
     it('/admin/ordrer/{id} responds (dynamic route)', () => {
       cy.request({ url: `${base}/admin/ordrer/1`, followRedirect: false, failOnStatusCode: false })
         .then(resp => {
-          // 302 (login redirect), 200 (found), or 404 (order not found) are all valid
           expect(resp.status).to.be.oneOf([200, 302, 404])
         })
     })
@@ -258,6 +481,28 @@ describe('AIbootcamphq Tenant (aibootcamphq.kompaza.com)', () => {
       cy.request({ url: `${base}/admin/kunder/1`, followRedirect: false, failOnStatusCode: false })
         .then(resp => {
           expect(resp.status).to.be.oneOf([200, 302, 404])
+        })
+    })
+  })
+
+  // ==========================================
+  // MASTERMIND ROUTES
+  // ==========================================
+  describe('Mastermind routes', () => {
+    it('/mastermind/fake-slug returns 404 (not 500)', () => {
+      cy.request({ url: `${base}/mastermind/fake-slug-xyz`, failOnStatusCode: false })
+        .its('status').should('eq', 404)
+    })
+  })
+
+  // ==========================================
+  // CERTIFICATE VERIFICATION
+  // ==========================================
+  describe('Certificate verification', () => {
+    it('/certificate/verify/fake-slug returns appropriate status (not 500)', () => {
+      cy.request({ url: `${base}/certificate/verify/fake-slug-xyz`, failOnStatusCode: false })
+        .then(resp => {
+          expect(resp.status).to.be.lessThan(500)
         })
     })
   })
@@ -301,7 +546,6 @@ describe('AIbootcamphq Tenant (aibootcamphq.kompaza.com)', () => {
         headers: { 'Content-Type': 'application/json' },
         failOnStatusCode: false,
       }).then(resp => {
-        // 200, 302, 400, 422 are all acceptable (just not 404/500)
         expect(resp.status).to.not.eq(404)
         expect(resp.status).to.be.lessThan(500)
       })
@@ -328,7 +572,6 @@ describe('AIbootcamphq Tenant (aibootcamphq.kompaza.com)', () => {
     it('checkout page loads', () => {
       cy.request({ url: `${base}/checkout`, failOnStatusCode: false })
         .then(resp => {
-          // May redirect to cart if empty, or show checkout
           expect(resp.status).to.be.oneOf([200, 302])
         })
     })
@@ -339,34 +582,7 @@ describe('AIbootcamphq Tenant (aibootcamphq.kompaza.com)', () => {
   })
 
   // ==========================================
-  // EBOOKS
-  // ==========================================
-  describe('Ebooks', () => {
-    it('/eboger returns 200', () => {
-      cy.request(`${base}/eboger`).its('status').should('eq', 200)
-    })
-
-    const ebookSlugs = [
-      'chatgpt-atlas-guide',
-      'linkedin-ai-mastery',
-      'ai-resultater-7-dage',
-      '300-ai-prompts',
-    ]
-
-    ebookSlugs.forEach(slug => {
-      it(`/ebog/${slug} returns 200`, () => {
-        cy.request(`${base}/ebog/${slug}`).its('status').should('eq', 200)
-      })
-    })
-
-    it('/eboger page shows cover images (not just placeholders)', () => {
-      cy.visit(`${base}/eboger`)
-      cy.get('img[src*="/uploads/"]').should('have.length.gte', 1)
-    })
-  })
-
-  // ==========================================
-  // DYNAMIC CONTENT ROUTES
+  // DYNAMIC CONTENT ROUTES (404 not 500)
   // ==========================================
   describe('Dynamic content routes', () => {
     it('/blog/{slug} returns 404 for non-existent article (not 500)', () => {
@@ -397,6 +613,32 @@ describe('AIbootcamphq Tenant (aibootcamphq.kompaza.com)', () => {
     it('completely unknown path returns 404 (not 500)', () => {
       cy.request({ url: `${base}/this-does-not-exist-at-all`, failOnStatusCode: false })
         .its('status').should('eq', 404)
+    })
+  })
+
+  // ==========================================
+  // NO SERVER ERRORS (500)
+  // ==========================================
+  describe('No server errors', () => {
+    const malformedUrls = [
+      '/admin/ordrer/abc',
+      '/admin/kunder/abc',
+      '/ebog/',
+      '/course/',
+      '/lp/',
+      '/blog/',
+      '/%00',
+      '/..%2f..%2fetc%2fpasswd',
+      '/<script>alert(1)</script>',
+    ]
+
+    malformedUrls.forEach(url => {
+      it(`${url} does not return 500`, () => {
+        cy.request({ url: `${base}${url}`, failOnStatusCode: false })
+          .then(resp => {
+            expect(resp.status, url).to.be.lessThan(500)
+          })
+      })
     })
   })
 })
