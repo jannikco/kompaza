@@ -11,7 +11,7 @@
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen" x-data="{ sidebarOpen: true, mobileMenuOpen: false }">
+<body class="bg-gray-100 text-gray-900 min-h-screen" x-data="{ sidebarOpen: true, mobileMenuOpen: false }">
 
     <!-- Mobile menu overlay -->
     <div x-show="mobileMenuOpen" x-cloak class="fixed inset-0 bg-black/50 z-40 lg:hidden" @click="mobileMenuOpen = false"></div>
@@ -195,13 +195,13 @@
     <!-- Main content -->
     <div class="lg:ml-64">
         <!-- Top bar -->
-        <header class="sticky top-0 z-30 flex items-center h-16 px-6 bg-gray-800 border-b border-gray-700">
-            <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden text-gray-400 hover:text-white mr-4">
+        <header class="sticky top-0 z-30 flex items-center h-16 px-6 bg-white border-b border-gray-200 shadow-sm">
+            <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden text-gray-500 hover:text-gray-900 mr-4">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
-            <h1 class="text-lg font-semibold text-white"><?= h($pageTitle ?? 'Dashboard') ?></h1>
+            <h1 class="text-lg font-semibold text-gray-900"><?= h($pageTitle ?? 'Dashboard') ?></h1>
             <div class="ml-auto flex items-center space-x-4">
-                <a href="/" target="_blank" class="text-sm text-gray-400 hover:text-white">View Site</a>
+                <a href="/" target="_blank" class="text-sm text-gray-500 hover:text-gray-900">View Site</a>
             </div>
         </header>
 
@@ -217,7 +217,7 @@
         <?php $flash = getFlashMessage(); ?>
         <?php if ($flash): ?>
         <div class="mx-6 mt-4" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
-            <div class="rounded-lg p-4 <?= $flash['type'] === 'success' ? 'bg-green-900/50 border border-green-700 text-green-300' : 'bg-red-900/50 border border-red-700 text-red-300' ?>">
+            <div class="rounded-lg p-4 <?= $flash['type'] === 'success' ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-red-50 border border-red-200 text-red-800' ?>">
                 <div class="flex items-center justify-between">
                     <span><?= h($flash['message']) ?></span>
                     <button @click="show = false" class="text-current opacity-50 hover:opacity-100">&times;</button>

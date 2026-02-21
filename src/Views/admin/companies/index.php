@@ -2,8 +2,8 @@
 
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h2 class="text-2xl font-bold text-white">Company Accounts</h2>
-        <p class="text-sm text-gray-400 mt-1">Manage team licenses and company accounts.</p>
+        <h2 class="text-2xl font-bold text-gray-900">Company Accounts</h2>
+        <p class="text-sm text-gray-500 mt-1">Manage team licenses and company accounts.</p>
     </div>
     <a href="/admin/companies/create" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition">
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -11,11 +11,11 @@
     </a>
 </div>
 
-<div class="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+<div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
     <?php if (empty($companies)): ?>
         <div class="p-12 text-center">
             <svg class="w-12 h-12 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-            <p class="text-gray-400 mb-4">No company accounts yet. Create your first to manage team licenses.</p>
+            <p class="text-gray-500 mb-4">No company accounts yet. Create your first to manage team licenses.</p>
             <a href="/admin/companies/create" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition">
                 Create Company Account
             </a>
@@ -24,37 +24,37 @@
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
-                    <tr class="border-b border-gray-700">
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Company Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Admin</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">Active Members</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">Total Licenses</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+                    <tr class="border-b border-gray-200">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admin</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Active Members</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Licenses</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-700">
+                <tbody class="divide-y divide-gray-200">
                     <?php foreach ($companies as $company): ?>
-                    <tr class="hover:bg-gray-750" x-data="{ confirmDelete: false }">
+                    <tr class="hover:bg-gray-50" x-data="{ confirmDelete: false }">
                         <td class="px-6 py-4">
-                            <div class="text-sm font-medium text-white"><?= h($company['company_name']) ?></div>
+                            <div class="text-sm font-medium text-gray-900"><?= h($company['company_name']) ?></div>
                         </td>
                         <td class="px-6 py-4">
-                            <div class="text-sm text-gray-300"><?= h($company['admin_name'] ?? 'N/A') ?></div>
+                            <div class="text-sm text-gray-600"><?= h($company['admin_name'] ?? 'N/A') ?></div>
                             <?php if (!empty($company['admin_email'])): ?>
                             <div class="text-xs text-gray-500"><?= h($company['admin_email']) ?></div>
                             <?php endif; ?>
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-300 text-center"><?= (int)($company['active_members'] ?? 0) ?></td>
-                        <td class="px-6 py-4 text-sm text-gray-300 text-center"><?= (int)($company['total_licenses'] ?? 0) ?></td>
+                        <td class="px-6 py-4 text-sm text-gray-600 text-center"><?= (int)($company['active_members'] ?? 0) ?></td>
+                        <td class="px-6 py-4 text-sm text-gray-600 text-center"><?= (int)($company['total_licenses'] ?? 0) ?></td>
                         <td class="px-6 py-4">
                             <?php
                             $statusColors = [
-                                'active' => 'bg-green-900 text-green-300',
-                                'suspended' => 'bg-red-900 text-red-300',
-                                'inactive' => 'bg-gray-700 text-gray-300',
+                                'active' => 'bg-green-100 text-green-700',
+                                'suspended' => 'bg-red-100 text-red-700',
+                                'inactive' => 'bg-gray-100 text-gray-700',
                             ];
-                            $statusClass = $statusColors[$company['status']] ?? 'bg-gray-700 text-gray-300';
+                            $statusClass = $statusColors[$company['status']] ?? 'bg-gray-100 text-gray-700';
                             ?>
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?= $statusClass ?>">
                                 <?= ucfirst($company['status']) ?>
@@ -62,11 +62,11 @@
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end space-x-2">
-                                <a href="/admin/companies/edit?id=<?= $company['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                                <a href="/admin/companies/edit?id=<?= $company['id'] ?>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">
                                     Edit
                                 </a>
                                 <template x-if="!confirmDelete">
-                                    <button @click="confirmDelete = true" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-400 bg-gray-700 hover:bg-red-900/50 rounded-lg transition">
+                                    <button @click="confirmDelete = true" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-600 bg-gray-100 hover:bg-red-50 rounded-lg transition">
                                         Delete
                                     </button>
                                 </template>
@@ -77,7 +77,7 @@
                                         <button type="submit" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition">
                                             Confirm
                                         </button>
-                                        <button type="button" @click="confirmDelete = false" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                                        <button type="button" @click="confirmDelete = false" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">
                                             Cancel
                                         </button>
                                     </form>

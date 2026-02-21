@@ -47,11 +47,11 @@ ob_start();
 ?>
 
 <div class="flex items-center justify-between mb-6">
-    <a href="/admin/lead-magnets" class="inline-flex items-center text-sm text-gray-400 hover:text-white transition">
+    <a href="/admin/lead-magnets" class="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 transition">
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
         Back to Lead Magnets
     </a>
-    <a href="/lp/<?= h($leadMagnet['slug']) ?>" target="_blank" class="inline-flex items-center text-sm text-indigo-400 hover:text-indigo-300 transition">
+    <a href="/lp/<?= h($leadMagnet['slug']) ?>" target="_blank" class="inline-flex items-center text-sm text-indigo-600 hover:text-indigo-500 transition">
         View Page
         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
     </a>
@@ -82,129 +82,129 @@ ob_start();
     <input type="hidden" name="social_proof" :value="JSON.stringify(socialProof)">
 
     <!-- Basic Information -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-6">Basic Information</h3>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Basic Information</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-                <label for="title" class="block text-sm font-medium text-gray-300 mb-2">Title</label>
+                <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Title</label>
                 <input type="text" name="title" id="title" required
                     value="<?= h($leadMagnet['title']) ?>"
-                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="e.g., 10 Tips for Better Marketing">
             </div>
             <div>
-                <label for="slug" class="block text-sm font-medium text-gray-300 mb-2">Slug</label>
+                <label for="slug" class="block text-sm font-medium text-gray-700 mb-2">Slug</label>
                 <input type="text" name="slug" id="slug" required
                     value="<?= h($leadMagnet['slug']) ?>"
-                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="10-tips-for-better-marketing">
             </div>
             <div class="md:col-span-2">
-                <label for="subtitle" class="block text-sm font-medium text-gray-300 mb-2">Subtitle</label>
+                <label for="subtitle" class="block text-sm font-medium text-gray-700 mb-2">Subtitle</label>
                 <input type="text" name="subtitle" id="subtitle"
                     value="<?= h($leadMagnet['subtitle'] ?? '') ?>"
-                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="A short subtitle for the lead magnet">
             </div>
             <div class="md:col-span-2">
-                <label for="meta_description" class="block text-sm font-medium text-gray-300 mb-2">Meta Description</label>
+                <label for="meta_description" class="block text-sm font-medium text-gray-700 mb-2">Meta Description</label>
                 <input type="text" name="meta_description" id="meta_description" maxlength="160"
                     value="<?= h($leadMagnet['meta_description'] ?? '') ?>"
-                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="SEO description (max 160 characters)">
             </div>
         </div>
     </div>
 
     <!-- Hero Section -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-6">Hero Section</h3>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Hero Section</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="md:col-span-2">
-                <label for="hero_headline" class="block text-sm font-medium text-gray-300 mb-2">Hero Headline</label>
+                <label for="hero_headline" class="block text-sm font-medium text-gray-700 mb-2">Hero Headline</label>
                 <input type="text" name="hero_headline" id="hero_headline"
                     value="<?= h($leadMagnet['hero_headline'] ?? '') ?>"
-                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="Main headline on the landing page">
             </div>
             <div class="md:col-span-2">
-                <label for="hero_subheadline" class="block text-sm font-medium text-gray-300 mb-2">Hero Subheadline</label>
+                <label for="hero_subheadline" class="block text-sm font-medium text-gray-700 mb-2">Hero Subheadline</label>
                 <input type="text" name="hero_subheadline" id="hero_subheadline"
                     value="<?= h($leadMagnet['hero_subheadline'] ?? '') ?>"
-                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="Supporting text below the headline">
             </div>
             <div>
-                <label for="hero_cta_text" class="block text-sm font-medium text-gray-300 mb-2">Hero CTA Text</label>
+                <label for="hero_cta_text" class="block text-sm font-medium text-gray-700 mb-2">Hero CTA Text</label>
                 <input type="text" name="hero_cta_text" id="hero_cta_text"
                     value="<?= h($leadMagnet['hero_cta_text'] ?? '') ?>"
-                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="e.g., Download Free Guide">
             </div>
             <div>
-                <label for="hero_bg_color" class="block text-sm font-medium text-gray-300 mb-2">Hero Background Color</label>
+                <label for="hero_bg_color" class="block text-sm font-medium text-gray-700 mb-2">Hero Background Color</label>
                 <div class="flex items-center space-x-3">
                     <input type="color" name="hero_bg_color" id="hero_bg_color" value="<?= h($leadMagnet['hero_bg_color'] ?? '#1e1b4b') ?>"
-                        class="w-12 h-10 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer">
+                        class="w-12 h-10 bg-white border border-gray-300 rounded-lg cursor-pointer">
                     <input type="text" id="hero_bg_color_text" value="<?= h($leadMagnet['hero_bg_color'] ?? '#1e1b4b') ?>"
-                        class="flex-1 px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        class="flex-1 px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                         placeholder="#1e1b4b"
                         oninput="document.getElementById('hero_bg_color').value = this.value"
                         onchange="document.getElementById('hero_bg_color').value = this.value">
                 </div>
             </div>
             <div class="md:col-span-2">
-                <label for="hero_image" class="block text-sm font-medium text-gray-300 mb-2">Hero Image</label>
+                <label for="hero_image" class="block text-sm font-medium text-gray-700 mb-2">Hero Image</label>
                 <?php if (!empty($leadMagnet['hero_image_path'])): ?>
                     <div class="mb-3 flex items-center space-x-3">
-                        <img src="<?= h(imageUrl($leadMagnet['hero_image_path'])) ?>" alt="Current hero image" class="h-16 w-auto rounded-lg border border-gray-600">
-                        <span class="text-sm text-gray-400">Current image</span>
+                        <img src="<?= h(imageUrl($leadMagnet['hero_image_path'])) ?>" alt="Current hero image" class="h-16 w-auto rounded-lg border border-gray-300">
+                        <span class="text-sm text-gray-500">Current image</span>
                     </div>
                 <?php endif; ?>
                 <input type="file" name="hero_image" id="hero_image" accept="image/*"
-                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 rounded-lg file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
                 <p class="text-xs text-gray-500 mt-2">Leave empty to keep the current image.</p>
             </div>
         </div>
     </div>
 
     <!-- Cover Image -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-6">Book Cover</h3>
-        <p class="text-gray-400 text-sm mb-4">This image is displayed as a 3D book mockup on the landing page.</p>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Book Cover</h3>
+        <p class="text-gray-500 text-sm mb-4">This image is displayed as a 3D book mockup on the landing page.</p>
         <?php if (!empty($leadMagnet['cover_image_path'])): ?>
             <div class="mb-4 flex items-center space-x-4">
-                <img src="<?= h(imageUrl($leadMagnet['cover_image_path'])) ?>" alt="Current cover" class="h-32 w-auto rounded-lg border border-gray-600">
-                <span class="text-sm text-gray-400">Current cover</span>
+                <img src="<?= h(imageUrl($leadMagnet['cover_image_path'])) ?>" alt="Current cover" class="h-32 w-auto rounded-lg border border-gray-300">
+                <span class="text-sm text-gray-500">Current cover</span>
             </div>
         <?php endif; ?>
         <input type="file" name="cover_image" accept="image/*"
-            class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
+            class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 rounded-lg file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
         <p class="text-xs text-gray-500 mt-2">Leave empty to keep the current cover. Upload a new image to replace it.</p>
     </div>
 
     <!-- Social Proof Bar -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-2">Social Proof Bar</h3>
-        <p class="text-gray-400 text-sm mb-6">Customizable metrics bar shown below the hero. Leave empty to use defaults.</p>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Social Proof Bar</h3>
+        <p class="text-gray-500 text-sm mb-6">Customizable metrics bar shown below the hero. Leave empty to use defaults.</p>
         <div class="space-y-3">
             <template x-for="(proof, index) in socialProof" :key="index">
-                <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+                <div class="bg-gray-50 border border-gray-300 rounded-lg p-4">
                     <div class="flex items-start space-x-3">
                         <div class="flex-1">
                             <div class="grid grid-cols-3 gap-2">
                                 <input type="text" x-model="proof.icon" maxlength="4"
-                                    class="px-3 py-2 bg-gray-700 border border-gray-600 text-white text-center rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    class="px-3 py-2 bg-white border border-gray-300 text-gray-900 text-center rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                     placeholder="Icon">
                                 <input type="text" x-model="proof.value"
-                                    class="px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    class="px-3 py-2 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                     placeholder="e.g., 10,000+">
                                 <input type="text" x-model="proof.label"
-                                    class="px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    class="px-3 py-2 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                     placeholder="Label">
                             </div>
                         </div>
-                        <button type="button" @click="socialProof.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-400 transition">
+                        <button type="button" @click="socialProof.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-600 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
@@ -212,38 +212,38 @@ ob_start();
             </template>
         </div>
         <button type="button" @click="socialProof.push({value: '', label: '', icon: ''})"
-            class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
+            class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-600 hover:text-indigo-500 transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             <span>Add metric</span>
         </button>
     </div>
 
     <!-- Features -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-6">Features Section</h3>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Features Section</h3>
         <div class="space-y-6">
             <div>
-                <label for="features_headline" class="block text-sm font-medium text-gray-300 mb-2">Features Headline</label>
+                <label for="features_headline" class="block text-sm font-medium text-gray-700 mb-2">Features Headline</label>
                 <input type="text" name="features_headline" id="features_headline"
                     value="<?= h($leadMagnet['features_headline'] ?? '') ?>"
-                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="e.g., What You'll Learn">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-3">Features</label>
+                <label class="block text-sm font-medium text-gray-700 mb-3">Features</label>
                 <div class="space-y-3">
                     <template x-for="(feature, index) in features" :key="index">
-                        <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+                        <div class="bg-gray-50 border border-gray-300 rounded-lg p-4">
                             <div class="flex items-start space-x-3">
                                 <div class="flex-1 space-y-2">
                                     <input type="text" x-model="feature.title"
-                                        class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                        class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                         placeholder="Feature title">
                                     <input type="text" x-model="feature.description"
-                                        class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                        class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                         placeholder="Feature description">
                                 </div>
-                                <button type="button" @click="features.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-400 transition">
+                                <button type="button" @click="features.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-600 transition">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                 </button>
                             </div>
@@ -251,7 +251,7 @@ ob_start();
                     </template>
                 </div>
                 <button type="button" @click="features.push({title: '', description: ''})"
-                    class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
+                    class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-600 hover:text-indigo-500 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     <span>Add feature</span>
                 </button>
@@ -261,25 +261,25 @@ ob_start();
     </div>
 
     <!-- Chapters -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-2">Chapters / Table of Contents</h3>
-        <p class="text-gray-400 text-sm mb-6">Displayed as a numbered list on the landing page.</p>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Chapters / Table of Contents</h3>
+        <p class="text-gray-500 text-sm mb-6">Displayed as a numbered list on the landing page.</p>
         <div class="space-y-3">
             <template x-for="(chapter, index) in chapters" :key="index">
-                <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+                <div class="bg-gray-50 border border-gray-300 rounded-lg p-4">
                     <div class="flex items-start space-x-3">
                         <div class="w-10 h-10 bg-indigo-500/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                            <span class="text-indigo-400 font-bold text-sm" x-text="chapter.number || (index + 1)"></span>
+                            <span class="text-indigo-600 font-bold text-sm" x-text="chapter.number || (index + 1)"></span>
                         </div>
                         <div class="flex-1 space-y-2">
                             <input type="text" x-model="chapter.title"
-                                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                 placeholder="Chapter title">
                             <input type="text" x-model="chapter.description"
-                                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                 placeholder="Brief description">
                         </div>
-                        <button type="button" @click="chapters.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-400 transition">
+                        <button type="button" @click="chapters.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-600 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
@@ -287,34 +287,34 @@ ob_start();
             </template>
         </div>
         <button type="button" @click="chapters.push({number: chapters.length + 1, title: '', description: ''})"
-            class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
+            class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-600 hover:text-indigo-500 transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             <span>Add chapter</span>
         </button>
     </div>
 
     <!-- Key Statistics -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-2">Key Statistics</h3>
-        <p class="text-gray-400 text-sm mb-6">Bold stat cards displayed on the landing page.</p>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Key Statistics</h3>
+        <p class="text-gray-500 text-sm mb-6">Bold stat cards displayed on the landing page.</p>
         <div class="space-y-3">
             <template x-for="(stat, index) in keyStatistics" :key="index">
-                <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+                <div class="bg-gray-50 border border-gray-300 rounded-lg p-4">
                     <div class="flex items-start space-x-3">
                         <div class="flex-1">
                             <div class="grid grid-cols-3 gap-2">
                                 <input type="text" x-model="stat.icon" maxlength="4"
-                                    class="px-3 py-2 bg-gray-700 border border-gray-600 text-white text-center rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    class="px-3 py-2 bg-white border border-gray-300 text-gray-900 text-center rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                     placeholder="Icon">
                                 <input type="text" x-model="stat.value"
-                                    class="px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    class="px-3 py-2 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                     placeholder="e.g., 50+">
                                 <input type="text" x-model="stat.label"
-                                    class="px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    class="px-3 py-2 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                     placeholder="Label">
                             </div>
                         </div>
-                        <button type="button" @click="keyStatistics.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-400 transition">
+                        <button type="button" @click="keyStatistics.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-600 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
@@ -322,34 +322,34 @@ ob_start();
             </template>
         </div>
         <button type="button" @click="keyStatistics.push({value: '', label: '', icon: ''})"
-            class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
+            class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-600 hover:text-indigo-500 transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             <span>Add statistic</span>
         </button>
     </div>
 
     <!-- Target Audience -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-6">Target Audience</h3>
-        <p class="text-gray-400 text-sm mb-4">Define who this lead magnet is for. These appear as persona cards on the landing page.</p>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Target Audience</h3>
+        <p class="text-gray-500 text-sm mb-4">Define who this lead magnet is for. These appear as persona cards on the landing page.</p>
         <div class="space-y-3">
             <template x-for="(persona, index) in targetAudience" :key="index">
-                <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+                <div class="bg-gray-50 border border-gray-300 rounded-lg p-4">
                     <div class="flex items-start space-x-3">
                         <div class="flex-1 space-y-2">
                             <div class="flex items-center space-x-2">
                                 <input type="text" x-model="persona.icon" maxlength="4"
-                                    class="w-16 px-3 py-2 bg-gray-700 border border-gray-600 text-white text-center rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    class="w-16 px-3 py-2 bg-white border border-gray-300 text-gray-900 text-center rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                     placeholder="&#x1F4BC;">
                                 <input type="text" x-model="persona.title"
-                                    class="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    class="flex-1 px-3 py-2 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                     placeholder="Persona title">
                             </div>
                             <input type="text" x-model="persona.description"
-                                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                 placeholder="Why this persona benefits from the guide">
                         </div>
-                        <button type="button" @click="targetAudience.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-400 transition">
+                        <button type="button" @click="targetAudience.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-600 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
@@ -357,87 +357,87 @@ ob_start();
             </template>
         </div>
         <button type="button" @click="targetAudience.push({icon: '', title: '', description: ''})"
-            class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
+            class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-600 hover:text-indigo-500 transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             <span>Add persona</span>
         </button>
     </div>
 
     <!-- Before/After Transformation -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-2">Before/After Transformation</h3>
-        <p class="text-gray-400 text-sm mb-6">Show the contrast between current situation and outcome after reading.</p>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Before/After Transformation</h3>
+        <p class="text-gray-500 text-sm mb-6">Show the contrast between current situation and outcome after reading.</p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-                <label class="block text-sm font-medium text-red-400 mb-3">Before (Pain Points)</label>
+                <label class="block text-sm font-medium text-red-600 mb-3">Before (Pain Points)</label>
                 <div class="space-y-2">
                     <template x-for="(item, index) in beforeAfter.before" :key="'before-'+index">
                         <div class="flex items-center space-x-2">
-                            <span class="text-red-400 flex-shrink-0">&#x2717;</span>
+                            <span class="text-red-600 flex-shrink-0">&#x2717;</span>
                             <input type="text" x-model="beforeAfter.before[index]"
-                                class="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                class="flex-1 px-3 py-2 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent"
                                 placeholder="Pain point...">
-                            <button type="button" @click="beforeAfter.before.splice(index, 1)" class="p-1 text-gray-500 hover:text-red-400 transition">
+                            <button type="button" @click="beforeAfter.before.splice(index, 1)" class="p-1 text-gray-500 hover:text-red-600 transition">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                             </button>
                         </div>
                     </template>
                 </div>
                 <button type="button" @click="beforeAfter.before.push('')"
-                    class="mt-2 text-xs text-red-400 hover:text-red-300 transition">+ Add pain point</button>
+                    class="mt-2 text-xs text-red-600 hover:text-red-300 transition">+ Add pain point</button>
             </div>
             <div>
-                <label class="block text-sm font-medium text-green-400 mb-3">After (Outcomes)</label>
+                <label class="block text-sm font-medium text-green-600 mb-3">After (Outcomes)</label>
                 <div class="space-y-2">
                     <template x-for="(item, index) in beforeAfter.after" :key="'after-'+index">
                         <div class="flex items-center space-x-2">
-                            <span class="text-green-400 flex-shrink-0">&#x2713;</span>
+                            <span class="text-green-600 flex-shrink-0">&#x2713;</span>
                             <input type="text" x-model="beforeAfter.after[index]"
-                                class="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                class="flex-1 px-3 py-2 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                 placeholder="Positive outcome...">
-                            <button type="button" @click="beforeAfter.after.splice(index, 1)" class="p-1 text-gray-500 hover:text-green-400 transition">
+                            <button type="button" @click="beforeAfter.after.splice(index, 1)" class="p-1 text-gray-500 hover:text-green-600 transition">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                             </button>
                         </div>
                     </template>
                 </div>
                 <button type="button" @click="beforeAfter.after.push('')"
-                    class="mt-2 text-xs text-green-400 hover:text-green-300 transition">+ Add outcome</button>
+                    class="mt-2 text-xs text-green-600 hover:text-green-300 transition">+ Add outcome</button>
             </div>
         </div>
     </div>
 
     <!-- Author Bio -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-2">Author Bio</h3>
-        <p class="text-gray-400 text-sm mb-4">A short bio displayed on the landing page. Builds trust and authority.</p>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Author Bio</h3>
+        <p class="text-gray-500 text-sm mb-4">A short bio displayed on the landing page. Builds trust and authority.</p>
         <textarea x-model="authorBio" name="author_bio" rows="3"
-            class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+            class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
             placeholder="Write a short author bio..."></textarea>
     </div>
 
     <!-- Testimonial Templates -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-2">Testimonials</h3>
-        <p class="text-gray-400 text-sm mb-6">Edit these to match real feedback from your audience.</p>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Testimonials</h3>
+        <p class="text-gray-500 text-sm mb-6">Edit these to match real feedback from your audience.</p>
         <div class="space-y-3">
             <template x-for="(testimonial, index) in testimonialTemplates" :key="index">
-                <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+                <div class="bg-gray-50 border border-gray-300 rounded-lg p-4">
                     <div class="flex items-start space-x-3">
                         <div class="flex-1 space-y-2">
                             <textarea x-model="testimonial.quote" rows="2"
-                                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                 placeholder="Testimonial quote..."></textarea>
                             <div class="grid grid-cols-2 gap-2">
                                 <input type="text" x-model="testimonial.name"
-                                    class="px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    class="px-3 py-2 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                     placeholder="Name">
                                 <input type="text" x-model="testimonial.title"
-                                    class="px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    class="px-3 py-2 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                     placeholder="Job title">
                             </div>
                         </div>
-                        <button type="button" @click="testimonialTemplates.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-400 transition">
+                        <button type="button" @click="testimonialTemplates.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-600 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
@@ -445,29 +445,29 @@ ob_start();
             </template>
         </div>
         <button type="button" @click="testimonialTemplates.push({quote: '', name: '', title: ''})"
-            class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
+            class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-600 hover:text-indigo-500 transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             <span>Add testimonial</span>
         </button>
     </div>
 
     <!-- FAQ -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-6">FAQ</h3>
-        <p class="text-gray-400 text-sm mb-4">Common questions prospects might have before downloading. Displayed as an accordion on the landing page.</p>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">FAQ</h3>
+        <p class="text-gray-500 text-sm mb-4">Common questions prospects might have before downloading. Displayed as an accordion on the landing page.</p>
         <div class="space-y-3">
             <template x-for="(item, index) in faq" :key="index">
-                <div class="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+                <div class="bg-gray-50 border border-gray-300 rounded-lg p-4">
                     <div class="flex items-start space-x-3">
                         <div class="flex-1 space-y-2">
                             <input type="text" x-model="item.question"
-                                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                 placeholder="Question">
                             <textarea x-model="item.answer" rows="2"
-                                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                 placeholder="Answer"></textarea>
                         </div>
-                        <button type="button" @click="faq.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-400 transition">
+                        <button type="button" @click="faq.splice(index, 1)" class="p-1.5 text-gray-500 hover:text-red-600 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
@@ -475,44 +475,44 @@ ob_start();
             </template>
         </div>
         <button type="button" @click="faq.push({question: '', answer: ''})"
-            class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-400 hover:text-indigo-300 transition">
+            class="mt-3 inline-flex items-center space-x-1 text-sm text-indigo-600 hover:text-indigo-500 transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             <span>Add FAQ item</span>
         </button>
     </div>
 
     <!-- PDF File -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-6">Downloadable PDF</h3>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Downloadable PDF</h3>
         <div>
-            <label for="pdf_file" class="block text-sm font-medium text-gray-300 mb-2">PDF File</label>
+            <label for="pdf_file" class="block text-sm font-medium text-gray-700 mb-2">PDF File</label>
             <?php if (!empty($leadMagnet['pdf_filename'])): ?>
                 <div class="mb-3 flex items-center space-x-3">
-                    <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                    <span class="text-sm text-gray-300"><?= h($leadMagnet['pdf_filename']) ?></span>
+                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    <span class="text-sm text-gray-600"><?= h($leadMagnet['pdf_filename']) ?></span>
                 </div>
             <?php endif; ?>
             <input type="file" name="pdf_file" id="pdf_file" accept=".pdf"
-                class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
+                class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 rounded-lg file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
             <p class="text-xs text-gray-500 mt-2">Leave empty to keep the current PDF. Upload a new file to replace it.</p>
         </div>
     </div>
 
     <!-- Email Settings -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-6">Email Delivery</h3>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Email Delivery</h3>
         <div class="space-y-6">
             <div>
-                <label for="email_subject" class="block text-sm font-medium text-gray-300 mb-2">Email Subject</label>
+                <label for="email_subject" class="block text-sm font-medium text-gray-700 mb-2">Email Subject</label>
                 <input type="text" name="email_subject" id="email_subject"
                     value="<?= h($leadMagnet['email_subject'] ?? '') ?>"
-                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="e.g., Here's your free guide!">
             </div>
             <div>
-                <label for="email_body_html" class="block text-sm font-medium text-gray-300 mb-2">Email Body</label>
+                <label for="email_body_html" class="block text-sm font-medium text-gray-700 mb-2">Email Body</label>
                 <textarea name="email_body_html" id="email_body_html" rows="6"
-                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="The email content that will be sent with the download link..."><?= h($leadMagnet['email_body_html'] ?? '') ?></textarea>
                 <p class="text-xs text-gray-500 mt-2">Use {{download_link}} to insert the PDF download link. Use {{name}} to insert the recipient's name.</p>
             </div>
@@ -520,12 +520,12 @@ ob_start();
     </div>
 
     <!-- Status -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-6">Publishing</h3>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Publishing</h3>
         <div>
-            <label for="status" class="block text-sm font-medium text-gray-300 mb-2">Status</label>
+            <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
             <select name="status" id="status"
-                class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                 <option value="draft" <?= ($leadMagnet['status'] ?? '') === 'draft' ? 'selected' : '' ?>>Draft</option>
                 <option value="published" <?= ($leadMagnet['status'] ?? '') === 'published' ? 'selected' : '' ?>>Published</option>
             </select>
@@ -534,7 +534,7 @@ ob_start();
 
     <!-- Submit -->
     <div class="flex items-center justify-end space-x-4">
-        <a href="/admin/lead-magnets" class="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+        <a href="/admin/lead-magnets" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">
             Cancel
         </a>
         <button type="submit" class="px-6 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition">
@@ -556,9 +556,9 @@ ob_start();
         menubar: false,
         plugins: 'lists link code',
         toolbar: 'undo redo | bold italic | bullist numlist | link | removeformat | code',
-        skin: 'oxide-dark',
-        content_css: 'dark',
-        content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #e5e7eb; background: #374151; }',
+        skin: 'oxide',
+        content_css: 'default',
+        content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1f2937; background: #ffffff; }',
         branding: false,
         promotion: false
     });

@@ -6,42 +6,42 @@ ob_start();
 ?>
 
 <div class="mb-6">
-    <a href="/admin/kurser/rediger?id=<?= $course['id'] ?>" class="text-sm text-gray-400 hover:text-white transition">&larr; Back to <?= h($course['title']) ?></a>
-    <h2 class="text-2xl font-bold text-white mt-1"><?= h($lesson['title']) ?></h2>
-    <p class="text-sm text-gray-400 mt-1">Module: <?= h($module['title']) ?></p>
+    <a href="/admin/kurser/rediger?id=<?= $course['id'] ?>" class="text-sm text-gray-500 hover:text-gray-900 transition">&larr; Back to <?= h($course['title']) ?></a>
+    <h2 class="text-2xl font-bold text-gray-900 mt-1"><?= h($lesson['title']) ?></h2>
+    <p class="text-sm text-gray-500 mt-1">Module: <?= h($module['title']) ?></p>
 </div>
 
 <form method="POST" action="/admin/kurser/lektion/opdater" class="max-w-4xl" x-data="{ lessonType: '<?= h($lesson['lesson_type']) ?>' }">
     <?= csrfField() ?>
     <input type="hidden" name="lesson_id" value="<?= $lesson['id'] ?>">
 
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 mb-6">
-        <h3 class="text-lg font-semibold text-white mb-4">Lesson Details</h3>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Lesson Details</h3>
         <div class="space-y-4">
             <div>
-                <label for="title" class="block text-sm font-medium text-gray-300 mb-1.5">Title <span class="text-red-400">*</span></label>
+                <label for="title" class="block text-sm font-medium text-gray-700 mb-1.5">Title <span class="text-red-600">*</span></label>
                 <input type="text" id="title" name="title" required value="<?= h($lesson['title']) ?>"
-                       class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm">
+                       class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">Lesson Type</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Lesson Type</label>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <label class="flex items-center p-3 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer hover:border-indigo-500 transition" :class="lessonType === 'video' ? 'border-indigo-500 ring-1 ring-indigo-500' : ''">
+                    <label class="flex items-center p-3 bg-white border border-gray-300 rounded-lg cursor-pointer hover:border-indigo-500 transition" :class="lessonType === 'video' ? 'border-indigo-500 ring-1 ring-indigo-500' : ''">
                         <input type="radio" name="lesson_type" value="video" x-model="lessonType" class="sr-only">
-                        <svg class="w-4 h-4 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                        <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                         <span class="text-sm text-white">Video</span>
                     </label>
-                    <label class="flex items-center p-3 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer hover:border-indigo-500 transition" :class="lessonType === 'text' ? 'border-indigo-500 ring-1 ring-indigo-500' : ''">
+                    <label class="flex items-center p-3 bg-white border border-gray-300 rounded-lg cursor-pointer hover:border-indigo-500 transition" :class="lessonType === 'text' ? 'border-indigo-500 ring-1 ring-indigo-500' : ''">
                         <input type="radio" name="lesson_type" value="text" x-model="lessonType" class="sr-only">
-                        <svg class="w-4 h-4 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <svg class="w-4 h-4 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                         <span class="text-sm text-white">Text</span>
                     </label>
-                    <label class="flex items-center p-3 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer hover:border-indigo-500 transition" :class="lessonType === 'video_text' ? 'border-indigo-500 ring-1 ring-indigo-500' : ''">
+                    <label class="flex items-center p-3 bg-white border border-gray-300 rounded-lg cursor-pointer hover:border-indigo-500 transition" :class="lessonType === 'video_text' ? 'border-indigo-500 ring-1 ring-indigo-500' : ''">
                         <input type="radio" name="lesson_type" value="video_text" x-model="lessonType" class="sr-only">
-                        <svg class="w-4 h-4 mr-2 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4"/></svg>
+                        <svg class="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4"/></svg>
                         <span class="text-sm text-white">Video + Text</span>
                     </label>
-                    <label class="flex items-center p-3 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer hover:border-indigo-500 transition" :class="lessonType === 'download' ? 'border-indigo-500 ring-1 ring-indigo-500' : ''">
+                    <label class="flex items-center p-3 bg-white border border-gray-300 rounded-lg cursor-pointer hover:border-indigo-500 transition" :class="lessonType === 'download' ? 'border-indigo-500 ring-1 ring-indigo-500' : ''">
                         <input type="radio" name="lesson_type" value="download" x-model="lessonType" class="sr-only">
                         <svg class="w-4 h-4 mr-2 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17v3a2 2 0 002 2h14a2 2 0 002-2v-3"/></svg>
                         <span class="text-sm text-white">Download</span>
@@ -52,8 +52,8 @@ ob_start();
     </div>
 
     <!-- Video Upload -->
-    <div x-show="lessonType === 'video' || lessonType === 'video_text'" x-cloak class="bg-gray-800 border border-gray-700 rounded-xl p-6 mb-6">
-        <h3 class="text-lg font-semibold text-white mb-4">Video</h3>
+    <div x-show="lessonType === 'video' || lessonType === 'video_text'" x-cloak class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Video</h3>
         <?php if ($lesson['video_status'] === 'ready'): ?>
             <div class="mb-4 p-3 bg-green-900/30 border border-green-700 rounded-lg">
                 <p class="text-sm text-green-300">Video ready: <?= h($lesson['video_original_filename']) ?>
@@ -79,22 +79,22 @@ ob_start();
 
         <!-- Chunked upload widget -->
         <div x-data="videoUploader()" class="space-y-3">
-            <div class="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:border-indigo-500 transition"
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-indigo-500 transition"
                  @dragover.prevent="dragover = true" @dragleave="dragover = false"
                  @drop.prevent="dragover = false; handleDrop($event)"
                  :class="dragover ? 'border-indigo-500 bg-indigo-900/10' : ''"
                  @click="$refs.videoInput.click()">
                 <input type="file" x-ref="videoInput" class="hidden" accept="video/*" @change="handleFile($event)">
                 <svg class="mx-auto h-10 w-10 text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
-                <p class="text-sm text-gray-400" x-show="!uploading">Click or drag video file here</p>
-                <p class="text-sm text-gray-400" x-show="!uploading">MP4, MOV, AVI, MKV up to 5GB</p>
+                <p class="text-sm text-gray-500" x-show="!uploading">Click or drag video file here</p>
+                <p class="text-sm text-gray-500" x-show="!uploading">MP4, MOV, AVI, MKV up to 5GB</p>
             </div>
             <div x-show="uploading" x-cloak>
-                <div class="flex items-center justify-between text-sm text-gray-300 mb-1">
+                <div class="flex items-center justify-between text-sm text-gray-600 mb-1">
                     <span x-text="fileName"></span>
                     <span x-text="Math.round(progress) + '%'"></span>
                 </div>
-                <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="w-full bg-gray-200 rounded-full h-2">
                     <div class="bg-indigo-600 h-2 rounded-full transition-all" :style="'width: ' + progress + '%'"></div>
                 </div>
                 <p class="text-xs text-gray-500 mt-1" x-text="statusMessage"></p>
@@ -106,26 +106,26 @@ ob_start();
     </div>
 
     <!-- Text Content -->
-    <div x-show="lessonType !== 'video'" x-cloak class="bg-gray-800 border border-gray-700 rounded-xl p-6 mb-6">
-        <h3 class="text-lg font-semibold text-white mb-4">Lesson Content</h3>
+    <div x-show="lessonType !== 'video'" x-cloak class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Lesson Content</h3>
         <textarea id="lesson_editor" name="text_content" rows="15"
-                  class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg text-sm"><?= h($lesson['text_content'] ?? '') ?></textarea>
+                  class="w-full bg-white border border-gray-300 text-gray-900 rounded-lg text-sm"><?= h($lesson['text_content'] ?? '') ?></textarea>
     </div>
 
     <!-- Attachments -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 mb-6">
-        <h3 class="text-lg font-semibold text-white mb-4">Attachments</h3>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Attachments</h3>
         <?php
         $attachments = \App\Models\LessonAttachment::getByLessonId($lesson['id']);
         ?>
         <?php if (!empty($attachments)): ?>
         <div class="space-y-2 mb-4">
             <?php foreach ($attachments as $att): ?>
-            <div class="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div class="flex items-center">
-                    <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                    <svg class="w-4 h-4 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
                     <span class="text-sm text-white"><?= h($att['title']) ?></span>
-                    <span class="text-xs text-gray-400 ml-2">(<?= strtoupper($att['file_type']) ?>, <?= number_format($att['file_size'] / 1024, 0) ?> KB)</span>
+                    <span class="text-xs text-gray-500 ml-2">(<?= strtoupper($att['file_type']) ?>, <?= number_format($att['file_size'] / 1024, 0) ?> KB)</span>
                     <span class="text-xs text-gray-500 ml-2"><?= $att['download_count'] ?> downloads</span>
                 </div>
                 <form method="POST" action="/admin/kurser/attachment/slet" onsubmit="return confirm('Delete this attachment?')" class="inline">
@@ -133,39 +133,39 @@ ob_start();
                     <input type="hidden" name="id" value="<?= $att['id'] ?>">
                     <input type="hidden" name="lesson_id" value="<?= $lesson['id'] ?>">
                     <input type="hidden" name="course_id" value="<?= $course['id'] ?>">
-                    <button type="submit" class="text-red-400 hover:text-red-300 text-xs">Delete</button>
+                    <button type="submit" class="text-red-600 hover:text-red-300 text-xs">Delete</button>
                 </form>
             </div>
             <?php endforeach; ?>
         </div>
         <?php endif; ?>
     </div>
-    <form method="POST" action="/admin/kurser/attachment/gem" enctype="multipart/form-data" class="bg-gray-800 border border-gray-700 rounded-xl p-6 mb-6">
+    <form method="POST" action="/admin/kurser/attachment/gem" enctype="multipart/form-data" class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6">
         <?= csrfField() ?>
         <input type="hidden" name="lesson_id" value="<?= $lesson['id'] ?>">
         <input type="hidden" name="course_id" value="<?= $course['id'] ?>">
-        <h3 class="text-lg font-semibold text-white mb-4">Upload Attachment</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Upload Attachment</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1.5">Title</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Title</label>
                 <input type="text" name="attachment_title" placeholder="e.g. Worksheet PDF"
-                       class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm">
+                       class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1.5">File</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">File</label>
                 <input type="file" name="attachment" required
-                       class="w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-indigo-600 file:text-white hover:file:bg-indigo-700">
+                       class="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-indigo-600 file:text-white hover:file:bg-indigo-700">
             </div>
         </div>
         <button type="submit" class="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition">Upload</button>
     </form>
 
     <!-- Settings -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 mb-6">
-        <h3 class="text-lg font-semibold text-white mb-4">Settings</h3>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Settings</h3>
         <label class="flex items-center">
-            <input type="checkbox" name="is_preview" value="1" <?= $lesson['is_preview'] ? 'checked' : '' ?> class="w-4 h-4 text-indigo-600 bg-gray-700 border-gray-600 rounded focus:ring-indigo-500">
-            <span class="ml-2 text-sm text-gray-300">Free preview (accessible without enrollment)</span>
+            <input type="checkbox" name="is_preview" value="1" <?= $lesson['is_preview'] ? 'checked' : '' ?> class="w-4 h-4 text-indigo-600 bg-white border-gray-300 rounded focus:ring-indigo-500">
+            <span class="ml-2 text-sm text-gray-600">Free preview (accessible without enrollment)</span>
         </label>
     </div>
 
@@ -174,10 +174,10 @@ ob_start();
             <?= csrfField() ?>
             <input type="hidden" name="lesson_id" value="<?= $lesson['id'] ?>">
             <input type="hidden" name="course_id" value="<?= $course['id'] ?>">
-            <button type="submit" class="text-sm text-red-400 hover:text-red-300 transition">Delete Lesson</button>
+            <button type="submit" class="text-sm text-red-600 hover:text-red-300 transition">Delete Lesson</button>
         </form>
         <div class="flex items-center space-x-3">
-            <a href="/admin/kurser/rediger?id=<?= $course['id'] ?>" class="px-4 py-2 text-sm text-gray-300 hover:text-white transition">Cancel</a>
+            <a href="/admin/kurser/rediger?id=<?= $course['id'] ?>" class="px-4 py-2 text-sm text-gray-600 hover:text-white transition">Cancel</a>
             <button type="submit" class="inline-flex items-center px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition">
                 Save Lesson
             </button>
@@ -272,14 +272,14 @@ document.addEventListener('DOMContentLoaded', function() {
         tinymce.init({
             selector: '#lesson_editor',
             height: 400,
-            skin: 'oxide-dark',
-            content_css: 'dark',
+            skin: 'oxide',
+            content_css: 'default',
             menubar: false,
             plugins: 'lists link image code table hr wordcount',
             toolbar: 'undo redo | formatselect | bold italic underline | bullist numlist | link image | code',
             branding: false,
             promotion: false,
-            content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #e5e7eb; background: #374151; }',
+            content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1f2937; background: #ffffff; }',
         });
     }
 });

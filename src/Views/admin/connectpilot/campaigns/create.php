@@ -1,7 +1,7 @@
 <?php $pageTitle = 'Create Campaign'; $currentPage = 'connectpilot-campaigns'; $tenant = currentTenant(); ob_start(); ?>
 
 <div class="mb-6">
-    <a href="/admin/connectpilot/kampagner" class="inline-flex items-center text-sm text-gray-400 hover:text-white transition">
+    <a href="/admin/connectpilot/kampagner" class="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 transition">
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
         Back to Campaigns
     </a>
@@ -11,25 +11,25 @@
     <?= csrfField() ?>
 
     <!-- Basic Information -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-6">Campaign Details</h3>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Campaign Details</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="md:col-span-2">
-                <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Campaign Name *</label>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Campaign Name *</label>
                 <input type="text" name="name" id="name" required
-                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="e.g., SaaS Decision Makers Q1 2025">
             </div>
             <div class="md:col-span-2">
-                <label for="description" class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+                <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
                 <textarea name="description" id="description" rows="3"
-                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="Describe the campaign goals and target audience..."></textarea>
             </div>
             <div>
-                <label for="linkedin_account" class="block text-sm font-medium text-gray-300 mb-2">LinkedIn Account</label>
+                <label for="linkedin_account" class="block text-sm font-medium text-gray-700 mb-2">LinkedIn Account</label>
                 <select name="linkedin_account_id" id="linkedin_account"
-                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                     <?php if (empty($linkedinAccounts)): ?>
                     <option value="">No accounts connected</option>
                     <?php else: ?>
@@ -42,22 +42,22 @@
                     <?php endif; ?>
                 </select>
                 <?php if (empty($linkedinAccounts)): ?>
-                <p class="text-xs text-yellow-400 mt-1"><a href="/admin/connectpilot/konto" class="underline">Connect a LinkedIn account</a> first.</p>
+                <p class="text-xs text-yellow-600 mt-1"><a href="/admin/connectpilot/konto" class="underline">Connect a LinkedIn account</a> first.</p>
                 <?php endif; ?>
             </div>
             <div>
-                <label for="status" class="block text-sm font-medium text-gray-300 mb-2">Status</label>
+                <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
                 <select name="status" id="status"
-                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                     <option value="draft">Draft</option>
                     <option value="active">Active</option>
                     <option value="paused">Paused</option>
                 </select>
             </div>
             <div class="md:col-span-2">
-                <label for="search_url" class="block text-sm font-medium text-gray-300 mb-2">LinkedIn Search URL</label>
+                <label for="search_url" class="block text-sm font-medium text-gray-700 mb-2">LinkedIn Search URL</label>
                 <input type="url" name="search_url" id="search_url"
-                    class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="https://www.linkedin.com/search/results/people/?keywords=...">
                 <p class="text-xs text-gray-500 mt-1">Paste the full LinkedIn search URL to define your target audience. Use LinkedIn Sales Navigator or standard search.</p>
             </div>
@@ -65,32 +65,32 @@
     </div>
 
     <!-- Sequence Builder -->
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h3 class="text-lg font-semibold text-white">Sequence Steps</h3>
-                <p class="text-sm text-gray-400 mt-1">Define the automated sequence of actions for this campaign.</p>
+                <h3 class="text-lg font-semibold text-gray-900">Sequence Steps</h3>
+                <p class="text-sm text-gray-500 mt-1">Define the automated sequence of actions for this campaign.</p>
             </div>
         </div>
 
         <div class="space-y-4">
             <template x-for="(step, index) in steps" :key="index">
-                <div class="bg-gray-900 border border-gray-700 rounded-lg p-5 relative">
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-5 relative">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center">
                             <span class="flex items-center justify-center w-7 h-7 rounded-full bg-indigo-600 text-white text-xs font-bold" x-text="index + 1"></span>
-                            <span class="ml-2 text-sm font-medium text-gray-300">Step</span>
+                            <span class="ml-2 text-sm font-medium text-gray-700">Step</span>
                         </div>
-                        <button type="button" @click="removeStep(index)" class="text-red-400 hover:text-red-300 text-sm" x-show="steps.length > 1">
+                        <button type="button" @click="removeStep(index)" class="text-red-600 hover:text-red-300 text-sm" x-show="steps.length > 1">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                         </button>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2">Action Type</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Action Type</label>
                             <select :name="'steps[' + index + '][type]'" x-model="step.type"
-                                class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                                 <option value="view_profile">View Profile</option>
                                 <option value="connect">Send Connection Request</option>
                                 <option value="message">Send Message</option>
@@ -98,9 +98,9 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2">Condition</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Condition</label>
                             <select :name="'steps[' + index + '][condition]'" x-model="step.condition"
-                                class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                                 <option value="always">Always</option>
                                 <option value="if_accepted">If Connection Accepted</option>
                                 <option value="if_no_reply">If No Reply</option>
@@ -108,22 +108,22 @@
                             </select>
                         </div>
                         <div class="md:col-span-2" x-show="step.type === 'connect' || step.type === 'message' || step.type === 'follow_up'">
-                            <label class="block text-sm font-medium text-gray-300 mb-2">Message Template</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Message Template</label>
                             <textarea :name="'steps[' + index + '][message_template]'" x-model="step.message_template" rows="3"
-                                class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                                class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
                                 placeholder="Hi {{first_name}}, I noticed you work at {{company}}..."></textarea>
-                            <p class="text-xs text-gray-500 mt-1">Available variables: <code class="text-indigo-400">{{first_name}}</code>, <code class="text-indigo-400">{{last_name}}</code>, <code class="text-indigo-400">{{company}}</code>, <code class="text-indigo-400">{{job_title}}</code></p>
+                            <p class="text-xs text-gray-500 mt-1">Available variables: <code class="text-indigo-600">{{first_name}}</code>, <code class="text-indigo-600">{{last_name}}</code>, <code class="text-indigo-600">{{company}}</code>, <code class="text-indigo-600">{{job_title}}</code></p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2">Delay (Days)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Delay (Days)</label>
                             <input type="number" :name="'steps[' + index + '][delay_days]'" x-model="step.delay_days" min="0" max="90"
-                                class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                 placeholder="0">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2">Delay (Hours)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Delay (Hours)</label>
                             <input type="number" :name="'steps[' + index + '][delay_hours]'" x-model="step.delay_hours" min="0" max="23"
-                                class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                 placeholder="0">
                         </div>
                     </div>
@@ -132,7 +132,7 @@
         </div>
 
         <button type="button" @click="addStep()"
-            class="mt-4 inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-400 bg-indigo-900/30 border border-indigo-700/50 hover:bg-indigo-900/50 rounded-lg transition">
+            class="mt-4 inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 rounded-lg transition">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Add Step
         </button>
@@ -140,7 +140,7 @@
 
     <!-- Submit -->
     <div class="flex items-center justify-end space-x-4">
-        <a href="/admin/connectpilot/kampagner" class="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+        <a href="/admin/connectpilot/kampagner" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">
             Cancel
         </a>
         <button type="submit" class="px-6 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition">
