@@ -192,14 +192,18 @@ You are a marketing copywriter. Generate hero section copy and email delivery co
 CRITICAL: Write ALL output in the language specified (see TARGET LANGUAGE). Never switch to English unless the target language IS English.
 
 Return a JSON object with exactly these fields:
-- "hero_headline": an attention-grabbing headline (max 10 words, punchy and benefit-driven)
-- "hero_subheadline": supporting text below the headline (1-2 sentences, explains the value)
-- "hero_cta_text": call-to-action button text (2-4 words)
+- "variants": an array of exactly 3 hero variant objects. Each variant has:
+  - "hero_headline": an attention-grabbing headline (max 10 words, punchy and benefit-driven)
+  - "hero_headline_accent": the 2-3 most impactful/important words from that headline (must be a substring of hero_headline)
+  - "hero_subheadline": supporting text below the headline (1-2 sentences, explains the value)
+  - "hero_cta_text": call-to-action button text (2-4 words)
+  - "hero_badge": a short context/urgency label (max 5 words, e.g. "Free Guide", "Exclusive PDF", "New Ebook")
+  Variant 1: Bold & direct style. Variant 2: Curiosity-driven style. Variant 3: Benefit-focused style.
 - "email_subject": email subject line for delivering the PDF (friendly, enticing)
 - "email_body_html": a short, friendly HTML email body that delivers the download link. Use {{name}} for the recipient's name and {{download_link}} for the PDF download URL. Keep it concise (3-5 short paragraphs). Use simple HTML (p tags, a tag for the link). Make it warm and {$tone}.
 PROMPT,
                 'user' => $contextBlock,
-                'max_tokens' => 2000,
+                'max_tokens' => 3000,
             ],
             [
                 'key' => 'content_sections',
@@ -255,9 +259,15 @@ PROMPT,
 
         if ($parallelResults['hero_email']) {
             $he = $parallelResults['hero_email'];
-            $merged['hero_headline'] = $he['hero_headline'] ?? '';
-            $merged['hero_subheadline'] = $he['hero_subheadline'] ?? '';
-            $merged['hero_cta_text'] = $he['hero_cta_text'] ?? '';
+            // Store full variants array for the wizard's "Pick Style" step
+            $merged['hero_variants'] = $he['variants'] ?? [];
+            // Default to first variant for backward-compat flat fields
+            $firstVariant = $merged['hero_variants'][0] ?? [];
+            $merged['hero_headline'] = $firstVariant['hero_headline'] ?? '';
+            $merged['hero_subheadline'] = $firstVariant['hero_subheadline'] ?? '';
+            $merged['hero_cta_text'] = $firstVariant['hero_cta_text'] ?? '';
+            $merged['hero_badge'] = $firstVariant['hero_badge'] ?? '';
+            $merged['hero_headline_accent'] = $firstVariant['hero_headline_accent'] ?? '';
             $merged['email_subject'] = $he['email_subject'] ?? '';
             $merged['email_body_html'] = $he['email_body_html'] ?? '';
         } else {
@@ -362,14 +372,18 @@ You are a marketing copywriter. Generate hero section copy and email delivery co
 CRITICAL: Write ALL output in the language specified (see DETECTED LANGUAGE). Never switch to English.
 
 Return a JSON object with exactly these fields:
-- "hero_headline": an attention-grabbing headline (max 10 words, punchy and benefit-driven)
-- "hero_subheadline": supporting text below the headline (1-2 sentences, explains the value)
-- "hero_cta_text": call-to-action button text (2-4 words)
+- "variants": an array of exactly 3 hero variant objects. Each variant has:
+  - "hero_headline": an attention-grabbing headline (max 10 words, punchy and benefit-driven)
+  - "hero_headline_accent": the 2-3 most impactful/important words from that headline (must be a substring of hero_headline)
+  - "hero_subheadline": supporting text below the headline (1-2 sentences, explains the value)
+  - "hero_cta_text": call-to-action button text (2-4 words)
+  - "hero_badge": a short context/urgency label (max 5 words, e.g. "Free Guide", "Exclusive PDF", "New Ebook")
+  Variant 1: Bold & direct style. Variant 2: Curiosity-driven style. Variant 3: Benefit-focused style.
 - "email_subject": email subject line for delivering the PDF (friendly, enticing)
 - "email_body_html": a short, friendly HTML email body that delivers the download link. Use {{name}} for the recipient's name and {{download_link}} for the PDF download URL. Keep it concise (3-5 short paragraphs). Use simple HTML (p tags, a tag for the link). Make it warm and {$tone}.
 PROMPT,
                 'user' => $contextBlock,
-                'max_tokens' => 2000,
+                'max_tokens' => 3000,
             ],
             [
                 'key' => 'content_sections',
@@ -426,9 +440,13 @@ PROMPT,
         // Merge hero_email
         if ($parallelResults['hero_email']) {
             $he = $parallelResults['hero_email'];
-            $merged['hero_headline'] = $he['hero_headline'] ?? '';
-            $merged['hero_subheadline'] = $he['hero_subheadline'] ?? '';
-            $merged['hero_cta_text'] = $he['hero_cta_text'] ?? '';
+            $merged['hero_variants'] = $he['variants'] ?? [];
+            $firstVariant = $merged['hero_variants'][0] ?? [];
+            $merged['hero_headline'] = $firstVariant['hero_headline'] ?? '';
+            $merged['hero_subheadline'] = $firstVariant['hero_subheadline'] ?? '';
+            $merged['hero_cta_text'] = $firstVariant['hero_cta_text'] ?? '';
+            $merged['hero_badge'] = $firstVariant['hero_badge'] ?? '';
+            $merged['hero_headline_accent'] = $firstVariant['hero_headline_accent'] ?? '';
             $merged['email_subject'] = $he['email_subject'] ?? '';
             $merged['email_body_html'] = $he['email_body_html'] ?? '';
         } else {
@@ -465,6 +483,62 @@ PROMPT,
             'errors' => $failedKeys,
             'partial' => !empty($failedKeys),
         ];
+    }
+
+    /**
+     * Generate multiple images in parallel using DALL-E and curl_multi.
+     *
+     * @param string $prompt Base image description
+     * @param int $count Number of images (each as a separate API call with slight variation)
+     * @param string $size Image size
+     * @return array Array of temporary URLs (nulls for failures)
+     */
+    public function generateImages(string $prompt, int $count = 3, string $size = '1024x1792'): array {
+        $multiHandle = curl_multi_init();
+        $handles = [];
+
+        for ($i = 0; $i < $count; $i++) {
+            $payload = [
+                'model' => 'dall-e-3',
+                'prompt' => $prompt,
+                'n' => 1,
+                'size' => $size,
+                'quality' => 'standard',
+            ];
+
+            $ch = $this->buildCurlHandle('POST', '/images/generations', $payload, 120);
+            $handles[$i] = $ch;
+            curl_multi_add_handle($multiHandle, $ch);
+        }
+
+        $running = null;
+        do {
+            $status = curl_multi_exec($multiHandle, $running);
+            if ($running > 0) {
+                curl_multi_select($multiHandle, 1);
+            }
+        } while ($running > 0 && $status === CURLM_OK);
+
+        $results = [];
+        foreach ($handles as $i => $ch) {
+            $response = curl_multi_getcontent($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $url = null;
+
+            if ($response && $httpCode >= 200 && $httpCode < 300) {
+                $responseData = json_decode($response, true);
+                $url = $responseData['data'][0]['url'] ?? null;
+            } else {
+                error_log("OpenAI DALL-E parallel call {$i} failed: HTTP {$httpCode}");
+            }
+
+            $results[$i] = $url;
+            curl_multi_remove_handle($multiHandle, $ch);
+            curl_close($ch);
+        }
+
+        curl_multi_close($multiHandle);
+        return $results;
     }
 
     /**

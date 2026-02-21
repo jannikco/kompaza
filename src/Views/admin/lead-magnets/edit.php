@@ -142,6 +142,20 @@ ob_start();
                     placeholder="e.g., Download Free Guide">
             </div>
             <div>
+                <label for="hero_badge" class="block text-sm font-medium text-gray-700 mb-2">Hero Badge</label>
+                <input type="text" name="hero_badge" id="hero_badge"
+                    value="<?= h($leadMagnet['hero_badge'] ?? '') ?>"
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="e.g., Free Guide">
+            </div>
+            <div>
+                <label for="hero_headline_accent" class="block text-sm font-medium text-gray-700 mb-2">Headline Accent Words</label>
+                <input type="text" name="hero_headline_accent" id="hero_headline_accent"
+                    value="<?= h($leadMagnet['hero_headline_accent'] ?? '') ?>"
+                    class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="Key words to highlight in brand color">
+            </div>
+            <div>
                 <label for="hero_bg_color" class="block text-sm font-medium text-gray-700 mb-2">Hero Background Color</label>
                 <div class="flex items-center space-x-3">
                     <input type="color" name="hero_bg_color" id="hero_bg_color" value="<?= h($leadMagnet['hero_bg_color'] ?? '#1e1b4b') ?>"

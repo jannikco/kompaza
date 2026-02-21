@@ -57,6 +57,17 @@ if (!empty($leadMagnet['cover_image_path'])) {
     $coverImage = imageUrl($leadMagnet['hero_image_path']);
 }
 
+// New hero fields (graceful fallback for existing lead magnets)
+$heroBadge = $leadMagnet['hero_badge'] ?? '';
+$heroAccent = $leadMagnet['hero_headline_accent'] ?? '';
+$heroHeadline = $leadMagnet['hero_headline'] ?? $leadMagnet['title'];
+
+// Helper: wraps accent words in <span class="text-brand">
+function heroHeadlineWithAccent($headline, $accent) {
+    if (empty($accent)) return h($headline);
+    return str_replace(h($accent), '<span class="text-brand">' . h($accent) . '</span>', h($headline));
+}
+
 // Section headings helper — falls back to English defaults for existing lead magnets
 $sectionHeadings = json_decode($leadMagnet['section_headings'] ?? '', true) ?: [];
 $sh = fn($key, $default) => $sectionHeadings[$key] ?? $default;
@@ -69,68 +80,89 @@ ob_start();
         perspective: 1200px;
     }
     .book-mockup-inner {
-        transform: rotateY(-15deg);
         transform-style: preserve-3d;
+        filter: drop-shadow(0 25px 50px rgba(0,0,0,0.4));
+    }
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotateY(-15deg); }
+        50% { transform: translateY(-15px) rotateY(-15deg); }
+    }
+    .book-float {
+        animation: float 6s ease-in-out infinite;
+        transform-style: preserve-3d;
+    }
+    .book-mockup:hover .book-float {
+        animation-play-state: paused;
+        transform: translateY(-5px) rotateY(-5deg);
         transition: transform 0.4s ease;
-        box-shadow: 10px 10px 30px rgba(0,0,0,0.4), 1px 1px 5px rgba(0,0,0,0.2);
     }
-    .book-mockup:hover .book-mockup-inner {
-        transform: rotateY(-5deg);
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
-    .book-spine {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 20px;
-        height: 100%;
-        transform: rotateY(90deg) translateZ(10px);
-        transform-origin: left;
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease-out;
+    }
+    .animate-fade-in-delay {
+        animation: fadeIn 0.8s ease-out 0.2s both;
     }
 </style>
 
-<!-- 1. Hero Section -->
+<!-- 1. Hero Section (Premium) -->
 <section class="relative overflow-hidden" style="background-color: <?= h($heroBgColor) ?>;" id="hero">
-    <div class="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent"></div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <!-- Left: Book + Content (desktop side-by-side, mobile stacked) -->
-            <div>
-                <!-- Desktop: book inline with text -->
+    <!-- Gradient overlay -->
+    <div class="absolute inset-0 bg-gradient-to-br from-black/30 to-transparent"></div>
+    <!-- SVG pattern texture -->
+    <div class="absolute inset-0 opacity-5">
+        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%220%200%2040%2040%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23fff%22%20fill-rule%3D%22evenodd%22%3E%3Ccircle%20cx%3D%2220%22%20cy%3D%2220%22%20r%3D%222%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E'); background-size: 40px 40px;"></div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <!-- Left: Text content with fade-in -->
+            <div class="animate-fade-in">
+                <!-- Badge -->
+                <?php if ($heroBadge): ?>
+                    <div class="inline-block bg-white/15 text-white/90 px-4 py-1.5 rounded-full text-sm font-semibold mb-5 backdrop-blur-sm">
+                        <?= h($heroBadge) ?>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Desktop: book + text side-by-side -->
                 <?php if ($coverImage): ?>
-                    <div class="hidden lg:flex items-start gap-6">
+                    <div class="hidden lg:flex items-start gap-8">
                         <div class="book-mockup flex-shrink-0">
-                            <div class="book-mockup-inner rounded-lg overflow-hidden">
+                            <div class="book-mockup-inner book-float rounded-lg overflow-hidden">
                                 <img src="<?= h($coverImage) ?>" alt="<?= h($leadMagnet['title']) ?>"
                                      class="w-44 h-auto">
                             </div>
                         </div>
                         <div>
-                            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
-                                <?= h($leadMagnet['hero_headline'] ?? $leadMagnet['title']) ?>
+                            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
+                                <?= heroHeadlineWithAccent($heroHeadline, $heroAccent) ?>
                             </h1>
                             <?php if (!empty($leadMagnet['hero_subheadline'])): ?>
-                                <p class="mt-4 text-lg text-white/80 leading-relaxed">
+                                <p class="mt-5 text-lg md:text-xl text-white/80 leading-relaxed">
                                     <?= h($leadMagnet['hero_subheadline']) ?>
                                 </p>
                             <?php elseif (!empty($leadMagnet['subtitle'])): ?>
-                                <p class="mt-4 text-lg text-white/80 leading-relaxed">
+                                <p class="mt-5 text-lg md:text-xl text-white/80 leading-relaxed">
                                     <?= h($leadMagnet['subtitle']) ?>
                                 </p>
                             <?php endif; ?>
                         </div>
                     </div>
-                    <!-- Desktop: no cover image, just text -->
                 <?php else: ?>
                     <div class="hidden lg:block">
-                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
-                            <?= h($leadMagnet['hero_headline'] ?? $leadMagnet['title']) ?>
+                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
+                            <?= heroHeadlineWithAccent($heroHeadline, $heroAccent) ?>
                         </h1>
                         <?php if (!empty($leadMagnet['hero_subheadline'])): ?>
-                            <p class="mt-4 text-lg text-white/80 leading-relaxed">
+                            <p class="mt-5 text-lg md:text-xl text-white/80 leading-relaxed">
                                 <?= h($leadMagnet['hero_subheadline']) ?>
                             </p>
                         <?php elseif (!empty($leadMagnet['subtitle'])): ?>
-                            <p class="mt-4 text-lg text-white/80 leading-relaxed">
+                            <p class="mt-5 text-lg md:text-xl text-white/80 leading-relaxed">
                                 <?= h($leadMagnet['subtitle']) ?>
                             </p>
                         <?php endif; ?>
@@ -142,7 +174,7 @@ ob_start();
                     <?php if ($coverImage): ?>
                         <div class="flex justify-center mb-6">
                             <div class="book-mockup">
-                                <div class="book-mockup-inner rounded-lg overflow-hidden">
+                                <div class="book-mockup-inner book-float rounded-lg overflow-hidden">
                                     <img src="<?= h($coverImage) ?>" alt="<?= h($leadMagnet['title']) ?>"
                                          class="w-48 h-auto">
                                 </div>
@@ -150,7 +182,7 @@ ob_start();
                         </div>
                     <?php endif; ?>
                     <h1 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
-                        <?= h($leadMagnet['hero_headline'] ?? $leadMagnet['title']) ?>
+                        <?= heroHeadlineWithAccent($heroHeadline, $heroAccent) ?>
                     </h1>
                     <?php if (!empty($leadMagnet['hero_subheadline'])): ?>
                         <p class="mt-4 text-lg text-white/80 leading-relaxed">
@@ -164,9 +196,9 @@ ob_start();
                 </div>
             </div>
 
-            <!-- Right: Signup Form only -->
-            <div class="flex justify-center lg:justify-end">
-                <div class="bg-white rounded-xl shadow-xl p-8 w-full max-w-lg" id="signup-form" x-data="{ loading: false, error: '' }">
+            <!-- Right: Signup Form -->
+            <div class="flex justify-center lg:justify-end animate-fade-in-delay">
+                <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-lg" id="signup-form" x-data="{ loading: false, error: '' }">
                     <h2 class="text-xl font-bold text-gray-900 mb-2"><?= h($sh('form_title', 'Get Your Free Copy')) ?></h2>
                     <p class="text-gray-500 text-sm mb-6"><?= h($sh('form_subtitle', 'Enter your details below and we\'ll send it straight to your inbox.')) ?></p>
 
@@ -204,7 +236,7 @@ ob_start();
                         <div x-show="error" x-cloak class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm" x-text="error"></div>
 
                         <button type="submit" :disabled="loading"
-                                class="mt-6 w-full btn-brand px-6 py-3.5 text-white font-semibold rounded-lg transition text-base disabled:opacity-50">
+                                class="mt-6 w-full btn-brand px-6 py-3.5 text-white font-semibold rounded-lg transform hover:scale-[1.02] shadow-lg transition text-base disabled:opacity-50">
                             <span x-show="!loading"><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
                             <span x-show="loading" x-cloak><?= h($sh('form_sending', 'Sending...')) ?></span>
                         </button>
@@ -496,14 +528,16 @@ ob_start();
 
 <!-- 11. Bottom CTA -->
 <section class="relative overflow-hidden py-16 lg:py-20" style="background-color: <?= h($heroBgColor) ?>;">
-    <div class="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent"></div>
+    <div class="absolute inset-0 bg-gradient-to-br from-black/30 to-transparent"></div>
+    <div class="absolute inset-0 opacity-5">
+        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%220%200%2040%2040%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23fff%22%20fill-rule%3D%22evenodd%22%3E%3Ccircle%20cx%3D%2220%22%20cy%3D%2220%22%20r%3D%222%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E'); background-size: 40px 40px;"></div>
+    </div>
     <div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row items-center justify-center lg:space-x-12 text-center lg:text-left">
-            <!-- Book mockup (smaller, repeated) -->
             <?php if ($coverImage): ?>
                 <div class="hidden lg:block flex-shrink-0 mb-8 lg:mb-0">
                     <div class="book-mockup">
-                        <div class="book-mockup-inner rounded-lg overflow-hidden">
+                        <div class="book-mockup-inner book-float rounded-lg overflow-hidden">
                             <img src="<?= h($coverImage) ?>" alt="<?= h($leadMagnet['title']) ?>"
                                  class="w-36 h-auto">
                         </div>
@@ -515,7 +549,7 @@ ob_start();
                 <h2 class="text-2xl sm:text-3xl font-bold text-white mb-4"><?= h($sh('cta_title', 'Ready to Get Started?')) ?></h2>
                 <p class="text-white/70 mb-8 max-w-lg"><?= h($sh('cta_subtitle', 'Download your free copy now and start implementing today.')) ?></p>
                 <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
-                   class="btn-brand inline-flex items-center justify-center px-8 py-3.5 text-white font-semibold rounded-lg transition shadow-sm text-base">
+                   class="btn-brand inline-flex items-center justify-center px-8 py-3.5 text-white font-semibold rounded-lg transform hover:scale-[1.02] shadow-lg transition text-base">
                     <?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?>
                 </a>
             </div>

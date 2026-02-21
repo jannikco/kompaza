@@ -39,8 +39,8 @@ class LeadMagnet {
     public static function create($data) {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            INSERT INTO lead_magnets (tenant_id, slug, title, subtitle, meta_description, hero_headline, hero_subheadline, hero_cta_text, hero_bg_color, hero_image_path, cover_image_path, features_headline, features, chapters, key_statistics, target_audience, faq, before_after, author_bio, testimonial_templates, social_proof, language, section_headings, pdf_filename, pdf_original_name, email_subject, email_body_html, brevo_list_id, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO lead_magnets (tenant_id, slug, title, subtitle, meta_description, hero_headline, hero_subheadline, hero_cta_text, hero_badge, hero_headline_accent, hero_bg_color, hero_image_path, cover_image_path, features_headline, features, chapters, key_statistics, target_audience, faq, before_after, author_bio, testimonial_templates, social_proof, language, section_headings, pdf_filename, pdf_original_name, email_subject, email_body_html, brevo_list_id, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->execute([
             $data['tenant_id'],
@@ -51,6 +51,8 @@ class LeadMagnet {
             $data['hero_headline'] ?? null,
             $data['hero_subheadline'] ?? null,
             $data['hero_cta_text'] ?? 'Download Free',
+            $data['hero_badge'] ?? null,
+            $data['hero_headline_accent'] ?? null,
             $data['hero_bg_color'] ?? '#1e40af',
             $data['hero_image_path'] ?? null,
             $data['cover_image_path'] ?? null,

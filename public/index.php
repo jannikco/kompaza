@@ -257,6 +257,7 @@ if ($routingMode === 'tenant') {
             '/admin/lead-magnets/ai-analyze' => 'admin/lead-magnets/ai-analyze',
             '/admin/lead-magnets/ai-generate' => 'admin/lead-magnets/ai-generate',
             '/admin/lead-magnets/ai-cover' => 'admin/lead-magnets/ai-cover',
+            '/admin/lead-magnets/ai-covers' => 'admin/lead-magnets/ai-covers',
             '/admin/lead-magnets/upload-cover' => 'admin/lead-magnets/upload-cover',
             '/admin/lead-magnets/gem' => 'admin/lead-magnets/store',
             '/admin/lead-magnets/opdater' => 'admin/lead-magnets/update',
