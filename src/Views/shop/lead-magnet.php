@@ -4,6 +4,17 @@ $tenant = currentTenant();
 $metaDescription = $leadMagnet['meta_description'] ?? $leadMagnet['subtitle'] ?? '';
 $heroBgColor = $leadMagnet['hero_bg_color'] ?? ($tenant['primary_color'] ?? '#1e40af');
 
+// Compute gradient shades from hero bg color (+-20 per RGB channel)
+$hexClean = ltrim($heroBgColor, '#');
+if (strlen($hexClean) === 3) {
+    $hexClean = $hexClean[0].$hexClean[0].$hexClean[1].$hexClean[1].$hexClean[2].$hexClean[2];
+}
+$r = hexdec(substr($hexClean, 0, 2));
+$g = hexdec(substr($hexClean, 2, 2));
+$b = hexdec(substr($hexClean, 4, 2));
+$heroBgDarker  = sprintf('#%02x%02x%02x', max(0, $r - 25), max(0, $g - 25), max(0, $b - 25));
+$heroBgLighter = sprintf('#%02x%02x%02x', min(255, $r + 25), min(255, $g + 25), min(255, $b + 25));
+
 $features = [];
 if (!empty($leadMagnet['features'])) {
     $features = json_decode($leadMagnet['features'], true) ?: [];
@@ -76,9 +87,8 @@ ob_start();
 ?>
 
 <style>
-    .book-mockup {
-        perspective: 1200px;
-    }
+    /* Book mockup base */
+    .book-mockup { perspective: 1200px; }
     .book-mockup-inner {
         transform-style: preserve-3d;
         filter: drop-shadow(0 25px 50px rgba(0,0,0,0.4));
@@ -96,43 +106,123 @@ ob_start();
         transform: translateY(-5px) rotateY(-5deg);
         transition: transform 0.4s ease;
     }
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
+
+    /* 3D book spine & page edges */
+    .book-3d { position: relative; }
+    .book-3d::before {
+        content: '';
+        position: absolute;
+        top: 3%; left: 0;
+        width: 10px; height: 94%;
+        background: linear-gradient(to right, rgba(0,0,0,0.3), rgba(0,0,0,0.1));
+        transform: rotateY(-60deg) translateX(-5px);
+        transform-origin: left;
+    }
+    .book-3d::after {
+        content: '';
+        position: absolute;
+        top: 2%; right: -6px;
+        width: 6px; height: 96%;
+        background: repeating-linear-gradient(to bottom, #f0f0f0 0px, #e8e8e8 1px, #f5f5f5 2px);
+        border-radius: 0 1px 1px 0;
+    }
+
+    /* Animated gradient background */
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Staggered entrance animations */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(24px); }
         to { opacity: 1; transform: translateY(0); }
     }
-    .animate-fade-in {
-        animation: fadeIn 0.8s ease-out;
+    .animate-stagger-1 { animation: fadeInUp 0.6s ease-out 0.1s both; }
+    .animate-stagger-2 { animation: fadeInUp 0.6s ease-out 0.3s both; }
+    .animate-stagger-3 { animation: fadeInUp 0.6s ease-out 0.5s both; }
+    .animate-stagger-4 { animation: fadeInUp 0.8s ease-out 0.7s both; }
+
+    /* Soft radial glow behind book */
+    @keyframes glowPulse {
+        0%, 100% { opacity: 0.3; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(1.1); }
     }
-    .animate-fade-in-delay {
-        animation: fadeIn 0.8s ease-out 0.2s both;
+    .book-glow {
+        position: absolute;
+        width: 200%; height: 200%;
+        top: -50%; left: -50%;
+        background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+        animation: glowPulse 4s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    /* CTA button shimmer */
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+    .btn-shimmer { position: relative; overflow: hidden; }
+    .btn-shimmer::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 50%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        animation: shimmer 3s ease-in-out infinite;
+    }
+
+    /* Form card colored glow */
+    .form-glow {
+        box-shadow: 0 25px 60px -12px rgba(0,0,0,0.25), 0 0 40px -15px <?= h($heroBgColor) ?>40;
+    }
+
+    /* Floating decorative orbs */
+    @keyframes floatOrb1 {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(30px, -20px); }
+    }
+    @keyframes floatOrb2 {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(-20px, 30px); }
+    }
+    @keyframes floatOrb3 {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(-15px, -25px); }
     }
 </style>
 
 <!-- 1. Hero Section (Premium) -->
-<section class="relative overflow-hidden" style="background-color: <?= h($heroBgColor) ?>;" id="hero">
+<section class="relative overflow-hidden" style="background: linear-gradient(-45deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>, <?= h($heroBgColor) ?>, <?= h($heroBgLighter) ?>); background-size: 400% 400%; animation: gradientShift 15s ease infinite;" id="hero">
     <!-- Gradient overlay -->
     <div class="absolute inset-0 bg-gradient-to-br from-black/30 to-transparent"></div>
-    <!-- SVG pattern texture -->
-    <div class="absolute inset-0 opacity-5">
-        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%220%200%2040%2040%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23fff%22%20fill-rule%3D%22evenodd%22%3E%3Ccircle%20cx%3D%2220%22%20cy%3D%2220%22%20r%3D%222%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E'); background-size: 40px 40px;"></div>
+    <!-- Cross-hatch SVG pattern -->
+    <div class="absolute inset-0 opacity-[0.04]">
+        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg%20width%3D%2230%22%20height%3D%2230%22%20viewBox%3D%220%200%2030%2030%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%200L30%2030M30%200L0%2030%22%20stroke%3D%22%23fff%22%20stroke-width%3D%220.5%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E'); background-size: 30px 30px;"></div>
     </div>
+    <!-- Floating decorative orbs -->
+    <div class="absolute top-10 right-20 w-64 h-64 rounded-full bg-white/5 blur-3xl pointer-events-none" style="animation: floatOrb1 20s ease-in-out infinite;"></div>
+    <div class="absolute bottom-10 left-10 w-48 h-48 rounded-full bg-white/5 blur-3xl pointer-events-none" style="animation: floatOrb2 25s ease-in-out infinite;"></div>
+    <div class="absolute top-1/2 left-1/3 w-40 h-40 rounded-full bg-white/[0.03] blur-3xl pointer-events-none" style="animation: floatOrb3 22s ease-in-out infinite;"></div>
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <!-- Left: Text content with fade-in -->
-            <div class="animate-fade-in">
+            <!-- Left: Text content with staggered entrance -->
+            <div>
                 <!-- Badge -->
                 <?php if ($heroBadge): ?>
-                    <div class="inline-block bg-white/15 text-white/90 px-4 py-1.5 rounded-full text-sm font-semibold mb-5 backdrop-blur-sm">
+                    <div class="animate-stagger-1 inline-block bg-white/15 text-white/90 px-4 py-1.5 rounded-full text-sm font-semibold mb-5 backdrop-blur-sm">
                         <?= h($heroBadge) ?>
                     </div>
                 <?php endif; ?>
 
                 <!-- Desktop: book + text side-by-side -->
                 <?php if ($coverImage): ?>
-                    <div class="hidden lg:flex items-start gap-8">
-                        <div class="book-mockup flex-shrink-0">
-                            <div class="book-mockup-inner book-float rounded-lg overflow-hidden">
+                    <div class="hidden lg:flex items-start gap-8 animate-stagger-2">
+                        <div class="book-mockup flex-shrink-0 relative">
+                            <div class="book-glow"></div>
+                            <div class="book-mockup-inner book-float book-3d rounded-lg overflow-hidden">
                                 <img src="<?= h($coverImage) ?>" alt="<?= h($leadMagnet['title']) ?>"
                                      class="w-44 h-auto">
                             </div>
@@ -142,27 +232,27 @@ ob_start();
                                 <?= heroHeadlineWithAccent($heroHeadline, $heroAccent) ?>
                             </h1>
                             <?php if (!empty($leadMagnet['hero_subheadline'])): ?>
-                                <p class="mt-5 text-lg md:text-xl text-white/80 leading-relaxed">
+                                <p class="animate-stagger-3 mt-5 text-lg md:text-xl text-white/80 leading-relaxed">
                                     <?= h($leadMagnet['hero_subheadline']) ?>
                                 </p>
                             <?php elseif (!empty($leadMagnet['subtitle'])): ?>
-                                <p class="mt-5 text-lg md:text-xl text-white/80 leading-relaxed">
+                                <p class="animate-stagger-3 mt-5 text-lg md:text-xl text-white/80 leading-relaxed">
                                     <?= h($leadMagnet['subtitle']) ?>
                                 </p>
                             <?php endif; ?>
                         </div>
                     </div>
                 <?php else: ?>
-                    <div class="hidden lg:block">
+                    <div class="hidden lg:block animate-stagger-2">
                         <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
                             <?= heroHeadlineWithAccent($heroHeadline, $heroAccent) ?>
                         </h1>
                         <?php if (!empty($leadMagnet['hero_subheadline'])): ?>
-                            <p class="mt-5 text-lg md:text-xl text-white/80 leading-relaxed">
+                            <p class="animate-stagger-3 mt-5 text-lg md:text-xl text-white/80 leading-relaxed">
                                 <?= h($leadMagnet['hero_subheadline']) ?>
                             </p>
                         <?php elseif (!empty($leadMagnet['subtitle'])): ?>
-                            <p class="mt-5 text-lg md:text-xl text-white/80 leading-relaxed">
+                            <p class="animate-stagger-3 mt-5 text-lg md:text-xl text-white/80 leading-relaxed">
                                 <?= h($leadMagnet['subtitle']) ?>
                             </p>
                         <?php endif; ?>
@@ -172,24 +262,25 @@ ob_start();
                 <!-- Mobile: book centered above text -->
                 <div class="lg:hidden">
                     <?php if ($coverImage): ?>
-                        <div class="flex justify-center mb-6">
-                            <div class="book-mockup">
-                                <div class="book-mockup-inner book-float rounded-lg overflow-hidden">
+                        <div class="flex justify-center mb-6 animate-stagger-1">
+                            <div class="book-mockup relative">
+                                <div class="book-glow"></div>
+                                <div class="book-mockup-inner book-float book-3d rounded-lg overflow-hidden">
                                     <img src="<?= h($coverImage) ?>" alt="<?= h($leadMagnet['title']) ?>"
                                          class="w-48 h-auto">
                                 </div>
                             </div>
                         </div>
                     <?php endif; ?>
-                    <h1 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+                    <h1 class="animate-stagger-2 text-3xl sm:text-4xl font-extrabold text-white leading-tight">
                         <?= heroHeadlineWithAccent($heroHeadline, $heroAccent) ?>
                     </h1>
                     <?php if (!empty($leadMagnet['hero_subheadline'])): ?>
-                        <p class="mt-4 text-lg text-white/80 leading-relaxed">
+                        <p class="animate-stagger-3 mt-4 text-lg text-white/80 leading-relaxed">
                             <?= h($leadMagnet['hero_subheadline']) ?>
                         </p>
                     <?php elseif (!empty($leadMagnet['subtitle'])): ?>
-                        <p class="mt-4 text-lg text-white/80 leading-relaxed">
+                        <p class="animate-stagger-3 mt-4 text-lg text-white/80 leading-relaxed">
                             <?= h($leadMagnet['subtitle']) ?>
                         </p>
                     <?php endif; ?>
@@ -197,8 +288,8 @@ ob_start();
             </div>
 
             <!-- Right: Signup Form -->
-            <div class="flex justify-center lg:justify-end animate-fade-in-delay">
-                <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-lg" id="signup-form" x-data="{ loading: false, error: '' }">
+            <div class="flex justify-center lg:justify-end animate-stagger-4">
+                <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 w-full max-w-lg ring-1 ring-white/20 form-glow" id="signup-form" x-data="{ loading: false, error: '' }">
                     <h2 class="text-xl font-bold text-gray-900 mb-2"><?= h($sh('form_title', 'Get Your Free Copy')) ?></h2>
                     <p class="text-gray-500 text-sm mb-6"><?= h($sh('form_subtitle', 'Enter your details below and we\'ll send it straight to your inbox.')) ?></p>
 
@@ -236,9 +327,9 @@ ob_start();
                         <div x-show="error" x-cloak class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm" x-text="error"></div>
 
                         <button type="submit" :disabled="loading"
-                                class="mt-6 w-full btn-brand px-6 py-3.5 text-white font-semibold rounded-lg transform hover:scale-[1.02] shadow-lg transition text-base disabled:opacity-50">
-                            <span x-show="!loading"><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
-                            <span x-show="loading" x-cloak><?= h($sh('form_sending', 'Sending...')) ?></span>
+                                class="btn-shimmer mt-6 w-full btn-brand px-6 py-3.5 text-white font-semibold rounded-lg transform hover:scale-[1.02] shadow-lg transition text-base disabled:opacity-50">
+                            <span class="relative z-10" x-show="!loading"><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
+                            <span class="relative z-10" x-show="loading" x-cloak><?= h($sh('form_sending', 'Sending...')) ?></span>
                         </button>
 
                         <p class="mt-4 text-xs text-gray-400 text-center"><?= h($sh('form_privacy', 'We respect your privacy. Unsubscribe at any time.')) ?></p>
@@ -527,17 +618,21 @@ ob_start();
 <?php endif; ?>
 
 <!-- 11. Bottom CTA -->
-<section class="relative overflow-hidden py-16 lg:py-20" style="background-color: <?= h($heroBgColor) ?>;">
+<section class="relative overflow-hidden py-16 lg:py-20" style="background: linear-gradient(-45deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>, <?= h($heroBgColor) ?>, <?= h($heroBgLighter) ?>); background-size: 400% 400%; animation: gradientShift 15s ease infinite;">
     <div class="absolute inset-0 bg-gradient-to-br from-black/30 to-transparent"></div>
-    <div class="absolute inset-0 opacity-5">
-        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%220%200%2040%2040%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23fff%22%20fill-rule%3D%22evenodd%22%3E%3Ccircle%20cx%3D%2220%22%20cy%3D%2220%22%20r%3D%222%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E'); background-size: 40px 40px;"></div>
+    <div class="absolute inset-0 opacity-[0.04]">
+        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg%20width%3D%2230%22%20height%3D%2230%22%20viewBox%3D%220%200%2030%2030%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%200L30%2030M30%200L0%2030%22%20stroke%3D%22%23fff%22%20stroke-width%3D%220.5%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E'); background-size: 30px 30px;"></div>
     </div>
+    <!-- Floating orbs -->
+    <div class="absolute top-5 right-16 w-48 h-48 rounded-full bg-white/5 blur-3xl pointer-events-none" style="animation: floatOrb1 20s ease-in-out infinite;"></div>
+    <div class="absolute bottom-5 left-8 w-36 h-36 rounded-full bg-white/5 blur-3xl pointer-events-none" style="animation: floatOrb2 25s ease-in-out infinite;"></div>
     <div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row items-center justify-center lg:space-x-12 text-center lg:text-left">
             <?php if ($coverImage): ?>
                 <div class="hidden lg:block flex-shrink-0 mb-8 lg:mb-0">
-                    <div class="book-mockup">
-                        <div class="book-mockup-inner book-float rounded-lg overflow-hidden">
+                    <div class="book-mockup relative">
+                        <div class="book-glow"></div>
+                        <div class="book-mockup-inner book-float book-3d rounded-lg overflow-hidden">
                             <img src="<?= h($coverImage) ?>" alt="<?= h($leadMagnet['title']) ?>"
                                  class="w-36 h-auto">
                         </div>
@@ -549,8 +644,8 @@ ob_start();
                 <h2 class="text-2xl sm:text-3xl font-bold text-white mb-4"><?= h($sh('cta_title', 'Ready to Get Started?')) ?></h2>
                 <p class="text-white/70 mb-8 max-w-lg"><?= h($sh('cta_subtitle', 'Download your free copy now and start implementing today.')) ?></p>
                 <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
-                   class="btn-brand inline-flex items-center justify-center px-8 py-3.5 text-white font-semibold rounded-lg transform hover:scale-[1.02] shadow-lg transition text-base">
-                    <?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?>
+                   class="btn-shimmer btn-brand inline-flex items-center justify-center px-8 py-3.5 text-white font-semibold rounded-lg transform hover:scale-[1.02] shadow-lg transition text-base">
+                    <span class="relative z-10"><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
                 </a>
             </div>
         </div>
