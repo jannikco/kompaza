@@ -139,66 +139,103 @@ ob_start();
                 </div>
                 <p class="font-medium text-gray-900 text-xs">Bold</p>
             </div>
-            <!-- Minimal -->
+            <!-- Minimal — Substack Newsletter -->
             <div @click="selectedTemplate = 'minimal'"
                  class="border-2 rounded-lg p-2.5 cursor-pointer transition hover:shadow-md text-center"
                  :class="selectedTemplate === 'minimal' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
                 <div class="w-full aspect-[3/4] rounded mb-2 overflow-hidden relative bg-white border border-gray-200">
-                    <div class="absolute top-2 left-2 right-2 h-1.5 bg-gray-100 rounded"></div>
-                    <div class="absolute top-5 left-2 w-10 h-1 bg-gray-200 rounded"></div>
-                    <div class="absolute top-9 left-2 right-2 space-y-1.5">
-                        <div class="h-2 bg-gray-50 rounded"></div>
-                        <div class="h-2 bg-gray-50 rounded"></div>
+                    <div class="absolute top-2 left-4 right-4 h-1.5 bg-gray-200 rounded"></div>
+                    <div class="absolute top-5 left-5 right-5 h-0.5 bg-gray-100 rounded"></div>
+                    <div class="absolute left-4 right-4 space-y-1.5" style="top: 2rem;">
+                        <div class="h-0 border-b-2 border-gray-200"></div>
+                        <div class="h-0 border-b-2 border-gray-200"></div>
                     </div>
-                    <div class="absolute bottom-2 left-2 right-2 h-2 bg-gray-100 rounded"></div>
+                    <div class="absolute left-3 right-3 space-y-1" style="top: 4rem;">
+                        <div class="flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-gray-200"></div><div class="h-0.5 bg-gray-100 rounded flex-1"></div></div>
+                        <div class="flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-gray-200"></div><div class="h-0.5 bg-gray-100 rounded flex-1"></div></div>
+                    </div>
+                    <div class="absolute bottom-2 left-4 right-4 h-2 bg-gray-100 rounded"></div>
                 </div>
                 <p class="font-medium text-gray-900 text-xs">Minimal</p>
             </div>
-            <!-- Classic -->
+            <!-- Classic — Editorial Magazine -->
             <div @click="selectedTemplate = 'classic'"
                  class="border-2 rounded-lg p-2.5 cursor-pointer transition hover:shadow-md text-center"
                  :class="selectedTemplate === 'classic' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
                 <div class="w-full aspect-[3/4] rounded mb-2 overflow-hidden relative" style="background: #faf7f2">
                     <div class="absolute top-2 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-amber-900/20 rounded"></div>
-                    <div class="absolute top-5 left-3 right-3 h-px bg-amber-900/10"></div>
-                    <div class="absolute top-7 left-3 right-3 space-y-1">
-                        <div class="h-1 bg-amber-900/10 rounded"></div>
-                        <div class="h-1 bg-amber-900/10 rounded w-4/5"></div>
+                    <div class="absolute top-5 left-3 right-3 h-px bg-amber-900/15"></div>
+                    <div class="absolute left-3 right-3 h-px bg-amber-900/15" style="top: 1.45rem;"></div>
+                    <div class="absolute top-8 left-3 right-3 flex gap-1">
+                        <div class="flex-1 space-y-0.5">
+                            <div class="h-0.5 bg-amber-900/10 rounded"></div>
+                            <div class="h-0.5 bg-amber-900/10 rounded w-4/5"></div>
+                            <div class="h-0.5 bg-amber-900/10 rounded"></div>
+                        </div>
+                        <div class="w-px bg-amber-900/10"></div>
+                        <div class="flex-1 space-y-0.5">
+                            <div class="h-0.5 bg-amber-900/10 rounded"></div>
+                            <div class="h-0.5 bg-amber-900/10 rounded w-3/4"></div>
+                            <div class="h-0.5 bg-amber-900/10 rounded"></div>
+                        </div>
                     </div>
-                    <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-10 h-2 bg-amber-900/15 rounded"></div>
+                    <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-10 h-2 rounded border border-amber-900/20"></div>
                 </div>
                 <p class="font-medium text-gray-900 text-xs">Classic</p>
             </div>
-            <!-- Split -->
+            <!-- Split — Asymmetric Agency -->
             <div @click="selectedTemplate = 'split'"
                  class="border-2 rounded-lg p-2.5 cursor-pointer transition hover:shadow-md text-center"
                  :class="selectedTemplate === 'split' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
-                <div class="w-full aspect-[3/4] rounded mb-2 overflow-hidden relative bg-gray-50 border border-gray-200">
-                    <div class="absolute top-0 left-0 w-1/2 h-1/2 bg-indigo-100"></div>
-                    <div class="absolute top-0 right-0 w-1/2 h-1/2 p-1.5">
-                        <div class="h-1 bg-gray-200 rounded mb-0.5"></div>
-                        <div class="h-0.5 bg-gray-100 rounded w-4/5"></div>
+                <div class="w-full aspect-[3/4] rounded mb-2 overflow-hidden relative bg-white border border-gray-200">
+                    <div class="absolute top-0 left-0 w-1/2 h-2/5 bg-indigo-500">
+                        <div class="absolute top-1.5 left-1.5 right-1.5 h-1 bg-white/30 rounded"></div>
                     </div>
-                    <div class="absolute bottom-0 left-0 w-1/2 h-1/2 p-1.5">
-                        <div class="h-1 bg-gray-200 rounded mb-0.5"></div>
-                        <div class="h-0.5 bg-gray-100 rounded w-3/5"></div>
+                    <div class="absolute top-0 right-0 w-1/2 h-2/5 bg-white p-1.5">
+                        <div class="h-0.5 bg-gray-200 rounded mb-0.5"></div>
+                        <div class="h-1.5 bg-indigo-100 rounded"></div>
                     </div>
-                    <div class="absolute bottom-0 right-0 w-1/2 h-1/2 bg-indigo-50"></div>
+                    <div class="absolute left-1.5 right-1.5 space-y-0.5" style="top: 45%;">
+                        <div class="flex gap-0.5"><div class="w-2 h-2 bg-indigo-100 rounded"></div><div class="h-0.5 bg-gray-100 rounded flex-1 mt-0.5"></div></div>
+                        <div class="flex gap-0.5 flex-row-reverse"><div class="w-2 h-2 bg-indigo-100 rounded"></div><div class="h-0.5 bg-gray-100 rounded flex-1 mt-0.5"></div></div>
+                    </div>
+                    <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0.5">
+                        <div class="w-1 h-1 rounded-full bg-indigo-400"></div>
+                        <div class="w-px h-1.5 bg-indigo-200"></div>
+                        <div class="w-1 h-1 rounded-full bg-indigo-400"></div>
+                    </div>
                 </div>
                 <p class="font-medium text-gray-900 text-xs">Split</p>
             </div>
-            <!-- Dark -->
+            <!-- Dark — Developer Dashboard -->
             <div @click="selectedTemplate = 'dark'"
                  class="border-2 rounded-lg p-2.5 cursor-pointer transition hover:shadow-md text-center"
                  :class="selectedTemplate === 'dark' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
                 <div class="w-full aspect-[3/4] rounded mb-2 overflow-hidden relative" style="background: #0f172a">
-                    <div class="absolute top-2 left-2 right-2 h-1.5 bg-white/10 rounded"></div>
-                    <div class="absolute top-5 left-2 w-8 h-1 bg-indigo-400/30 rounded"></div>
-                    <div class="absolute top-10 left-2 right-2 grid grid-cols-2 gap-1">
-                        <div class="h-4 bg-white/5 rounded border border-white/10"></div>
-                        <div class="h-4 bg-white/5 rounded border border-white/10"></div>
+                    <!-- Terminal title bar -->
+                    <div class="absolute top-2 left-2 right-2 rounded-t" style="background: rgba(255,255,255,0.05);">
+                        <div class="flex items-center gap-0.5 px-1.5 py-0.5">
+                            <div class="w-1 h-1 rounded-full bg-red-400/60"></div>
+                            <div class="w-1 h-1 rounded-full bg-yellow-400/60"></div>
+                            <div class="w-1 h-1 rounded-full bg-green-400/60"></div>
+                        </div>
+                        <div class="px-1.5 pb-1 space-y-0.5">
+                            <div class="h-0.5 bg-white/10 rounded w-3/4"></div>
+                            <div class="h-0.5 bg-white/10 rounded w-1/2"></div>
+                        </div>
                     </div>
-                    <div class="absolute bottom-2 left-2 right-2 h-2 bg-indigo-500/20 rounded border border-indigo-400/20"></div>
+                    <!-- Scroll cards -->
+                    <div class="absolute left-2 right-1 flex gap-0.5" style="top: 55%;">
+                        <div class="w-4 h-3 bg-white/5 rounded border-t border-indigo-400/40 flex-shrink-0"></div>
+                        <div class="w-4 h-3 bg-white/5 rounded border-t border-indigo-400/40 flex-shrink-0"></div>
+                        <div class="w-4 h-3 bg-white/5 rounded border-t border-indigo-400/40 flex-shrink-0"></div>
+                    </div>
+                    <!-- Chat bubbles -->
+                    <div class="absolute left-2 right-2 space-y-0.5" style="bottom: 8px;">
+                        <div class="flex gap-0.5"><div class="w-1.5 h-1.5 rounded-full bg-indigo-400/30"></div><div class="h-1.5 bg-white/5 rounded-r rounded-bl flex-1"></div></div>
+                        <div class="flex gap-0.5"><div class="w-1.5 h-1.5 rounded-full bg-indigo-400/30"></div><div class="h-1.5 bg-white/5 rounded-r rounded-bl w-3/4"></div></div>
+                    </div>
+                    <div class="absolute left-2 right-2 h-px" style="top: 50%; background: rgba(99,102,241,0.3); box-shadow: 0 0 3px rgba(99,102,241,0.3);"></div>
                 </div>
                 <p class="font-medium text-gray-900 text-xs">Dark</p>
             </div>

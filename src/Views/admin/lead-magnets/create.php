@@ -195,7 +195,7 @@ ob_start();
                         <p class="text-gray-400 text-[11px]">High-energy, animated</p>
                     </div>
 
-                    <!-- Minimal -->
+                    <!-- Minimal — Substack Newsletter: narrow text-only, underline inputs -->
                     <div @click="selectedTemplate = 'minimal'"
                          class="border-2 rounded-xl p-3 cursor-pointer transition hover:shadow-md text-center relative"
                          :class="selectedTemplate === 'minimal' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
@@ -203,20 +203,27 @@ ob_start();
                             <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">AI Pick</div>
                         </template>
                         <div class="w-full aspect-[3/4] rounded-lg mb-3 overflow-hidden relative bg-white border border-gray-200">
-                            <div class="absolute top-3 left-3 right-3 h-2 bg-gray-100 rounded"></div>
-                            <div class="absolute top-7 left-3 w-12 h-1 bg-gray-200 rounded"></div>
-                            <div class="absolute top-10 left-3 right-3 h-0.5 bg-gray-100 rounded"></div>
-                            <div class="absolute top-14 left-3 right-3 space-y-2">
-                                <div class="h-3 bg-gray-50 rounded"></div>
-                                <div class="h-3 bg-gray-50 rounded"></div>
+                            <!-- Narrow centered text column -->
+                            <div class="absolute top-4 left-5 right-5 h-2 bg-gray-200 rounded"></div>
+                            <div class="absolute top-8 left-7 right-7 h-1 bg-gray-100 rounded"></div>
+                            <!-- Underline inputs -->
+                            <div class="absolute top-13 left-6 right-6 space-y-2.5" style="top: 3rem;">
+                                <div class="h-0 border-b-2 border-gray-200"></div>
+                                <div class="h-0 border-b-2 border-gray-200"></div>
                             </div>
-                            <div class="absolute bottom-3 left-3 right-3 h-3 bg-gray-100 rounded"></div>
+                            <!-- Numbered list -->
+                            <div class="absolute left-5 right-5 space-y-1.5" style="top: 5.5rem;">
+                                <div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-gray-200"></div><div class="h-1 bg-gray-100 rounded flex-1"></div></div>
+                                <div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-gray-200"></div><div class="h-1 bg-gray-100 rounded flex-1"></div></div>
+                                <div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-gray-200"></div><div class="h-1 bg-gray-100 rounded flex-1"></div></div>
+                            </div>
+                            <div class="absolute bottom-3 left-6 right-6 h-2.5 bg-gray-100 rounded"></div>
                         </div>
                         <p class="font-semibold text-gray-900 text-sm">Minimal</p>
-                        <p class="text-gray-400 text-[11px]">Clean, professional</p>
+                        <p class="text-gray-400 text-[11px]">Text-only, newsletter</p>
                     </div>
 
-                    <!-- Classic -->
+                    <!-- Classic — Editorial Magazine: serif, newspaper columns, pull-quotes -->
                     <div @click="selectedTemplate = 'classic'"
                          class="border-2 rounded-xl p-3 cursor-pointer transition hover:shadow-md text-center relative"
                          :class="selectedTemplate === 'classic' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
@@ -224,44 +231,74 @@ ob_start();
                             <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">AI Pick</div>
                         </template>
                         <div class="w-full aspect-[3/4] rounded-lg mb-3 overflow-hidden relative" style="background: #faf7f2">
-                            <div class="absolute top-3 left-1/2 -translate-x-1/2 w-16 h-2 bg-amber-900/20 rounded"></div>
-                            <div class="absolute top-7 left-4 right-4 h-px bg-amber-900/10"></div>
-                            <div class="absolute top-10 left-4 right-4 space-y-1.5">
-                                <div class="h-1 bg-amber-900/10 rounded"></div>
-                                <div class="h-1 bg-amber-900/10 rounded w-4/5"></div>
-                                <div class="h-1 bg-amber-900/10 rounded w-3/5"></div>
+                            <!-- Serif headline centered -->
+                            <div class="absolute top-3 left-1/2 -translate-x-1/2 w-16 h-2 bg-amber-900/20 rounded" style="font-family: serif;"></div>
+                            <!-- Double-rule strip -->
+                            <div class="absolute top-7 left-4 right-4 h-px bg-amber-900/15"></div>
+                            <div class="absolute left-4 right-4 h-px bg-amber-900/15" style="top: 1.95rem;"></div>
+                            <!-- Two newspaper columns -->
+                            <div class="absolute top-10 left-4 right-4 flex gap-1.5">
+                                <div class="flex-1 space-y-1">
+                                    <div class="h-1 bg-amber-900/10 rounded"></div>
+                                    <div class="h-1 bg-amber-900/10 rounded w-4/5"></div>
+                                    <div class="h-1 bg-amber-900/10 rounded"></div>
+                                    <div class="h-1 bg-amber-900/10 rounded w-3/5"></div>
+                                </div>
+                                <div class="w-px bg-amber-900/10"></div>
+                                <div class="flex-1 space-y-1">
+                                    <div class="h-1 bg-amber-900/10 rounded"></div>
+                                    <div class="h-1 bg-amber-900/10 rounded w-3/4"></div>
+                                    <div class="h-1 bg-amber-900/10 rounded"></div>
+                                    <div class="h-1 bg-amber-900/10 rounded w-4/5"></div>
+                                </div>
                             </div>
-                            <div class="absolute bottom-8 left-4 right-4 h-px bg-amber-900/10"></div>
-                            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 w-14 h-2.5 bg-amber-900/15 rounded"></div>
+                            <!-- Giant pull-quote -->
+                            <div class="absolute bottom-8 left-4 right-4 text-center">
+                                <div class="text-amber-900/15 text-lg font-bold" style="font-family: serif;">&ldquo;</div>
+                                <div class="h-1 bg-amber-900/8 rounded mx-2"></div>
+                            </div>
+                            <!-- Outlined button -->
+                            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 w-14 h-2.5 rounded border border-amber-900/20"></div>
                         </div>
                         <p class="font-semibold text-gray-900 text-sm">Classic</p>
-                        <p class="text-gray-400 text-[11px]">Elegant, editorial</p>
+                        <p class="text-gray-400 text-[11px]">Serif, editorial magazine</p>
                     </div>
 
-                    <!-- Split -->
+                    <!-- Split — Asymmetric Agency: 50/50 hero, zigzag, timeline -->
                     <div @click="selectedTemplate = 'split'"
                          class="border-2 rounded-xl p-3 cursor-pointer transition hover:shadow-md text-center relative"
                          :class="selectedTemplate === 'split' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
                         <template x-if="recommendedTemplate === 'split'">
                             <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">AI Pick</div>
                         </template>
-                        <div class="w-full aspect-[3/4] rounded-lg mb-3 overflow-hidden relative bg-gray-50 border border-gray-200">
-                            <div class="absolute top-0 left-0 w-1/2 h-1/2 bg-indigo-100"></div>
-                            <div class="absolute top-0 right-0 w-1/2 h-1/2 p-2">
-                                <div class="h-1.5 bg-gray-200 rounded mb-1"></div>
-                                <div class="h-1 bg-gray-100 rounded w-4/5"></div>
+                        <div class="w-full aspect-[3/4] rounded-lg mb-3 overflow-hidden relative bg-white border border-gray-200">
+                            <!-- 50/50 hero split -->
+                            <div class="absolute top-0 left-0 w-1/2 h-2/5 bg-indigo-500">
+                                <div class="absolute top-2 left-2 right-2 h-1.5 bg-white/30 rounded"></div>
+                                <div class="absolute top-5 left-2 w-8 h-1 bg-white/20 rounded"></div>
                             </div>
-                            <div class="absolute bottom-0 left-0 w-1/2 h-1/2 p-2">
-                                <div class="h-1.5 bg-gray-200 rounded mb-1"></div>
-                                <div class="h-1 bg-gray-100 rounded w-3/5"></div>
+                            <div class="absolute top-0 right-0 w-1/2 h-2/5 bg-white p-2">
+                                <div class="h-1 bg-gray-200 rounded mb-1"></div>
+                                <div class="h-0.5 border-b border-gray-200 mb-1"></div>
+                                <div class="h-2 bg-indigo-100 rounded"></div>
                             </div>
-                            <div class="absolute bottom-0 right-0 w-1/2 h-1/2 bg-indigo-50"></div>
+                            <!-- Zigzag rows -->
+                            <div class="absolute left-2 right-2 space-y-1" style="top: 45%;">
+                                <div class="flex gap-1"><div class="w-3 h-3 bg-indigo-100 rounded"></div><div class="h-1 bg-gray-100 rounded flex-1 mt-1"></div></div>
+                                <div class="flex gap-1 flex-row-reverse"><div class="w-3 h-3 bg-indigo-100 rounded"></div><div class="h-1 bg-gray-100 rounded flex-1 mt-1"></div></div>
+                            </div>
+                            <!-- Center timeline dots -->
+                            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1">
+                                <div class="w-1.5 h-1.5 rounded-full bg-indigo-400"></div>
+                                <div class="w-px h-2 bg-indigo-200"></div>
+                                <div class="w-1.5 h-1.5 rounded-full bg-indigo-400"></div>
+                            </div>
                         </div>
                         <p class="font-semibold text-gray-900 text-sm">Split</p>
-                        <p class="text-gray-400 text-[11px]">Visual, alternating</p>
+                        <p class="text-gray-400 text-[11px]">50/50, zigzag, timeline</p>
                     </div>
 
-                    <!-- Dark -->
+                    <!-- Dark — Developer Dashboard: terminal, monospace, chat bubbles -->
                     <div @click="selectedTemplate = 'dark'"
                          class="border-2 rounded-xl p-3 cursor-pointer transition hover:shadow-md text-center relative"
                          :class="selectedTemplate === 'dark' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
@@ -269,16 +306,34 @@ ob_start();
                             <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">AI Pick</div>
                         </template>
                         <div class="w-full aspect-[3/4] rounded-lg mb-3 overflow-hidden relative" style="background: #0f172a">
-                            <div class="absolute top-3 left-3 right-3 h-2 bg-white/10 rounded"></div>
-                            <div class="absolute top-7 left-3 w-10 h-1.5 bg-indigo-400/30 rounded"></div>
-                            <div class="absolute top-14 left-3 right-3 grid grid-cols-2 gap-1.5">
-                                <div class="h-6 bg-white/5 rounded border border-white/10"></div>
-                                <div class="h-6 bg-white/5 rounded border border-white/10"></div>
+                            <!-- Terminal window with title bar dots -->
+                            <div class="absolute top-3 left-3 right-3 rounded-t overflow-hidden" style="background: rgba(255,255,255,0.05);">
+                                <div class="flex items-center gap-1 px-2 py-1">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-red-400/60"></div>
+                                    <div class="w-1.5 h-1.5 rounded-full bg-yellow-400/60"></div>
+                                    <div class="w-1.5 h-1.5 rounded-full bg-green-400/60"></div>
+                                </div>
+                                <div class="px-2 pb-1.5 space-y-1">
+                                    <div class="h-1 bg-white/10 rounded w-3/4"></div>
+                                    <div class="h-1 bg-white/10 rounded w-1/2"></div>
+                                </div>
                             </div>
-                            <div class="absolute bottom-3 left-3 right-3 h-3 bg-indigo-500/20 rounded border border-indigo-400/20"></div>
+                            <!-- Horizontal scroll cards strip -->
+                            <div class="absolute left-3 right-1 flex gap-1" style="top: 55%;">
+                                <div class="w-6 h-5 bg-white/5 rounded border-t-2 border-indigo-400/40 flex-shrink-0"></div>
+                                <div class="w-6 h-5 bg-white/5 rounded border-t-2 border-indigo-400/40 flex-shrink-0"></div>
+                                <div class="w-6 h-5 bg-white/5 rounded border-t-2 border-indigo-400/40 flex-shrink-0"></div>
+                            </div>
+                            <!-- Chat bubbles -->
+                            <div class="absolute left-3 right-3 space-y-1" style="bottom: 12px;">
+                                <div class="flex gap-1 items-start"><div class="w-2 h-2 rounded-full bg-indigo-400/30 flex-shrink-0"></div><div class="h-2.5 bg-white/5 rounded-r-lg rounded-bl-lg flex-1"></div></div>
+                                <div class="flex gap-1 items-start"><div class="w-2 h-2 rounded-full bg-indigo-400/30 flex-shrink-0"></div><div class="h-2.5 bg-white/5 rounded-r-lg rounded-bl-lg w-3/4"></div></div>
+                            </div>
+                            <!-- Neon glow line -->
+                            <div class="absolute left-3 right-3 h-px" style="top: 50%; background: rgba(99,102,241,0.3); box-shadow: 0 0 4px rgba(99,102,241,0.3);"></div>
                         </div>
                         <p class="font-semibold text-gray-900 text-sm">Dark</p>
-                        <p class="text-gray-400 text-[11px]">Tech, futuristic</p>
+                        <p class="text-gray-400 text-[11px]">Terminal, developer</p>
                     </div>
                 </div>
 
@@ -288,16 +343,16 @@ ob_start();
                         <p class="text-gray-600 text-sm">Animated gradients, wave dividers, hover effects, and floating elements. Best for <strong>marketing, product launches, and startups</strong>.</p>
                     </template>
                     <template x-if="selectedTemplate === 'minimal'">
-                        <p class="text-gray-600 text-sm">Clean whitespace, thin borders, no decorative effects. Best for <strong>premium brands, professional services, and design-focused</strong> content.</p>
+                        <p class="text-gray-600 text-sm">Like reading a beautifully typeset blog post. Narrow single-column, underline inputs, numbered lists, blockquote testimonials. Best for <strong>newsletters, thought leadership, and premium brands</strong>.</p>
                     </template>
                     <template x-if="selectedTemplate === 'classic'">
-                        <p class="text-gray-600 text-sm">Serif headings, single-column layout, elegant dividers. Best for <strong>educational content, thought leadership, and long-form guides</strong>.</p>
+                        <p class="text-gray-600 text-sm">Harvard Business Review meets The Economist. Serif Playfair Display headings, CSS newspaper columns, giant pull-quotes, ornamental rules. Best for <strong>editorial content, research, and long-form guides</strong>.</p>
                     </template>
                     <template x-if="selectedTemplate === 'split'">
-                        <p class="text-gray-600 text-sm">Alternating left/right sections, angled dividers, large images. Best for <strong>visual content, case studies, and portfolio-style guides</strong>.</p>
+                        <p class="text-gray-600 text-sm">Stripe-inspired asymmetric agency layout. 50/50 split hero, zigzag feature rows, center timeline, oversized stacked numbers. Best for <strong>visual content, case studies, and bold brands</strong>.</p>
                     </template>
                     <template x-if="selectedTemplate === 'dark'">
-                        <p class="text-gray-600 text-sm">Dark background, frosted glass cards, glowing accents. Best for <strong>tech/developer content, creative agencies, and innovation</strong>.</p>
+                        <p class="text-gray-600 text-sm">Developer dashboard aesthetic. Terminal window form, horizontal scroll cards, diff-view transformations, chat bubble testimonials, monospace accents. Best for <strong>tech/developer content, SaaS, and innovation</strong>.</p>
                     </template>
                 </div>
 
