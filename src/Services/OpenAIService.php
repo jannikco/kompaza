@@ -135,6 +135,167 @@ class OpenAIService {
     }
 
     /**
+     * Phase 1: Analyze PDF — runs only the orchestrator call (~5s).
+     * Returns language, metadata, cover_prompt, etc.
+     */
+    public function analyzeLeadMagnet(string $pdfText, string $context = ''): ?array {
+        $userMessage = "Here is the content of the PDF lead magnet:\n\n" . $pdfText;
+        if (!empty($context)) {
+            $userMessage .= "\n\nAdditional context from the author about the target audience and goals:\n" . $context;
+        }
+
+        $orchestratorSystem = <<<'PROMPT'
+You are a content analysis expert. Analyze the PDF content provided and extract key metadata.
+
+CRITICAL: Detect the language of the PDF content. If the PDF is written in Danish, ALL text fields MUST be in Danish. If the PDF is in English, write in English. Never translate — always match the source language exactly.
+
+Return a JSON object with exactly these fields:
+- "language": ISO 639-1 code of the detected language (e.g. "da", "en", "de")
+- "content_summary": 2-3 sentence summary of the PDF content (in detected language)
+- "key_topics": array of 5-8 key topics/themes from the PDF (in detected language)
+- "tone": the writing tone - one of "professional", "casual", "academic", "friendly"
+- "title": a clear, descriptive title for the lead magnet (max 60 chars, in detected language)
+- "slug": URL-friendly slug derived from the title (lowercase, hyphens, no special chars)
+- "subtitle": a supporting subtitle (1 sentence, max 120 chars, in detected language)
+- "meta_description": SEO meta description (max 155 chars, in detected language)
+- "hero_bg_color": a professional dark hex color for the hero background (e.g. "#1e3a5f")
+- "cover_prompt": a DALL-E image generation prompt describing an ideal abstract book cover. Focus on visual elements, colors, mood, and abstract shapes only. Do NOT include any text or typography. This field must always be in English for DALL-E.
+PROMPT;
+
+        return $this->chatCompletion($orchestratorSystem, $userMessage);
+    }
+
+    /**
+     * Phase 2: Generate sections — takes confirmed language, runs 3 parallel calls, merges results.
+     * Uses the user-confirmed $language (not the auto-detected one).
+     */
+    public function generateLeadMagnetSections(string $pdfText, array $orchestratorResult, string $language, string $context = ''): array {
+        $tone = $orchestratorResult['tone'] ?? 'professional';
+        $summary = $orchestratorResult['content_summary'] ?? '';
+        $keyTopics = $orchestratorResult['key_topics'] ?? [];
+
+        $contextBlock = "TARGET LANGUAGE: {$language} (you MUST write ALL output in this language)\n";
+        $contextBlock .= "WRITING TONE: {$tone}\n";
+        $contextBlock .= "CONTENT SUMMARY: {$summary}\n";
+        $contextBlock .= "KEY TOPICS: " . implode(', ', $keyTopics) . "\n\n";
+        $contextBlock .= "PDF CONTENT:\n" . $pdfText;
+        if (!empty($context)) {
+            $contextBlock .= "\n\nADDITIONAL CONTEXT FROM AUTHOR:\n" . $context;
+        }
+
+        $parallelRequests = [
+            [
+                'key' => 'hero_email',
+                'system' => <<<PROMPT
+You are a marketing copywriter. Generate hero section copy and email delivery content for a lead magnet landing page.
+
+CRITICAL: Write ALL output in the language specified (see TARGET LANGUAGE). Never switch to English unless the target language IS English.
+
+Return a JSON object with exactly these fields:
+- "hero_headline": an attention-grabbing headline (max 10 words, punchy and benefit-driven)
+- "hero_subheadline": supporting text below the headline (1-2 sentences, explains the value)
+- "hero_cta_text": call-to-action button text (2-4 words)
+- "email_subject": email subject line for delivering the PDF (friendly, enticing)
+- "email_body_html": a short, friendly HTML email body that delivers the download link. Use {{name}} for the recipient's name and {{download_link}} for the PDF download URL. Keep it concise (3-5 short paragraphs). Use simple HTML (p tags, a tag for the link). Make it warm and {$tone}.
+PROMPT,
+                'user' => $contextBlock,
+                'max_tokens' => 2000,
+            ],
+            [
+                'key' => 'content_sections',
+                'system' => <<<'PROMPT'
+You are a content structure expert. Extract structured content sections from the PDF for a landing page.
+
+CRITICAL: Write ALL output in the language specified (see TARGET LANGUAGE). Never switch to English unless the target language IS English.
+
+Return a JSON object with exactly these fields:
+- "features_headline": a headline for the features/benefits section (e.g. "What You'll Learn")
+- "features": array of 3-6 objects, each with "title" (short, 3-6 words) and "description" (1 sentence). These highlight key takeaways from the PDF.
+- "chapters": array of up to 8 objects, each with "number" (integer), "title" (chapter/section title), and "description" (1 sentence summary). This represents the table of contents or main sections of the PDF. If the PDF doesn't have clear chapters, create logical sections based on the content.
+- "key_statistics": array of 3-4 objects, each with "value" (a number, percentage, or short metric), "label" (what the number represents), and "icon" (a single relevant emoji). Extract real numbers/data from the PDF where possible, or create compelling statistics about the content.
+PROMPT,
+                'user' => $contextBlock,
+                'max_tokens' => 3000,
+            ],
+            [
+                'key' => 'trust_sections',
+                'system' => <<<'PROMPT'
+You are a conversion optimization expert. Generate trust-building and audience-targeting content for a lead magnet landing page.
+
+CRITICAL: Write ALL output in the language specified (see TARGET LANGUAGE). Never switch to English unless the target language IS English.
+
+Return a JSON object with exactly these fields:
+- "target_audience": array of exactly 3 objects, each with "icon" (a single relevant emoji), "title" (short persona name, 3-5 words), and "description" (1 sentence explaining why this persona benefits from the PDF)
+- "faq": array of 4-5 objects, each with "question" and "answer". Common questions a prospect might have before downloading. Keep answers concise (1-2 sentences).
+- "before_after": an object with "before" (array of 3 pain point strings that the reader experiences without this knowledge) and "after" (array of 3 positive outcome strings after reading the PDF). Keep each string to 1 short sentence.
+- "author_bio_suggestion": a 2-3 sentence author bio based on the expertise demonstrated in the PDF. Write it in third person.
+- "testimonial_templates": array of 2-3 objects, each with "quote" (a realistic testimonial quote), "name" (a realistic first name), and "title" (a job title). These are editable templates for the user to customize with real feedback.
+- "social_proof": array of 3 objects, each with "value" (a compelling metric like "50+" or "10,000+"), "label" (what it represents, e.g. "Pages of Insights"), and "icon" (a single emoji). These replace the default metrics bar on the landing page.
+- "section_headings": an object with translated section heading strings for the landing page. All values must be in the TARGET LANGUAGE. Keys and their English defaults: "form_title" ("Get Your Free Copy"), "form_subtitle" ("Enter your details below and we'll send it straight to your inbox."), "form_name_label" ("Full Name"), "form_email_label" ("Email Address"), "form_privacy" ("We respect your privacy. Unsubscribe at any time."), "form_sending" ("Sending..."), "toc_title" ("Table of Contents"), "toc_subtitle" ("A preview of what you'll find inside"), "stats_title" ("By the Numbers"), "transformation_title" ("The Transformation"), "before_label" ("Before"), "after_label" ("After"), "audience_title" ("Who Is This For?"), "author_title" ("About the Author"), "testimonials_title" ("What Readers Say"), "faq_title" ("Frequently Asked Questions"), "cta_title" ("Ready to Get Started?"), "cta_subtitle" ("Download your free copy now and start implementing today."), "default_proof_1" ("PDF Guide"), "default_proof_2" ("100% Free"), "default_proof_3" ("Instant Access")
+PROMPT,
+                'user' => $contextBlock,
+                'max_tokens' => 4000,
+            ],
+        ];
+
+        $parallelResults = $this->parallelChatCompletions($parallelRequests, 90);
+
+        // Merge results
+        $merged = [
+            'language' => $language,
+            'title' => $orchestratorResult['title'] ?? '',
+            'slug' => $orchestratorResult['slug'] ?? '',
+            'subtitle' => $orchestratorResult['subtitle'] ?? '',
+            'meta_description' => $orchestratorResult['meta_description'] ?? '',
+            'hero_bg_color' => $orchestratorResult['hero_bg_color'] ?? '#1e3a5f',
+            'cover_prompt' => $orchestratorResult['cover_prompt'] ?? '',
+        ];
+
+        $failedKeys = [];
+
+        if ($parallelResults['hero_email']) {
+            $he = $parallelResults['hero_email'];
+            $merged['hero_headline'] = $he['hero_headline'] ?? '';
+            $merged['hero_subheadline'] = $he['hero_subheadline'] ?? '';
+            $merged['hero_cta_text'] = $he['hero_cta_text'] ?? '';
+            $merged['email_subject'] = $he['email_subject'] ?? '';
+            $merged['email_body_html'] = $he['email_body_html'] ?? '';
+        } else {
+            $failedKeys[] = 'hero_email';
+        }
+
+        if ($parallelResults['content_sections']) {
+            $cs = $parallelResults['content_sections'];
+            $merged['features_headline'] = $cs['features_headline'] ?? '';
+            $merged['features'] = $cs['features'] ?? [];
+            $merged['chapters'] = $cs['chapters'] ?? [];
+            $merged['key_statistics'] = $cs['key_statistics'] ?? [];
+        } else {
+            $failedKeys[] = 'content_sections';
+        }
+
+        if ($parallelResults['trust_sections']) {
+            $ts = $parallelResults['trust_sections'];
+            $merged['target_audience'] = $ts['target_audience'] ?? [];
+            $merged['faq'] = $ts['faq'] ?? [];
+            $merged['before_after'] = $ts['before_after'] ?? ['before' => [], 'after' => []];
+            $merged['author_bio'] = $ts['author_bio_suggestion'] ?? '';
+            $merged['testimonial_templates'] = $ts['testimonial_templates'] ?? [];
+            $merged['social_proof'] = $ts['social_proof'] ?? [];
+            $merged['section_headings'] = $ts['section_headings'] ?? [];
+        } else {
+            $failedKeys[] = 'trust_sections';
+        }
+
+        return [
+            'success' => true,
+            'data' => $merged,
+            'errors' => $failedKeys,
+            'partial' => !empty($failedKeys),
+        ];
+    }
+
+    /**
      * Orchestrated multi-step AI generation for lead magnet content.
      *
      * Step 1: Orchestrator analyzes PDF (sequential)

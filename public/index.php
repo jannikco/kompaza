@@ -254,6 +254,7 @@ if ($routingMode === 'tenant') {
             '/admin/redirects/edit' => 'admin/redirects/edit',
         ],
         'POST' => [
+            '/admin/lead-magnets/ai-analyze' => 'admin/lead-magnets/ai-analyze',
             '/admin/lead-magnets/ai-generate' => 'admin/lead-magnets/ai-generate',
             '/admin/lead-magnets/ai-cover' => 'admin/lead-magnets/ai-cover',
             '/admin/lead-magnets/upload-cover' => 'admin/lead-magnets/upload-cover',

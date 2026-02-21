@@ -22,73 +22,35 @@ if (!OpenAIService::isConfigured()) {
     exit;
 }
 
-// Validate PDF upload
-if (empty($_FILES['pdf_file']['name']) || $_FILES['pdf_file']['error'] !== UPLOAD_ERR_OK) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Please upload a PDF file']);
-    exit;
-}
-
-$pdfOriginalName = $_FILES['pdf_file']['name'];
-$ext = strtolower(pathinfo($pdfOriginalName, PATHINFO_EXTENSION));
-if ($ext !== 'pdf') {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Only PDF files are allowed']);
-    exit;
-}
-
-$tmpPath = $_FILES['pdf_file']['tmp_name'];
-
-// Upload PDF to S3 now so we don't need to re-upload on form submit
-$pdfFilename = uploadPrivateFile($tmpPath, 'pdfs', 'lm', 'pdf');
-
-// Extract text from PDF using pdftotext
-$pdfText = '';
-$extractPath = $_FILES['pdf_file']['tmp_name'];
-
-// pdftotext might work on the original tmp file, but it may have been moved by uploadPrivateFile
-// If it was moved to local storage, use that path; otherwise try the tmp path
-if (file_exists($extractPath)) {
-    $escapedPath = escapeshellarg($extractPath);
-    $pdfText = shell_exec("pdftotext {$escapedPath} - 2>/dev/null") ?? '';
-} else {
-    // File was moved to local storage, try that path
-    $tenantId = currentTenantId();
-    $localPath = STORAGE_PATH . '/pdfs/' . $tenantId . '/' . $pdfFilename;
-    if (file_exists($localPath)) {
-        $escapedPath = escapeshellarg($localPath);
-        $pdfText = shell_exec("pdftotext {$escapedPath} - 2>/dev/null") ?? '';
-    }
-}
-
-$pdfText = trim($pdfText);
-
-if (empty($pdfText)) {
-    // Still return success with PDF uploaded, but no AI content (scanned PDF or pdftotext not available)
-    echo json_encode([
-        'success' => true,
-        'ai_generated' => false,
-        'message' => 'PDF uploaded but could not extract text. Please fill in the fields manually.',
-        'pdf_filename' => $pdfFilename,
-        'pdf_original_name' => $pdfOriginalName,
-        'data' => null,
-    ]);
-    exit;
-}
-
-// Truncate to ~12k chars to fit within context
-$pdfText = mb_substr($pdfText, 0, 12000);
-
+// Accept pre-analyzed data from the analyze step
+$pdfText = trim($_POST['pdf_text'] ?? '');
+$orchestratorJson = $_POST['orchestrator'] ?? '';
+$language = trim($_POST['language'] ?? 'en');
 $context = trim($_POST['context'] ?? '');
+$pdfFilename = $_POST['pdf_filename'] ?? '';
+$pdfOriginalName = $_POST['pdf_original_name'] ?? '';
+
+if (empty($pdfText) || empty($orchestratorJson)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Missing pre-analyzed data. Please start over.']);
+    exit;
+}
+
+$orchestratorResult = json_decode($orchestratorJson, true);
+if (!$orchestratorResult) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Invalid orchestrator data.']);
+    exit;
+}
 
 $openai = new OpenAIService();
-$result = $openai->generateLeadMagnetContent($pdfText, $context);
+$result = $openai->generateLeadMagnetSections($pdfText, $orchestratorResult, $language, $context);
 
 if (!$result['success']) {
     echo json_encode([
         'success' => true,
         'ai_generated' => false,
-        'message' => 'AI generation failed. PDF uploaded — please fill in the fields manually.',
+        'message' => 'AI generation failed. Please fill in the fields manually.',
         'pdf_filename' => $pdfFilename,
         'pdf_original_name' => $pdfOriginalName,
         'data' => null,
@@ -122,6 +84,9 @@ if (isset($data['testimonial_templates']) && is_array($data['testimonial_templat
 }
 if (isset($data['social_proof']) && is_array($data['social_proof'])) {
     $data['social_proof_json'] = json_encode($data['social_proof']);
+}
+if (isset($data['section_headings']) && is_array($data['section_headings'])) {
+    $data['section_headings_json'] = json_encode($data['section_headings']);
 }
 
 echo json_encode([

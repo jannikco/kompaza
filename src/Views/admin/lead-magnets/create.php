@@ -40,7 +40,7 @@ ob_start();
         </div>
     </div>
 
-    <!-- Step 1: Upload PDF + AI Generate -->
+    <!-- Step 1: Upload PDF + AI Generate (two-phase) -->
     <div x-show="step === 1" x-transition>
         <div class="max-w-2xl mx-auto">
             <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8 text-center">
@@ -50,7 +50,8 @@ ob_start();
                 <h2 class="text-2xl font-bold text-gray-900 mb-2">Create with AI</h2>
                 <p class="text-gray-500 mb-8">Upload your PDF and let AI generate the landing page content, email copy, and more.</p>
 
-                <div x-show="!loading">
+                <!-- Phase 1: Upload & Analyze -->
+                <div x-show="!analyzing && !showLanguageSelection && !generating">
                     <label class="block mb-4">
                         <div class="relative border-2 border-dashed border-gray-300 rounded-xl p-8 hover:border-indigo-500 transition cursor-pointer"
                              :class="pdfFile ? 'border-indigo-500 bg-indigo-500/5' : ''">
@@ -61,7 +62,7 @@ ob_start();
                             </div>
                             <div x-show="pdfFile" class="flex items-center justify-center space-x-3">
                                 <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                                <span class="text-white font-medium" x-text="pdfFile?.name"></span>
+                                <span class="text-gray-900 font-medium" x-text="pdfFile?.name"></span>
                             </div>
                         </div>
                     </label>
@@ -79,7 +80,7 @@ ob_start();
                     </template>
 
                     <div class="flex items-center justify-center space-x-4">
-                        <button @click="generateWithAI()" :disabled="!pdfFile"
+                        <button @click="analyzeWithAI()" :disabled="!pdfFile"
                             class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition inline-flex items-center space-x-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                             <span>Generate with AI</span>
@@ -90,14 +91,67 @@ ob_start();
                     </div>
                 </div>
 
-                <!-- Loading state with progress phases -->
-                <div x-show="loading" class="py-8">
+                <!-- Analyzing spinner (Phase 1 loading) -->
+                <div x-show="analyzing" class="py-8">
                     <div class="flex items-center justify-center space-x-3 mb-4">
                         <svg class="animate-spin w-6 h-6 text-indigo-600" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span class="text-white font-medium" x-text="loadingPhase"></span>
+                        <span class="text-gray-900 font-medium">Analyzing your PDF...</span>
+                    </div>
+                    <p class="text-gray-500 text-sm">This usually takes 5-10 seconds</p>
+                </div>
+
+                <!-- Language Selection (Phase 2 setup) -->
+                <div x-show="showLanguageSelection" class="py-4">
+                    <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-start space-x-3">
+                        <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <div class="text-left">
+                            <p class="text-green-800 font-medium">PDF analyzed successfully</p>
+                            <p class="text-green-700 text-sm">Language detected: <strong x-text="languageNames[detectedLanguage] || detectedLanguage"></strong></p>
+                        </div>
+                    </div>
+
+                    <div class="mb-6 text-left">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Generate content in:</label>
+                        <select x-model="confirmedLanguage"
+                            class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                            <option value="da">Danish</option>
+                            <option value="en">English</option>
+                            <option value="de">German</option>
+                            <option value="fr">French</option>
+                            <option value="es">Spanish</option>
+                            <option value="nl">Dutch</option>
+                            <option value="sv">Swedish</option>
+                            <option value="no">Norwegian</option>
+                        </select>
+                    </div>
+
+                    <template x-if="error">
+                        <div class="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 text-sm" x-text="error"></div>
+                    </template>
+
+                    <div class="flex items-center justify-center space-x-4">
+                        <button @click="generateContent()"
+                            class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition inline-flex items-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            <span>Generate Landing Page</span>
+                        </button>
+                        <button @click="showLanguageSelection = false; analyzing = false; error = '';" class="text-sm text-gray-500 hover:text-gray-900 transition">
+                            &larr; Back
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Generating spinner (Phase 2 loading) -->
+                <div x-show="generating" class="py-8">
+                    <div class="flex items-center justify-center space-x-3 mb-4">
+                        <svg class="animate-spin w-6 h-6 text-indigo-600" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span class="text-gray-900 font-medium" x-text="loadingPhase"></span>
                     </div>
                     <p class="text-gray-500 text-sm">This may take 30-45 seconds</p>
                     <!-- Progress bar -->
@@ -266,6 +320,8 @@ ob_start();
         <input type="hidden" name="before_after" :value="JSON.stringify(beforeAfter)">
         <input type="hidden" name="testimonial_templates" :value="JSON.stringify(testimonialTemplates)">
         <input type="hidden" name="social_proof" :value="JSON.stringify(socialProof)">
+        <input type="hidden" name="language" :value="confirmedLanguage">
+        <input type="hidden" name="section_headings" :value="JSON.stringify(sectionHeadings)">
 
         <!-- Step 3: Basic Info & Hero -->
         <div x-show="step === 3" x-transition class="space-y-8">
@@ -790,13 +846,20 @@ function leadMagnetWizard() {
             {n: 6, label: 'Publish'}
         ],
         loading: false,
-        loadingPhase: 'Analyzing your PDF...',
+        analyzing: false,
+        generating: false,
+        showLanguageSelection: false,
+        loadingPhase: 'Generating content...',
         loadingProgress: 0,
         error: '',
         context: '',
         pdfFile: null,
         pdfFilename: '',
         pdfOriginalName: '',
+        pdfTextForGeneration: '',
+        orchestratorData: null,
+        detectedLanguage: '',
+        confirmedLanguage: '',
         aiGenerated: false,
         partialWarning: false,
         features: [],
@@ -808,6 +871,10 @@ function leadMagnetWizard() {
         authorBio: '',
         testimonialTemplates: [],
         socialProof: [],
+        sectionHeadings: {},
+
+        // Language display names
+        languageNames: { da: 'Danish', en: 'English', de: 'German', fr: 'French', es: 'Spanish', nl: 'Dutch', sv: 'Swedish', no: 'Norwegian' },
 
         // Cover state
         coverMode: '',
@@ -856,22 +923,22 @@ function leadMagnetWizard() {
             this.step = 6;
         },
 
-        startLoadingAnimation() {
+        startGeneratingAnimation() {
             this.loadingProgress = 0;
-            this.loadingPhase = 'Analyzing your PDF...';
+            this.loadingPhase = 'Generating landing page sections...';
 
             setTimeout(() => { this.loadingProgress = 20; }, 500);
             setTimeout(() => {
-                this.loadingPhase = 'Analyzing content structure...';
-                this.loadingProgress = 35;
+                this.loadingPhase = 'Creating marketing copy...';
+                this.loadingProgress = 40;
             }, 5000);
             setTimeout(() => {
-                this.loadingPhase = 'Generating landing page sections...';
-                this.loadingProgress = 55;
+                this.loadingPhase = 'Building trust elements...';
+                this.loadingProgress = 60;
             }, 12000);
             setTimeout(() => {
-                this.loadingPhase = 'Building trust elements...';
-                this.loadingProgress = 70;
+                this.loadingPhase = 'Translating section headings...';
+                this.loadingProgress = 75;
             }, 20000);
             setTimeout(() => {
                 this.loadingPhase = 'Almost done...';
@@ -879,15 +946,76 @@ function leadMagnetWizard() {
             }, 30000);
         },
 
-        async generateWithAI() {
+        // Phase 1: Upload PDF and run orchestrator analysis
+        async analyzeWithAI() {
             if (!this.pdfFile) return;
-            this.loading = true;
+            this.analyzing = true;
             this.error = '';
-            this.startLoadingAnimation();
 
             const formData = new FormData();
             formData.append('pdf_file', this.pdfFile);
             formData.append('context', this.context);
+            formData.append('<?= CSRF_TOKEN_NAME ?>', '<?= generateCsrfToken() ?>');
+
+            try {
+                const response = await fetch('/admin/lead-magnets/ai-analyze', {
+                    method: 'POST',
+                    body: formData,
+                });
+                const result = await response.json();
+
+                if (!result.success) {
+                    this.error = result.error || 'Something went wrong. Please try again.';
+                    this.analyzing = false;
+                    return;
+                }
+
+                this.pdfFilename = result.pdf_filename || '';
+                this.pdfOriginalName = result.pdf_original_name || '';
+
+                if (!result.ai_generated) {
+                    // PDF couldn't be analyzed, skip to manual
+                    this.analyzing = false;
+                    this.step = 3;
+                    return;
+                }
+
+                this.orchestratorData = result.orchestrator;
+                this.pdfTextForGeneration = result.pdf_text || '';
+                this.detectedLanguage = result.orchestrator.language || 'en';
+                this.confirmedLanguage = this.detectedLanguage;
+
+                // Pre-fill basic info from orchestrator
+                this.formData.title = result.orchestrator.title || '';
+                this.formData.slug = result.orchestrator.slug || '';
+                this.formData.subtitle = result.orchestrator.subtitle || '';
+                this.formData.meta_description = result.orchestrator.meta_description || '';
+                this.formData.hero_bg_color = result.orchestrator.hero_bg_color || '#1e1b4b';
+                if (result.orchestrator.cover_prompt) this.coverPrompt = result.orchestrator.cover_prompt;
+
+                this.analyzing = false;
+                this.showLanguageSelection = true;
+
+            } catch (e) {
+                this.error = 'Network error. Please try again.';
+                this.analyzing = false;
+            }
+        },
+
+        // Phase 2: Generate content with confirmed language
+        async generateContent() {
+            this.showLanguageSelection = false;
+            this.generating = true;
+            this.error = '';
+            this.startGeneratingAnimation();
+
+            const formData = new FormData();
+            formData.append('pdf_text', this.pdfTextForGeneration);
+            formData.append('orchestrator', JSON.stringify(this.orchestratorData));
+            formData.append('language', this.confirmedLanguage);
+            formData.append('context', this.context);
+            formData.append('pdf_filename', this.pdfFilename);
+            formData.append('pdf_original_name', this.pdfOriginalName);
             formData.append('<?= CSRF_TOKEN_NAME ?>', '<?= generateCsrfToken() ?>');
 
             try {
@@ -899,27 +1027,20 @@ function leadMagnetWizard() {
 
                 if (!result.success) {
                     this.error = result.error || 'Something went wrong. Please try again.';
-                    this.loading = false;
+                    this.generating = false;
+                    this.showLanguageSelection = true;
                     return;
                 }
-
-                this.pdfFilename = result.pdf_filename || '';
-                this.pdfOriginalName = result.pdf_original_name || '';
 
                 if (result.ai_generated && result.data) {
                     this.aiGenerated = true;
                     this.partialWarning = result.partial || false;
                     const d = result.data;
 
-                    // Basic info & hero
-                    this.formData.title = d.title || '';
-                    this.formData.slug = d.slug || '';
-                    this.formData.subtitle = d.subtitle || '';
-                    this.formData.meta_description = d.meta_description || '';
+                    // Hero & email
                     this.formData.hero_headline = d.hero_headline || '';
                     this.formData.hero_subheadline = d.hero_subheadline || '';
                     this.formData.hero_cta_text = d.hero_cta_text || '';
-                    this.formData.hero_bg_color = d.hero_bg_color || '#1e1b4b';
                     this.formData.features_headline = d.features_headline || '';
                     this.formData.email_subject = d.email_subject || '';
                     this.formData.email_body_html = d.email_body_html || '';
@@ -941,8 +1062,8 @@ function leadMagnetWizard() {
                     if (d.author_bio) this.authorBio = d.author_bio;
                     if (d.testimonial_templates && Array.isArray(d.testimonial_templates)) this.testimonialTemplates = d.testimonial_templates;
                     if (d.social_proof && Array.isArray(d.social_proof)) this.socialProof = d.social_proof;
-
-                    if (d.cover_prompt) this.coverPrompt = d.cover_prompt;
+                    if (d.section_headings && typeof d.section_headings === 'object') this.sectionHeadings = d.section_headings;
+                    if (d.language) this.confirmedLanguage = d.language;
                 }
 
                 this.loadingProgress = 100;
@@ -950,9 +1071,10 @@ function leadMagnetWizard() {
 
             } catch (e) {
                 this.error = 'Network error. Please try again.';
+                this.showLanguageSelection = true;
             }
 
-            this.loading = false;
+            this.generating = false;
         },
 
         async generateCover() {

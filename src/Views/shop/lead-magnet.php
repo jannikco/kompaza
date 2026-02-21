@@ -57,6 +57,10 @@ if (!empty($leadMagnet['cover_image_path'])) {
     $coverImage = imageUrl($leadMagnet['hero_image_path']);
 }
 
+// Section headings helper — falls back to English defaults for existing lead magnets
+$sectionHeadings = json_decode($leadMagnet['section_headings'] ?? '', true) ?: [];
+$sh = fn($key, $default) => $sectionHeadings[$key] ?? $default;
+
 ob_start();
 ?>
 
@@ -87,66 +91,84 @@ ob_start();
 <!-- 1. Hero Section -->
 <section class="relative overflow-hidden" style="background-color: <?= h($heroBgColor) ?>;" id="hero">
     <div class="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent"></div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <!-- Left: Content -->
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <!-- Left: Book + Content (desktop side-by-side, mobile stacked) -->
             <div>
-                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
-                    <?= h($leadMagnet['hero_headline'] ?? $leadMagnet['title']) ?>
-                </h1>
-                <?php if (!empty($leadMagnet['hero_subheadline'])): ?>
-                    <p class="mt-6 text-lg text-white/80 leading-relaxed">
-                        <?= h($leadMagnet['hero_subheadline']) ?>
-                    </p>
-                <?php elseif (!empty($leadMagnet['subtitle'])): ?>
-                    <p class="mt-6 text-lg text-white/80 leading-relaxed">
-                        <?= h($leadMagnet['subtitle']) ?>
-                    </p>
-                <?php endif; ?>
-
-                <!-- Mobile book mockup -->
-                <div class="mt-8 lg:hidden flex justify-center">
-                    <?php if ($coverImage): ?>
-                        <div class="book-mockup">
+                <!-- Desktop: book inline with text -->
+                <?php if ($coverImage): ?>
+                    <div class="hidden lg:flex items-start gap-6">
+                        <div class="book-mockup flex-shrink-0">
                             <div class="book-mockup-inner rounded-lg overflow-hidden">
                                 <img src="<?= h($coverImage) ?>" alt="<?= h($leadMagnet['title']) ?>"
-                                     class="w-48 h-auto">
+                                     class="w-44 h-auto">
                             </div>
                         </div>
-                    <?php else: ?>
-                        <div class="book-mockup">
-                            <div class="book-mockup-inner rounded-lg w-48 h-64 bg-white/10 flex items-center justify-center">
-                                <svg class="w-16 h-16 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        <div>
+                            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
+                                <?= h($leadMagnet['hero_headline'] ?? $leadMagnet['title']) ?>
+                            </h1>
+                            <?php if (!empty($leadMagnet['hero_subheadline'])): ?>
+                                <p class="mt-4 text-lg text-white/80 leading-relaxed">
+                                    <?= h($leadMagnet['hero_subheadline']) ?>
+                                </p>
+                            <?php elseif (!empty($leadMagnet['subtitle'])): ?>
+                                <p class="mt-4 text-lg text-white/80 leading-relaxed">
+                                    <?= h($leadMagnet['subtitle']) ?>
+                                </p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <!-- Desktop: no cover image, just text -->
+                <?php else: ?>
+                    <div class="hidden lg:block">
+                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
+                            <?= h($leadMagnet['hero_headline'] ?? $leadMagnet['title']) ?>
+                        </h1>
+                        <?php if (!empty($leadMagnet['hero_subheadline'])): ?>
+                            <p class="mt-4 text-lg text-white/80 leading-relaxed">
+                                <?= h($leadMagnet['hero_subheadline']) ?>
+                            </p>
+                        <?php elseif (!empty($leadMagnet['subtitle'])): ?>
+                            <p class="mt-4 text-lg text-white/80 leading-relaxed">
+                                <?= h($leadMagnet['subtitle']) ?>
+                            </p>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Mobile: book centered above text -->
+                <div class="lg:hidden">
+                    <?php if ($coverImage): ?>
+                        <div class="flex justify-center mb-6">
+                            <div class="book-mockup">
+                                <div class="book-mockup-inner rounded-lg overflow-hidden">
+                                    <img src="<?= h($coverImage) ?>" alt="<?= h($leadMagnet['title']) ?>"
+                                         class="w-48 h-auto">
+                                </div>
                             </div>
                         </div>
+                    <?php endif; ?>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+                        <?= h($leadMagnet['hero_headline'] ?? $leadMagnet['title']) ?>
+                    </h1>
+                    <?php if (!empty($leadMagnet['hero_subheadline'])): ?>
+                        <p class="mt-4 text-lg text-white/80 leading-relaxed">
+                            <?= h($leadMagnet['hero_subheadline']) ?>
+                        </p>
+                    <?php elseif (!empty($leadMagnet['subtitle'])): ?>
+                        <p class="mt-4 text-lg text-white/80 leading-relaxed">
+                            <?= h($leadMagnet['subtitle']) ?>
+                        </p>
                     <?php endif; ?>
                 </div>
             </div>
 
-            <!-- Right: Book mockup (desktop) + Form -->
-            <div class="flex flex-col items-center">
-                <!-- Desktop book mockup -->
-                <div class="hidden lg:flex justify-center mb-8">
-                    <?php if ($coverImage): ?>
-                        <div class="book-mockup">
-                            <div class="book-mockup-inner rounded-lg overflow-hidden">
-                                <img src="<?= h($coverImage) ?>" alt="<?= h($leadMagnet['title']) ?>"
-                                     class="w-56 h-auto">
-                            </div>
-                        </div>
-                    <?php else: ?>
-                        <div class="book-mockup">
-                            <div class="book-mockup-inner rounded-lg w-56 h-72 bg-white/10 flex items-center justify-center">
-                                <svg class="w-20 h-20 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                </div>
-
-                <!-- Signup Form -->
-                <div class="bg-white rounded-xl shadow-xl p-8 w-full max-w-md" id="signup-form" x-data="{ loading: false, error: '' }">
-                    <h2 class="text-xl font-bold text-gray-900 mb-2">Get Your Free Copy</h2>
-                    <p class="text-gray-500 text-sm mb-6">Enter your details below and we'll send it straight to your inbox.</p>
+            <!-- Right: Signup Form only -->
+            <div class="flex justify-center lg:justify-end">
+                <div class="bg-white rounded-xl shadow-xl p-8 w-full max-w-lg" id="signup-form" x-data="{ loading: false, error: '' }">
+                    <h2 class="text-xl font-bold text-gray-900 mb-2"><?= h($sh('form_title', 'Get Your Free Copy')) ?></h2>
+                    <p class="text-gray-500 text-sm mb-6"><?= h($sh('form_subtitle', 'Enter your details below and we\'ll send it straight to your inbox.')) ?></p>
 
                     <form action="/lp/tilmeld" method="POST"
                           @submit.prevent="
@@ -166,13 +188,13 @@ ob_start();
 
                         <div class="space-y-4">
                             <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1"><?= h($sh('form_name_label', 'Full Name')) ?></label>
                                 <input type="text" id="name" name="name" required
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 ring-brand focus:border-transparent"
                                        placeholder="John Smith">
                             </div>
                             <div>
-                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1"><?= h($sh('form_email_label', 'Email Address')) ?></label>
                                 <input type="email" id="email" name="email" required
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 ring-brand focus:border-transparent"
                                        placeholder="john@company.com">
@@ -184,10 +206,10 @@ ob_start();
                         <button type="submit" :disabled="loading"
                                 class="mt-6 w-full btn-brand px-6 py-3.5 text-white font-semibold rounded-lg transition text-base disabled:opacity-50">
                             <span x-show="!loading"><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
-                            <span x-show="loading" x-cloak>Sending...</span>
+                            <span x-show="loading" x-cloak><?= h($sh('form_sending', 'Sending...')) ?></span>
                         </button>
 
-                        <p class="mt-4 text-xs text-gray-400 text-center">We respect your privacy. Unsubscribe at any time.</p>
+                        <p class="mt-4 text-xs text-gray-400 text-center"><?= h($sh('form_privacy', 'We respect your privacy. Unsubscribe at any time.')) ?></p>
                     </form>
                 </div>
             </div>
@@ -212,15 +234,15 @@ ob_start();
             <?php else: ?>
                 <div class="flex flex-col items-center space-y-1">
                     <svg class="w-6 h-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <span class="text-sm font-semibold text-gray-900">PDF Guide</span>
+                    <span class="text-sm font-semibold text-gray-900"><?= h($sh('default_proof_1', 'PDF Guide')) ?></span>
                 </div>
                 <div class="flex flex-col items-center space-y-1">
                     <svg class="w-6 h-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span class="text-sm font-semibold text-gray-900">100% Free</span>
+                    <span class="text-sm font-semibold text-gray-900"><?= h($sh('default_proof_2', '100% Free')) ?></span>
                 </div>
                 <div class="flex flex-col items-center space-y-1">
                     <svg class="w-6 h-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    <span class="text-sm font-semibold text-gray-900">Instant Access</span>
+                    <span class="text-sm font-semibold text-gray-900"><?= h($sh('default_proof_3', 'Instant Access')) ?></span>
                 </div>
             <?php endif; ?>
         </div>
@@ -267,8 +289,8 @@ ob_start();
 <section class="py-16 lg:py-20 bg-gray-50">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Table of Contents</h2>
-            <p class="mt-3 text-gray-500">A preview of what you'll find inside</p>
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900"><?= h($sh('toc_title', 'Table of Contents')) ?></h2>
+            <p class="mt-3 text-gray-500"><?= h($sh('toc_subtitle', 'A preview of what you\'ll find inside')) ?></p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
             <?php foreach ($chapters as $chapter): ?>
@@ -294,7 +316,7 @@ ob_start();
 <section class="py-16 lg:py-20 bg-white">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">By the Numbers</h2>
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900"><?= h($sh('stats_title', 'By the Numbers')) ?></h2>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-<?= min(count($keyStatistics), 4) ?> gap-6 max-w-3xl mx-auto">
             <?php foreach ($keyStatistics as $stat): ?>
@@ -316,7 +338,7 @@ ob_start();
 <section class="py-16 lg:py-20 bg-gray-50">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">The Transformation</h2>
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900"><?= h($sh('transformation_title', 'The Transformation')) ?></h2>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             <?php if (!empty($beforeAfter['before'])): ?>
@@ -325,7 +347,7 @@ ob_start();
                         <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
                             <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </div>
-                        <h3 class="font-semibold text-red-700 text-lg">Before</h3>
+                        <h3 class="font-semibold text-red-700 text-lg"><?= h($sh('before_label', 'Before')) ?></h3>
                     </div>
                     <ul class="space-y-4">
                         <?php foreach ($beforeAfter['before'] as $item): ?>
@@ -343,7 +365,7 @@ ob_start();
                         <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
                             <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                         </div>
-                        <h3 class="font-semibold text-green-700 text-lg">After</h3>
+                        <h3 class="font-semibold text-green-700 text-lg"><?= h($sh('after_label', 'After')) ?></h3>
                     </div>
                     <ul class="space-y-4">
                         <?php foreach ($beforeAfter['after'] as $item): ?>
@@ -365,7 +387,7 @@ ob_start();
 <section class="py-16 lg:py-20 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Who Is This For?</h2>
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900"><?= h($sh('audience_title', 'Who Is This For?')) ?></h2>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <?php foreach ($targetAudience as $persona): ?>
@@ -392,7 +414,7 @@ ob_start();
                     <svg class="w-7 h-7 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 </div>
                 <div>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">About the Author</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2"><?= h($sh('author_title', 'About the Author')) ?></h3>
                     <p class="text-gray-600 leading-relaxed"><?= h($authorBio) ?></p>
                 </div>
             </div>
@@ -406,7 +428,7 @@ ob_start();
 <section class="py-16 lg:py-20 bg-white">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">What Readers Say</h2>
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900"><?= h($sh('testimonials_title', 'What Readers Say')) ?></h2>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-<?= min(count($testimonials), 3) ?> gap-8 max-w-4xl mx-auto">
             <?php foreach ($testimonials as $testimonial): ?>
@@ -438,7 +460,7 @@ ob_start();
 <section class="py-16 lg:py-20 bg-gray-50">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Frequently Asked Questions</h2>
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900"><?= h($sh('faq_title', 'Frequently Asked Questions')) ?></h2>
         </div>
         <div class="space-y-4" x-data="{ openFaq: null }">
             <?php foreach ($faqItems as $index => $faq): ?>
@@ -490,8 +512,8 @@ ob_start();
             <?php endif; ?>
 
             <div>
-                <h2 class="text-2xl sm:text-3xl font-bold text-white mb-4">Ready to Get Started?</h2>
-                <p class="text-white/70 mb-8 max-w-lg">Download your free copy now and start implementing today.</p>
+                <h2 class="text-2xl sm:text-3xl font-bold text-white mb-4"><?= h($sh('cta_title', 'Ready to Get Started?')) ?></h2>
+                <p class="text-white/70 mb-8 max-w-lg"><?= h($sh('cta_subtitle', 'Download your free copy now and start implementing today.')) ?></p>
                 <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
                    class="btn-brand inline-flex items-center justify-center px-8 py-3.5 text-white font-semibold rounded-lg transition shadow-sm text-base">
                     <?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?>
