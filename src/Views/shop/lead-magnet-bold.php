@@ -290,7 +290,7 @@ ob_start();
 </style>
 
 <!-- 1. Hero Section (Premium) -->
-<section class="relative overflow-hidden" style="background: linear-gradient(-45deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>, <?= h($heroBgColor) ?>, <?= h($heroBgLighter) ?>); background-size: 400% 400%; animation: gradientShift 15s ease infinite;" id="hero">
+<section class="relative overflow-hidden" style="background: linear-gradient(-45deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>, <?= h($midCtaBg) ?>, <?= h($heroBgLighterHsl) ?>); background-size: 400% 400%; animation: gradientShift 15s ease infinite;" id="hero">
     <div class="absolute inset-0 bg-gradient-to-br from-black/30 to-transparent"></div>
     <div class="absolute inset-0 opacity-[0.04]">
         <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg%20width%3D%2230%22%20height%3D%2230%22%20viewBox%3D%220%200%2030%2030%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%200L30%2030M30%200L0%2030%22%20stroke%3D%22%23fff%22%20stroke-width%3D%220.5%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E'); background-size: 30px 30px;"></div>
@@ -406,21 +406,35 @@ ob_start();
                         <div x-show="error" x-cloak class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm" x-text="error"></div>
 
                         <button type="submit" :disabled="loading" onclick="heroRipple(event)"
-                                class="btn-shimmer mt-6 w-full btn-brand px-6 py-3.5 text-white font-semibold rounded-lg transform hover:scale-[1.02] shadow-lg transition text-base disabled:opacity-50">
-                            <span class="relative z-10" x-show="!loading"><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
+                                class="btn-shimmer mt-6 w-full btn-brand px-10 py-4 text-white font-bold rounded-full transform hover:scale-[1.02] shadow-lg transition text-lg uppercase tracking-wide disabled:opacity-50">
+                            <span class="relative z-10 inline-flex items-center justify-center space-x-2" x-show="!loading">
+                                <span><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                            </span>
                             <span class="relative z-10" x-show="loading" x-cloak><?= h($sh('form_sending', 'Sending...')) ?></span>
                             <span class="ripple"></span>
                         </button>
 
-                        <div class="mt-4 flex items-center justify-center space-x-4 text-xs text-gray-400">
-                            <span class="flex items-center space-x-1">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        <!-- Trust badges -->
+                        <div class="mt-5 flex items-center justify-center space-x-5 text-xs text-gray-400">
+                            <span class="flex items-center space-x-1.5">
+                                <span class="w-6 h-6 rounded-full flex items-center justify-center" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.1);">
+                                    <svg class="w-3 h-3 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                </span>
                                 <span>Secure</span>
                             </span>
-                            <span class="text-gray-300">|</span>
-                            <span>No spam, ever</span>
-                            <span class="text-gray-300">|</span>
-                            <span>Unsubscribe anytime</span>
+                            <span class="flex items-center space-x-1.5">
+                                <span class="w-6 h-6 rounded-full flex items-center justify-center" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.1);">
+                                    <svg class="w-3 h-3 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                                </span>
+                                <span>No spam</span>
+                            </span>
+                            <span class="flex items-center space-x-1.5">
+                                <span class="w-6 h-6 rounded-full flex items-center justify-center" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.1);">
+                                    <svg class="w-3 h-3 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                </span>
+                                <span>Instant</span>
+                            </span>
                         </div>
                     </form>
                 </div>
@@ -430,7 +444,7 @@ ob_start();
 </section>
 
 <!-- Wave: Hero -> Social Proof -->
-<div class="wave-divider" style="background: linear-gradient(-45deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>, <?= h($heroBgColor) ?>, <?= h($heroBgLighter) ?>); background-size: 400% 400%; animation: gradientShift 15s ease infinite;">
+<div class="wave-divider" style="background: linear-gradient(-45deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>, <?= h($midCtaBg) ?>, <?= h($heroBgLighterHsl) ?>); background-size: 400% 400%; animation: gradientShift 15s ease infinite;">
     <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0,0 C300,48 900,0 1200,48 L1200,48 L0,48 Z" fill="rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.06)"/>
     </svg>
@@ -556,23 +570,24 @@ ob_start();
 <?php if (!empty($chapters)): ?>
 <div class="wave-divider" style="<?= $bgMedium ?>">
     <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0,48 C300,0 900,48 1200,0 L1200,48 L0,48 Z" fill="<?= h($heroBgColor) ?>"/>
+        <path d="M0,48 C300,0 900,48 1200,0 L1200,48 L0,48 Z" fill="<?= h($midCtaBg) ?>"/>
     </svg>
 </div>
-<section class="mid-cta-banner py-16 lg:py-20" style="background: linear-gradient(135deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>);">
+<section class="mid-cta-banner py-16 lg:py-20" style="background: linear-gradient(135deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>);">
     <div class="cta-pattern"></div>
     <div class="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div class="reveal">
             <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3"><?= h($sh('mid_cta_1', 'Don\'t Miss Out')) ?></h2>
             <p class="text-white/70 mb-8 max-w-lg mx-auto"><?= h($sh('mid_cta_1_sub', 'Get instant access to strategies that drive real results.')) ?></p>
             <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
-               class="inline-flex items-center justify-center px-8 py-3.5 bg-white text-gray-900 font-semibold rounded-lg transform hover:scale-[1.02] shadow-lg transition text-base">
+               class="inline-flex items-center justify-center px-10 py-4 bg-white text-gray-900 font-bold rounded-full transform hover:scale-[1.02] shadow-lg transition text-lg uppercase tracking-wide">
                 <?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?>
+                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </a>
         </div>
     </div>
 </section>
-<div class="wave-divider" style="background: linear-gradient(135deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>);">
+<div class="wave-divider" style="background: linear-gradient(135deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>);">
     <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0,0 C300,48 900,0 1200,48 L1200,48 L0,48 Z" fill="rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,<?= !empty($keyStatistics) ? '0.02' : '0.05' ?>)"/>
     </svg>
@@ -676,23 +691,24 @@ ob_start();
 <?php if (!empty($targetAudience)): ?>
 <div class="wave-divider" style="<?= $bgLight ?>">
     <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0,0 C150,48 350,0 600,32 C850,64 1050,0 1200,48 L1200,48 L0,48 Z" fill="<?= h($heroBgColor) ?>"/>
+        <path d="M0,0 C150,48 350,0 600,32 C850,64 1050,0 1200,48 L1200,48 L0,48 Z" fill="<?= h($midCtaBg) ?>"/>
     </svg>
 </div>
-<section class="mid-cta-banner py-16 lg:py-20" style="background: linear-gradient(135deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>);">
+<section class="mid-cta-banner py-16 lg:py-20" style="background: linear-gradient(135deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>);">
     <div class="cta-pattern"></div>
     <div class="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div class="reveal">
             <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3"><?= h($sh('mid_cta_2', 'Ready to Take the Next Step?')) ?></h2>
             <p class="text-white/70 mb-8 max-w-lg mx-auto"><?= h($sh('mid_cta_2_sub', 'Join thousands of others who have already downloaded this guide.')) ?></p>
             <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
-               class="inline-flex items-center justify-center px-8 py-3.5 bg-white text-gray-900 font-semibold rounded-lg transform hover:scale-[1.02] shadow-lg transition text-base">
+               class="inline-flex items-center justify-center px-10 py-4 bg-white text-gray-900 font-bold rounded-full transform hover:scale-[1.02] shadow-lg transition text-lg uppercase tracking-wide">
                 <?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?>
+                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </a>
         </div>
     </div>
 </section>
-<div class="wave-divider" style="background: linear-gradient(135deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>);">
+<div class="wave-divider" style="background: linear-gradient(135deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>);">
     <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0,0 C300,48 900,0 1200,48 L1200,48 L0,48 Z" fill="rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.05)"/>
     </svg>
@@ -783,12 +799,30 @@ ob_start();
 <?php $prevBgBottom = !empty($faqItems) ? $bgMedium : (!empty($testimonials) ? $bgLight : $bgMedium); ?>
 <div class="wave-divider" style="<?= $prevBgBottom ?>">
     <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0,0 C150,48 350,0 600,32 C850,64 1050,0 1200,48 L1200,48 L0,48 Z" fill="<?= h($heroBgColor) ?>"/>
+        <path d="M0,0 C150,48 350,0 600,32 C850,64 1050,0 1200,48 L1200,48 L0,48 Z" fill="<?= h($midCtaBg) ?>"/>
+    </svg>
+</div>
+
+<!-- Guarantee Section -->
+<section class="py-14 lg:py-18" style="<?= $bgMedium ?>">
+    <div class="reveal max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full mb-5" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.08);">
+            <svg class="w-8 h-8 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2"><?= h($sh('guarantee_title', '100% Free, No Strings Attached')) ?></h3>
+        <p class="text-gray-500 text-sm max-w-md mx-auto"><?= h($sh('guarantee_desc', 'This guide is completely free. No credit card required, no hidden fees. Just actionable insights delivered to your inbox.')) ?></p>
+    </div>
+</section>
+
+<!-- Wave -> Bottom CTA -->
+<div class="wave-divider" style="<?= $bgMedium ?>">
+    <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,0 C150,48 350,0 600,32 C850,64 1050,0 1200,48 L1200,48 L0,48 Z" fill="<?= h($midCtaBg) ?>"/>
     </svg>
 </div>
 
 <!-- 11. Bottom CTA -->
-<section class="relative overflow-hidden py-16 lg:py-20" style="background: linear-gradient(-45deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>, <?= h($heroBgColor) ?>, <?= h($heroBgLighter) ?>); background-size: 400% 400%; animation: gradientShift 15s ease infinite;">
+<section class="relative overflow-hidden py-16 lg:py-20" style="background: linear-gradient(-45deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>, <?= h($midCtaBg) ?>, <?= h($heroBgLighterHsl) ?>); background-size: 400% 400%; animation: gradientShift 15s ease infinite;">
     <div class="absolute inset-0 bg-gradient-to-br from-black/30 to-transparent"></div>
     <div class="absolute inset-0 opacity-[0.04]">
         <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg%20width%3D%2230%22%20height%3D%2230%22%20viewBox%3D%220%200%2030%2030%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%200L30%2030M30%200L0%2030%22%20stroke%3D%22%23fff%22%20stroke-width%3D%220.5%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E'); background-size: 30px 30px;"></div>
@@ -809,10 +843,34 @@ ob_start();
             <?php endif; ?>
             <div>
                 <h2 class="text-2xl sm:text-3xl font-bold text-white mb-4"><?= h($sh('cta_title', 'Ready to Get Started?')) ?></h2>
-                <p class="text-white/70 mb-8 max-w-lg"><?= h($sh('cta_subtitle', 'Download your free copy now and start implementing today.')) ?></p>
+                <p class="text-white/70 mb-4 max-w-lg"><?= h($sh('cta_subtitle', 'Download your free copy now and start implementing today.')) ?></p>
+
+                <!-- Benefit stack -->
+                <div class="flex flex-col sm:flex-row items-center lg:items-start gap-3 mb-8 text-sm text-white/70">
+                    <?php
+                        $benefitItems = array_slice($features, 0, 3);
+                        if (empty($benefitItems)) {
+                            $benefitItems = [
+                                ['title' => $sh('benefit_1', 'Actionable strategies')],
+                                ['title' => $sh('benefit_2', 'Expert insights')],
+                                ['title' => $sh('benefit_3', 'Instant PDF download')],
+                            ];
+                        }
+                    ?>
+                    <?php foreach ($benefitItems as $bi): ?>
+                        <span class="flex items-center space-x-2">
+                            <svg class="w-4 h-4 flex-shrink-0 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span><?= h(is_array($bi) ? ($bi['title'] ?? '') : $bi) ?></span>
+                        </span>
+                    <?php endforeach; ?>
+                </div>
+
                 <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
-                   class="btn-shimmer btn-brand inline-flex items-center justify-center px-8 py-3.5 text-white font-semibold rounded-lg transform hover:scale-[1.02] shadow-lg transition text-base">
-                    <span class="relative z-10"><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
+                   class="btn-shimmer inline-flex items-center justify-center px-10 py-4 bg-white text-gray-900 font-bold rounded-full transform hover:scale-[1.02] shadow-lg transition text-lg uppercase tracking-wide">
+                    <span class="relative z-10 inline-flex items-center space-x-2">
+                        <span><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </span>
                 </a>
             </div>
         </div>

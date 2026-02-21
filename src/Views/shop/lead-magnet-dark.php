@@ -10,8 +10,8 @@
     /* Glowing neon divider */
     .glow-divider {
         height: 1px;
-        background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.3);
-        box-shadow: 0 0 10px rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.3), 0 0 20px rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.1);
+        background: rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.3);
+        box-shadow: 0 0 10px rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.3), 0 0 20px rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.1);
     }
 
     /* Terminal window */
@@ -44,31 +44,31 @@
     .dark-input::placeholder { color: #4b5563 !important; }
     .dark-input:focus {
         background: rgba(255,255,255,0.1) !important;
-        border-color: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>) !important;
-        box-shadow: 0 0 0 3px rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.2), 0 0 15px rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.1) !important;
+        border-color: <?= $neonAccent ?> !important;
+        box-shadow: 0 0 0 3px rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.2), 0 0 15px rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.1) !important;
         outline: none !important;
     }
 
     /* Glow button */
     .btn-glow {
-        box-shadow: 0 0 20px rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.4), 0 4px 12px rgba(0,0,0,0.3);
+        box-shadow: 0 0 20px rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.4), 0 4px 12px rgba(0,0,0,0.3);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .btn-glow:hover {
         transform: scale(1.02);
-        box-shadow: 0 0 30px rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.6), 0 6px 20px rgba(0,0,0,0.4);
+        box-shadow: 0 0 30px rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.6), 0 6px 20px rgba(0,0,0,0.4);
     }
 
     /* Neon stat glow */
     .neon-stat {
-        color: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);
-        text-shadow: 0 0 20px rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.5), 0 0 40px rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.2);
+        color: <?= $neonAccent ?>;
+        text-shadow: 0 0 20px rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.5), 0 0 40px rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.2);
         letter-spacing: 0.05em;
     }
 
     /* Progress bar glow */
     .progress-glow {
-        box-shadow: 0 0 8px rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.4);
+        box-shadow: 0 0 8px rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.4);
     }
 
     /* Chat bubble */
@@ -99,8 +99,8 @@
         transition: all 0.2s ease;
     }
     .tag-pill:hover {
-        background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.15);
-        border-color: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.4);
+        background: rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.15);
+        border-color: rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.4);
     }
 
     /* Floating orbs */
@@ -117,28 +117,28 @@
 <!-- 1. Hero — Terminal-style form with fake title bar -->
 <section class="dark-bg relative overflow-hidden" id="hero">
     <div class="absolute inset-0 grid-overlay opacity-[0.02]"></div>
-    <div class="absolute top-10 right-20 w-72 h-72 rounded-full pointer-events-none opacity-20 blur-3xl" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.2); animation: floatOrb1 20s ease-in-out infinite;"></div>
-    <div class="absolute bottom-10 left-10 w-56 h-56 rounded-full pointer-events-none opacity-15 blur-3xl" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.15); animation: floatOrb2 25s ease-in-out infinite;"></div>
+    <div class="absolute top-10 right-20 w-72 h-72 rounded-full pointer-events-none opacity-20 blur-3xl" style="background: rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.2); animation: floatOrb1 20s ease-in-out infinite;"></div>
+    <div class="absolute bottom-10 left-10 w-56 h-56 rounded-full pointer-events-none opacity-15 blur-3xl" style="background: rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.15); animation: floatOrb2 25s ease-in-out infinite;"></div>
 
     <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <!-- Left: Text -->
             <div>
                 <?php if ($heroBadge): ?>
-                    <div class="mono inline-flex items-center text-sm font-medium mb-6 px-4 py-1.5 rounded-full" style="color: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>); background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.1); border: 1px solid rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.3);">
+                    <div class="mono inline-flex items-center text-sm font-medium mb-6 px-4 py-1.5 rounded-full" style="color: <?= $neonAccent ?>; background: rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.1); border: 1px solid rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.3);">
                         <span class="mr-2 opacity-60">&gt;_</span> <?= h($heroBadge) ?>
                     </div>
                 <?php endif; ?>
 
                 <?php if ($coverImage): ?>
                     <div class="mb-6">
-                        <img src="<?= h($coverImage) ?>" alt="<?= h($leadMagnet['title']) ?>" class="w-36 h-auto rounded-lg" style="box-shadow: 0 0 30px rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.2);">
+                        <img src="<?= h($coverImage) ?>" alt="<?= h($leadMagnet['title']) ?>" class="w-36 h-auto rounded-lg" style="box-shadow: 0 0 30px rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.2);">
                     </div>
                 <?php endif; ?>
 
                 <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
                     <?php if (!empty($heroAccent)): ?>
-                        <?= str_replace(h($heroAccent), '<span style="color: rgb(' . $r . ',' . $g . ',' . $b . '); text-shadow: 0 0 20px rgba(' . $r . ',' . $g . ',' . $b . ',0.5);">' . h($heroAccent) . '</span>', h($heroHeadline)) ?>
+                        <?= str_replace(h($heroAccent), '<span style="color: ' . $neonAccent . '; text-shadow: 0 0 20px rgba(' . $neonR . ',' . $neonG . ',' . $neonB . ',0.5);">' . h($heroAccent) . '</span>', h($heroHeadline)) ?>
                     <?php else: ?>
                         <?= h($heroHeadline) ?>
                     <?php endif; ?>
@@ -193,21 +193,35 @@
                             <div x-show="error" x-cloak class="mt-4 p-3 bg-red-900/30 border border-red-500/30 rounded-lg text-red-300 text-sm" x-text="error"></div>
 
                             <button type="submit" :disabled="loading"
-                                    class="btn-glow mt-6 w-full px-6 py-3.5 text-white font-semibold rounded-lg text-base disabled:opacity-50"
-                                    style="background: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);">
-                                <span x-show="!loading"><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
+                                    class="btn-glow mt-6 w-full px-10 py-4 text-white font-bold rounded-full text-lg uppercase tracking-wide disabled:opacity-50"
+                                    style="background: <?= $neonAccent ?>;">
+                                <span x-show="!loading" class="inline-flex items-center justify-center space-x-2">
+                                    <span><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                </span>
                                 <span x-show="loading" x-cloak><?= h($sh('form_sending', 'Sending...')) ?></span>
                             </button>
 
-                            <div class="mt-4 flex items-center justify-center space-x-4 text-xs text-gray-500">
-                                <span class="flex items-center space-x-1">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                            <!-- Trust badges -->
+                            <div class="mt-5 flex items-center justify-center space-x-5 text-xs text-gray-500">
+                                <span class="flex items-center space-x-1.5">
+                                    <span class="w-6 h-6 rounded-full flex items-center justify-center" style="background: rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.12);">
+                                        <svg class="w-3 h-3" style="color: <?= $neonAccent ?>;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                    </span>
                                     <span>Secure</span>
                                 </span>
-                                <span class="text-gray-600">|</span>
-                                <span>No spam, ever</span>
-                                <span class="text-gray-600">|</span>
-                                <span>Unsubscribe anytime</span>
+                                <span class="flex items-center space-x-1.5">
+                                    <span class="w-6 h-6 rounded-full flex items-center justify-center" style="background: rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.12);">
+                                        <svg class="w-3 h-3" style="color: <?= $neonAccent ?>;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                                    </span>
+                                    <span>No spam</span>
+                                </span>
+                                <span class="flex items-center space-x-1.5">
+                                    <span class="w-6 h-6 rounded-full flex items-center justify-center" style="background: rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.12);">
+                                        <svg class="w-3 h-3" style="color: <?= $neonAccent ?>;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                    </span>
+                                    <span>Instant</span>
+                                </span>
                             </div>
                         </form>
                     </div>
@@ -226,7 +240,7 @@
         <div class="grid grid-cols-3 gap-4">
             <?php if (!empty($socialProof)): ?>
                 <?php foreach ($socialProof as $proof): ?>
-                    <div class="rounded-xl p-5 text-center" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.15);">
+                    <div class="rounded-xl p-5 text-center" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.15);">
                         <?php if (!empty($proof['icon'])): ?>
                             <div class="text-xl mb-1"><?= h($proof['icon']) ?></div>
                         <?php endif; ?>
@@ -235,13 +249,13 @@
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
-                <div class="rounded-xl p-5 text-center" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.15);">
+                <div class="rounded-xl p-5 text-center" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.15);">
                     <div class="mono text-2xl sm:text-3xl font-bold neon-stat"><?= h($sh('default_proof_1', 'PDF Guide')) ?></div>
                 </div>
-                <div class="rounded-xl p-5 text-center" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.15);">
+                <div class="rounded-xl p-5 text-center" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.15);">
                     <div class="mono text-2xl sm:text-3xl font-bold neon-stat"><?= h($sh('default_proof_2', '100% Free')) ?></div>
                 </div>
-                <div class="rounded-xl p-5 text-center" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.15);">
+                <div class="rounded-xl p-5 text-center" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.15);">
                     <div class="mono text-2xl sm:text-3xl font-bold neon-stat"><?= h($sh('default_proof_3', 'Instant Access')) ?></div>
                 </div>
             <?php endif; ?>
@@ -262,12 +276,12 @@
                     $featureDesc = is_array($feature) ? ($feature['description'] ?? '') : '';
                     $featureIcon = is_array($feature) ? ($feature['icon'] ?? null) : null;
                 ?>
-                <div class="flex-shrink-0 w-[280px] rounded-xl p-6" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-top: 3px solid rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.6);">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.12);">
+                <div class="flex-shrink-0 w-[280px] rounded-xl p-6" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-top: 3px solid rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.6);">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background: rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.12);">
                         <?php if ($featureIcon): ?>
-                            <span class="text-lg" style="color: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);"><?= h($featureIcon) ?></span>
+                            <span class="text-lg" style="color: <?= $neonAccent ?>;"><?= h($featureIcon) ?></span>
                         <?php else: ?>
-                            <svg class="w-5 h-5" style="color: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <svg class="w-5 h-5" style="color: <?= $neonAccent ?>;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                         <?php endif; ?>
                     </div>
                     <h3 class="font-semibold text-white mb-2"><?= h($featureTitle) ?></h3>
@@ -293,7 +307,7 @@
             <?php foreach ($chapters as $cIndex => $chapter): ?>
                 <?php $progress = round((($cIndex + 1) / $totalChapters) * 100); ?>
                 <div class="flex items-center gap-4 sm:gap-6 p-4 rounded-xl" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);">
-                    <span class="mono text-2xl sm:text-3xl font-bold flex-shrink-0 w-12 text-right" style="color: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.4);"><?= h($chapter['number'] ?? '') ?></span>
+                    <span class="mono text-2xl sm:text-3xl font-bold flex-shrink-0 w-12 text-right" style="color: rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.4);"><?= h($chapter['number'] ?? '') ?></span>
                     <div class="flex-1 min-w-0">
                         <h3 class="font-semibold text-white truncate"><?= h($chapter['title'] ?? '') ?></h3>
                         <?php if (!empty($chapter['description'])): ?>
@@ -302,7 +316,7 @@
                     </div>
                     <div class="hidden sm:flex items-center gap-3 flex-shrink-0 w-32">
                         <div class="flex-1 h-2 rounded-full" style="background: rgba(255,255,255,0.06);">
-                            <div class="h-2 rounded-full progress-glow" style="width: <?= $progress ?>%; background: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);"></div>
+                            <div class="h-2 rounded-full progress-glow" style="width: <?= $progress ?>%; background: <?= $neonAccent ?>;"></div>
                         </div>
                         <span class="mono text-xs text-gray-500"><?= $progress ?>%</span>
                     </div>
@@ -316,14 +330,15 @@
 <!-- Mid-CTA -->
 <?php if (!empty($chapters)): ?>
 <div class="dark-bg"><div class="max-w-5xl mx-auto px-8"><div class="glow-divider"></div></div></div>
-<section class="py-16 lg:py-20 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.08), rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.03)), #0f172a;">
+<section class="py-16 lg:py-20 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.12), rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.05)), #0f172a;">
     <div class="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3"><?= h($sh('mid_cta_1', 'Don\'t Miss Out')) ?></h2>
         <p class="text-gray-400 mb-8 max-w-lg mx-auto"><?= h($sh('mid_cta_1_sub', 'Get instant access to strategies that drive real results.')) ?></p>
         <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
-           class="btn-glow inline-flex items-center justify-center px-8 py-3.5 text-white font-semibold rounded-lg text-base"
-           style="background: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);">
+           class="btn-glow inline-flex items-center justify-center px-10 py-4 text-white font-bold rounded-full text-lg uppercase tracking-wide"
+           style="background: <?= $neonAccent ?>;">
             <?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?>
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
         </a>
     </div>
 </section>
@@ -340,7 +355,7 @@
                 <div class="text-center">
                     <div class="mono text-4xl sm:text-5xl lg:text-6xl font-bold neon-stat"><?= h($stat['value'] ?? '') ?></div>
                     <div class="text-sm text-gray-500 mt-2 uppercase tracking-wider"><?= h($stat['label'] ?? '') ?></div>
-                    <div class="mt-2 h-0.5 w-full rounded-full progress-glow" style="background: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);"></div>
+                    <div class="mt-2 h-0.5 w-full rounded-full progress-glow" style="background: <?= $neonAccent ?>;"></div>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -419,14 +434,15 @@
 <!-- Mid-CTA #2 -->
 <?php if (!empty($targetAudience)): ?>
 <div class="dark-alt-bg"><div class="max-w-5xl mx-auto px-8"><div class="glow-divider"></div></div></div>
-<section class="py-16 lg:py-20 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.08), rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.03)), #0f172a;">
+<section class="py-16 lg:py-20 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.12), rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.05)), #0f172a;">
     <div class="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3"><?= h($sh('mid_cta_2', 'Ready to Take the Next Step?')) ?></h2>
         <p class="text-gray-400 mb-8 max-w-lg mx-auto"><?= h($sh('mid_cta_2_sub', 'Join thousands of others who have already downloaded this guide.')) ?></p>
         <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
-           class="btn-glow inline-flex items-center justify-center px-8 py-3.5 text-white font-semibold rounded-lg text-base"
-           style="background: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);">
+           class="btn-glow inline-flex items-center justify-center px-10 py-4 text-white font-bold rounded-full text-lg uppercase tracking-wide"
+           style="background: <?= $neonAccent ?>;">
             <?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?>
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
         </a>
     </div>
 </section>
@@ -439,8 +455,8 @@
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="rounded-xl p-8" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
             <div class="flex items-start space-x-4">
-                <div class="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.15);">
-                    <svg class="w-7 h-7" style="color: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <div class="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0" style="background: rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.15);">
+                    <svg class="w-7 h-7" style="color: <?= $neonAccent ?>;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 </div>
                 <div>
                     <h3 class="text-lg font-semibold text-white mb-2"><?= h($sh('author_title', 'About the Author')) ?></h3>
@@ -461,8 +477,8 @@
         <div class="space-y-6">
             <?php foreach ($testimonials as $testimonial): ?>
                 <div class="flex items-start gap-3">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 mt-1" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.2);">
-                        <span class="font-bold text-sm" style="color: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);"><?= h(mb_substr($testimonial['name'] ?? '?', 0, 1)) ?></span>
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 mt-1" style="background: rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.2);">
+                        <span class="font-bold text-sm" style="color: <?= $neonAccent ?>;"><?= h(mb_substr($testimonial['name'] ?? '?', 0, 1)) ?></span>
                     </div>
                     <div class="flex-1">
                         <div class="flex items-center gap-2 mb-1">
@@ -494,7 +510,7 @@
                     <button type="button" @click="openFaq = openFaq === <?= $index ?> ? null : <?= $index ?>"
                         class="w-full flex items-center justify-between px-5 py-4 text-left transition hover:bg-white/[0.02]">
                         <span class="flex items-center gap-2">
-                            <span class="mono text-sm flex-shrink-0" style="color: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);">&gt;</span>
+                            <span class="mono text-sm flex-shrink-0" style="color: <?= $neonAccent ?>;">&gt;</span>
                             <span class="font-medium text-white text-sm"><?= h($faq['question'] ?? '') ?></span>
                         </span>
                         <svg class="w-4 h-4 text-gray-500 transition-transform duration-200 flex-shrink-0 ml-3" :class="openFaq === <?= $index ?> ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -511,18 +527,52 @@
 </section>
 <?php endif; ?>
 
-<!-- 11. Bottom CTA — "Deploy" style -->
+<!-- Guarantee Section -->
 <div class="<?= !empty($faqItems) ? 'dark-alt-bg' : 'dark-bg' ?>"><div class="max-w-5xl mx-auto px-8"><div class="glow-divider"></div></div></div>
-<section class="relative overflow-hidden py-20 lg:py-28" style="background: linear-gradient(135deg, #0f172a, rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.08), #0f172a);">
-    <div class="absolute top-5 right-16 w-48 h-48 rounded-full pointer-events-none opacity-20 blur-3xl" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.3); animation: floatOrb1 20s ease-in-out infinite;"></div>
+<section class="dark-bg py-14 lg:py-18">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full mb-5" style="background: rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.1); border: 1px solid rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.25);">
+            <svg class="w-8 h-8" style="color: <?= $neonAccent ?>;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2"><?= h($sh('guarantee_title', '100% Free, No Strings Attached')) ?></h3>
+        <p class="text-gray-400 text-sm max-w-md mx-auto"><?= h($sh('guarantee_desc', 'This guide is completely free. No credit card required, no hidden fees. Just actionable insights delivered to your inbox.')) ?></p>
+    </div>
+</section>
+
+<!-- 11. Bottom CTA — "Deploy" style -->
+<div class="dark-bg"><div class="max-w-5xl mx-auto px-8"><div class="glow-divider"></div></div></div>
+<section class="relative overflow-hidden py-20 lg:py-28" style="background: linear-gradient(135deg, #0f172a, rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.12), #0f172a);">
+    <div class="absolute top-5 right-16 w-48 h-48 rounded-full pointer-events-none opacity-20 blur-3xl" style="background: rgba(<?= $neonR ?>,<?= $neonG ?>,<?= $neonB ?>,0.3); animation: floatOrb1 20s ease-in-out infinite;"></div>
     <div class="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4"><?= h($sh('cta_title', 'Ready to Get Started?')) ?></h2>
         <p class="text-gray-400 mb-2 max-w-lg mx-auto"><?= h($sh('cta_subtitle', 'Download your free copy now and start implementing today.')) ?></p>
-        <p class="mono text-xs text-gray-600 mb-8">$ download --format=pdf --free</p>
+        <p class="mono text-xs text-gray-600 mb-6">$ download --format=pdf --free</p>
+
+        <!-- Benefit stack -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8 text-sm text-gray-300">
+            <?php
+                $benefitItems = array_slice($features, 0, 3);
+                if (empty($benefitItems)) {
+                    $benefitItems = [
+                        ['title' => $sh('benefit_1', 'Actionable strategies')],
+                        ['title' => $sh('benefit_2', 'Expert insights')],
+                        ['title' => $sh('benefit_3', 'Instant PDF download')],
+                    ];
+                }
+            ?>
+            <?php foreach ($benefitItems as $bi): ?>
+                <span class="flex items-center space-x-2">
+                    <svg class="w-4 h-4 flex-shrink-0" style="color: <?= $neonAccent ?>;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span><?= h(is_array($bi) ? ($bi['title'] ?? '') : $bi) ?></span>
+                </span>
+            <?php endforeach; ?>
+        </div>
+
         <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
-           class="btn-glow inline-flex items-center justify-center px-8 py-3.5 text-white font-semibold rounded-lg text-base"
-           style="background: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);">
+           class="btn-glow inline-flex items-center justify-center px-10 py-4 text-white font-bold rounded-full text-lg uppercase tracking-wide"
+           style="background: <?= $neonAccent ?>;">
             <?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?>
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
         </a>
     </div>
 </section>

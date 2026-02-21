@@ -56,7 +56,7 @@
     <?php if (!empty($leadMagnet['hero_image_path'])): ?>
         style="background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.75)), url('<?= h(imageUrl($leadMagnet['hero_image_path'])) ?>') center/cover no-repeat; min-height: 70vh;"
     <?php else: ?>
-        style="background: linear-gradient(180deg, <?= h($heroBgDarker) ?>, <?= h($heroBgColor) ?>); min-height: 60vh;"
+        style="background: linear-gradient(180deg, <?= h($midCtaBgDarker) ?>, <?= h($midCtaBg) ?>); min-height: 60vh;"
     <?php endif; ?>
 >
     <div class="relative max-w-3xl mx-auto px-6 py-20 lg:py-28 flex flex-col items-center justify-center text-center" style="min-height: inherit;">
@@ -121,7 +121,7 @@
                 <div x-show="error" x-cloak class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm" x-text="error"></div>
 
                 <button type="submit" :disabled="loading"
-                        class="mt-6 w-full btn-brand px-6 py-3.5 text-white font-semibold rounded-lg shadow-md transition text-base disabled:opacity-50">
+                        class="mt-6 w-full btn-brand px-10 py-4 text-white font-bold rounded-full shadow-md transition text-lg uppercase tracking-wide disabled:opacity-50">
                     <span x-show="!loading"><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
                     <span x-show="loading" x-cloak><?= h($sh('form_sending', 'Sending...')) ?></span>
                 </button>
@@ -219,13 +219,14 @@
 
 <!-- Mid-CTA -->
 <?php if (!empty($chapters) || !empty($features)): ?>
-<section class="py-16 lg:py-20" style="background: linear-gradient(180deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>);">
+<section class="py-16 lg:py-20" style="background: linear-gradient(180deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>);">
     <div class="max-w-3xl mx-auto px-6 text-center">
         <h2 class="serif text-2xl md:text-3xl font-bold text-white mb-4"><?= h($sh('mid_cta_1', 'Don\'t Miss Out')) ?></h2>
         <p class="text-white/70 mb-8 max-w-lg mx-auto"><?= h($sh('mid_cta_1_sub', 'Get instant access to strategies that drive real results.')) ?></p>
         <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
-           class="inline-flex items-center justify-center px-8 py-3.5 border-2 border-white text-white font-semibold rounded-lg transition hover:bg-white hover:text-gray-900 text-base">
+           class="inline-flex items-center justify-center px-10 py-4 bg-white text-gray-900 font-bold rounded-full transition hover:bg-gray-100 shadow-lg text-lg uppercase tracking-wide">
             <?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?>
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
         </a>
     </div>
 </section>
@@ -327,13 +328,14 @@
 
 <!-- Mid-CTA #2 -->
 <?php if (!empty($targetAudience) || !empty($beforeAfter)): ?>
-<section class="py-16 lg:py-20" style="background: linear-gradient(180deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>);">
+<section class="py-16 lg:py-20" style="background: linear-gradient(180deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>);">
     <div class="max-w-3xl mx-auto px-6 text-center">
         <h2 class="serif text-2xl md:text-3xl font-bold text-white mb-4"><?= h($sh('mid_cta_2', 'Ready to Take the Next Step?')) ?></h2>
         <p class="text-white/70 mb-8 max-w-lg mx-auto"><?= h($sh('mid_cta_2_sub', 'Join thousands of others who have already downloaded this guide.')) ?></p>
         <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
-           class="inline-flex items-center justify-center px-8 py-3.5 border-2 border-white text-white font-semibold rounded-lg transition hover:bg-white hover:text-gray-900 text-base">
+           class="inline-flex items-center justify-center px-10 py-4 bg-white text-gray-900 font-bold rounded-full transition hover:bg-gray-100 shadow-lg text-lg uppercase tracking-wide">
             <?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?>
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
         </a>
     </div>
 </section>
@@ -404,8 +406,21 @@
 </section>
 <?php endif; ?>
 
+<!-- Guarantee -->
+<section class="bg-white py-14 lg:py-18">
+    <div class="max-w-2xl mx-auto px-6 text-center">
+        <hr class="orn-hr mb-8">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-full mb-5" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.08);">
+            <svg class="w-7 h-7" style="color: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <h3 class="serif text-xl font-bold text-gray-900 mb-2"><?= h($sh('guarantee_title', '100% Free, No Strings Attached')) ?></h3>
+        <p class="text-gray-500 text-sm max-w-md mx-auto"><?= h($sh('guarantee_desc', 'This guide is completely free. No credit card required, no hidden fees. Just actionable insights delivered to your inbox.')) ?></p>
+        <hr class="orn-hr mt-8">
+    </div>
+</section>
+
 <!-- 11. Bottom CTA — White text on dark brand bg, outlined button -->
-<section class="py-20 lg:py-24" style="background: linear-gradient(180deg, <?= h($heroBgDarker) ?>, <?= h($heroBgColor) ?>);">
+<section class="py-20 lg:py-24" style="background: linear-gradient(180deg, <?= h($midCtaBgDarker) ?>, <?= h($midCtaBg) ?>);">
     <div class="max-w-3xl mx-auto px-6 text-center">
         <?php if ($coverImage): ?>
             <div class="flex justify-center mb-8">
@@ -415,8 +430,9 @@
         <h2 class="serif text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4"><?= h($sh('cta_title', 'Ready to Get Started?')) ?></h2>
         <p class="text-white/70 mb-8 max-w-lg mx-auto"><?= h($sh('cta_subtitle', 'Download your free copy now and start implementing today.')) ?></p>
         <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
-           class="inline-flex items-center justify-center px-8 py-3.5 border-2 border-white text-white font-semibold rounded-lg transition hover:bg-white hover:text-gray-900 text-base">
+           class="inline-flex items-center justify-center px-10 py-4 bg-white text-gray-900 font-bold rounded-full transition hover:bg-gray-100 shadow-lg text-lg uppercase tracking-wide">
             <?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?>
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
         </a>
     </div>
 </section>

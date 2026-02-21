@@ -106,7 +106,7 @@
 </style>
 
 <!-- 1. Hero — True 50/50 split screen -->
-<section class="relative overflow-hidden" style="background: linear-gradient(135deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>);" id="hero">
+<section class="relative overflow-hidden" style="background: linear-gradient(135deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>);" id="hero">
     <div class="max-w-7xl mx-auto">
         <div class="flex flex-col lg:flex-row min-h-[600px] lg:min-h-[650px]">
             <!-- Left half: Brand bg with text -->
@@ -192,8 +192,9 @@
                         <div x-show="error" x-cloak class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm" x-text="error"></div>
 
                         <button type="submit" :disabled="loading"
-                                class="mt-6 w-full btn-brand px-6 py-3.5 text-white font-semibold rounded-lg shadow-lg transition hover:shadow-xl text-base disabled:opacity-50">
+                                class="mt-6 w-full btn-brand px-10 py-4 text-white font-bold rounded-full shadow-lg transition hover:shadow-xl text-lg uppercase tracking-wide disabled:opacity-50">
                             <span x-show="!loading"><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
+                            <svg x-show="!loading" class="inline-block w-5 h-5 ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                             <span x-show="loading" x-cloak><?= h($sh('form_sending', 'Sending...')) ?></span>
                         </button>
 
@@ -215,7 +216,7 @@
 </section>
 
 <!-- Angled divider -->
-<div class="relative h-16 lg:h-20" style="background: linear-gradient(135deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>);">
+<div class="relative h-16 lg:h-20" style="background: linear-gradient(135deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>);">
     <div class="absolute inset-0 bg-white" style="clip-path: polygon(0 40%, 100% 0, 100% 100%, 0 100%);"></div>
 </div>
 
@@ -306,9 +307,9 @@
 <!-- 5. Key Statistics — Oversized stacked numbers, one per row -->
 <?php if (!empty($keyStatistics)): ?>
 <div class="relative h-16 lg:h-20" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.04);">
-    <div class="absolute inset-0" style="background: linear-gradient(135deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>); clip-path: polygon(0 40%, 100% 0, 100% 100%, 0 100%);"></div>
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>); clip-path: polygon(0 40%, 100% 0, 100% 100%, 0 100%);"></div>
 </div>
-<section class="py-20 lg:py-28 relative overflow-hidden" style="background: linear-gradient(135deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>);">
+<section class="py-20 lg:py-28 relative overflow-hidden" style="background: linear-gradient(135deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>);">
     <div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-3xl sm:text-4xl font-extrabold text-white text-center mb-14"><?= h($sh('stats_title', 'By the Numbers')) ?></h2>
         <div class="space-y-10 max-w-3xl mx-auto">
@@ -321,7 +322,7 @@
         </div>
     </div>
 </section>
-<div class="relative h-16 lg:h-20" style="background: linear-gradient(135deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>);">
+<div class="relative h-16 lg:h-20" style="background: linear-gradient(135deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>);">
     <div class="absolute inset-0 bg-white" style="clip-path: polygon(0 0, 100% 60%, 100% 100%, 0 100%);"></div>
 </div>
 <?php endif; ?>
@@ -376,19 +377,20 @@
 <!-- Mid-CTA -->
 <?php if (!empty($beforeAfter) || !empty($chapters)): ?>
 <div class="relative h-16 lg:h-20 bg-white">
-    <div class="absolute inset-0" style="background: linear-gradient(135deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>); clip-path: polygon(0 0, 100% 60%, 100% 100%, 0 100%);"></div>
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>); clip-path: polygon(0 0, 100% 60%, 100% 100%, 0 100%);"></div>
 </div>
-<section class="py-16 lg:py-20" style="background: linear-gradient(135deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>);">
+<section class="py-16 lg:py-20" style="background: linear-gradient(135deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>);">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3"><?= h($sh('mid_cta_1', 'Don\'t Miss Out')) ?></h2>
         <p class="text-white/70 mb-8 max-w-lg mx-auto"><?= h($sh('mid_cta_1_sub', 'Get instant access to strategies that drive real results.')) ?></p>
         <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
-           class="inline-flex items-center justify-center px-8 py-3.5 bg-white text-gray-900 font-semibold rounded-lg shadow-lg transition hover:shadow-xl hover:bg-gray-50 text-base">
+           class="inline-flex items-center justify-center px-10 py-4 bg-white text-gray-900 font-bold rounded-full shadow-lg transition hover:shadow-xl hover:bg-gray-50 text-lg uppercase tracking-wide">
             <?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?>
+            <svg class="w-5 h-5 ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
         </a>
     </div>
 </section>
-<div class="relative h-16 lg:h-20" style="background: linear-gradient(135deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>);">
+<div class="relative h-16 lg:h-20" style="background: linear-gradient(135deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>);">
     <div class="absolute inset-0 bg-white" style="clip-path: polygon(0 40%, 100% 0, 100% 100%, 0 100%);"></div>
 </div>
 <?php endif; ?>
@@ -558,11 +560,22 @@
 </section>
 <?php endif; ?>
 
+<!-- Guarantee Section -->
+<section class="py-14 lg:py-18">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full mb-5" style="background: rgba(<?= $r ?>,<?= $g ?>,<?= $b ?>,0.08);">
+            <svg class="w-8 h-8 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2"><?= h($sh('guarantee_title', '100% Free, No Strings Attached')) ?></h3>
+        <p class="text-gray-500 text-sm max-w-md mx-auto"><?= h($sh('guarantee_desc', 'This guide is completely free. No credit card required, no hidden fees. Just actionable insights delivered to your inbox.')) ?></p>
+    </div>
+</section>
+
 <!-- 11. Bottom CTA -->
 <div class="relative h-16 lg:h-20 bg-white">
-    <div class="absolute inset-0" style="background: linear-gradient(135deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>); clip-path: polygon(0 0, 100% 60%, 100% 100%, 0 100%);"></div>
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>); clip-path: polygon(0 0, 100% 60%, 100% 100%, 0 100%);"></div>
 </div>
-<section class="relative overflow-hidden py-20 lg:py-28" style="background: linear-gradient(135deg, <?= h($heroBgColor) ?>, <?= h($heroBgDarker) ?>);">
+<section class="relative overflow-hidden py-20 lg:py-28" style="background: linear-gradient(135deg, <?= h($midCtaBg) ?>, <?= h($midCtaBgDarker) ?>);">
     <div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
             <?php if ($coverImage): ?>
@@ -574,8 +587,9 @@
                 <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4"><?= h($sh('cta_title', 'Ready to Get Started?')) ?></h2>
                 <p class="text-white/70 mb-8 max-w-lg"><?= h($sh('cta_subtitle', 'Download your free copy now and start implementing today.')) ?></p>
                 <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
-                   class="btn-brand inline-flex items-center justify-center px-8 py-3.5 text-white font-semibold rounded-lg shadow-lg transition hover:shadow-xl text-base">
+                   class="btn-brand inline-flex items-center justify-center px-10 py-4 text-white font-bold rounded-full shadow-lg transition hover:shadow-xl text-lg uppercase tracking-wide">
                     <?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?>
+                    <svg class="w-5 h-5 ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
             </div>
         </div>

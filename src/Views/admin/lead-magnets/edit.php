@@ -43,6 +43,15 @@ if (!empty($leadMagnet['social_proof'])) {
     $existingSocialProof = json_decode($leadMagnet['social_proof'], true) ?: [];
 }
 
+// Brand color for preview thumbnails
+$_brandHex = $tenant['primary_color'] ?? '#4f46e5';
+$_bClean = ltrim($_brandHex, '#');
+if (strlen($_bClean) === 3) $_bClean = $_bClean[0].$_bClean[0].$_bClean[1].$_bClean[1].$_bClean[2].$_bClean[2];
+$_bR = hexdec(substr($_bClean, 0, 2));
+$_bG = hexdec(substr($_bClean, 2, 2));
+$_bB = hexdec(substr($_bClean, 4, 2));
+$_brandDark = sprintf('#%02x%02x%02x', max(0, $_bR - 50), max(0, $_bG - 50), max(0, $_bB - 50));
+
 ob_start();
 ?>
 
@@ -127,9 +136,13 @@ ob_start();
             <div @click="selectedTemplate = 'bold'"
                  class="border-2 rounded-lg p-2.5 cursor-pointer transition hover:shadow-md text-center"
                  :class="selectedTemplate === 'bold' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
-                <div class="w-full aspect-[3/4] rounded mb-2 overflow-hidden relative" style="background: linear-gradient(135deg, #4f46e5, #1e1b4b)">
+                <div class="w-full aspect-[3/4] rounded mb-2 overflow-hidden relative" style="background: linear-gradient(135deg, <?= h($_brandHex) ?>, <?= h($_brandDark) ?>)">
                     <div class="absolute top-2 left-2 right-2 h-1.5 bg-white/30 rounded"></div>
                     <div class="absolute top-5 left-2 w-8 h-1 bg-white/50 rounded"></div>
+                    <!-- Glassmorphic card -->
+                    <div class="absolute top-9 right-1.5 w-7 h-8 rounded-lg" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);"></div>
+                    <!-- Book rectangle -->
+                    <div class="absolute top-9 left-2 w-4 h-6 rounded" style="background: rgba(255,255,255,0.25);"></div>
                     <div class="absolute bottom-6 left-2 right-2 grid grid-cols-3 gap-0.5">
                         <div class="h-3 bg-white/15 rounded"></div>
                         <div class="h-3 bg-white/15 rounded"></div>
@@ -150,11 +163,15 @@ ob_start();
                         <div class="h-0 border-b-2 border-gray-200"></div>
                         <div class="h-0 border-b-2 border-gray-200"></div>
                     </div>
-                    <div class="absolute left-3 right-3 space-y-1" style="top: 4rem;">
+                    <!-- Brand pill button -->
+                    <div class="absolute left-4 right-4 h-1.5 rounded-full" style="top: 3.5rem; background: <?= h($_brandHex) ?>;"></div>
+                    <!-- Alternating section -->
+                    <div class="absolute left-0 right-0 h-2.5 bg-gray-50" style="top: 4.5rem;"></div>
+                    <div class="absolute left-3 right-3 space-y-1" style="top: 5.2rem;">
                         <div class="flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-gray-200"></div><div class="h-0.5 bg-gray-100 rounded flex-1"></div></div>
                         <div class="flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-gray-200"></div><div class="h-0.5 bg-gray-100 rounded flex-1"></div></div>
                     </div>
-                    <div class="absolute bottom-2 left-4 right-4 h-2 bg-gray-100 rounded"></div>
+                    <div class="absolute bottom-2 left-4 right-4 h-1.5 rounded-full" style="background: <?= h($_brandHex) ?>; opacity: 0.7;"></div>
                 </div>
                 <p class="font-medium text-gray-900 text-xs">Minimal</p>
             </div>
@@ -163,9 +180,11 @@ ob_start();
                  class="border-2 rounded-lg p-2.5 cursor-pointer transition hover:shadow-md text-center"
                  :class="selectedTemplate === 'classic' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
                 <div class="w-full aspect-[3/4] rounded mb-2 overflow-hidden relative" style="background: #faf7f2">
-                    <div class="absolute top-2 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-amber-900/20 rounded"></div>
-                    <div class="absolute top-5 left-3 right-3 h-px bg-amber-900/15"></div>
-                    <div class="absolute left-3 right-3 h-px bg-amber-900/15" style="top: 1.45rem;"></div>
+                    <div class="absolute top-2 left-1/2 -translate-x-1/2 w-12 h-1.5 rounded" style="background: rgba(<?= $_bR ?>,<?= $_bG ?>,<?= $_bB ?>,0.25);"></div>
+                    <!-- Ornamental rule -->
+                    <div class="absolute left-1/2 -translate-x-1/2 w-6 h-px" style="top: 1.1rem; background: <?= h($_brandHex) ?>;"></div>
+                    <div class="absolute left-3 right-3 h-px" style="top: 1.5rem; background: rgba(<?= $_bR ?>,<?= $_bG ?>,<?= $_bB ?>,0.15);"></div>
+                    <div class="absolute left-3 right-3 h-px" style="top: 1.75rem; background: rgba(<?= $_bR ?>,<?= $_bG ?>,<?= $_bB ?>,0.15);"></div>
                     <div class="absolute top-8 left-3 right-3 flex gap-1">
                         <div class="flex-1 space-y-0.5">
                             <div class="h-0.5 bg-amber-900/10 rounded"></div>
@@ -179,7 +198,7 @@ ob_start();
                             <div class="h-0.5 bg-amber-900/10 rounded"></div>
                         </div>
                     </div>
-                    <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-10 h-2 rounded border border-amber-900/20"></div>
+                    <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-10 h-1.5 rounded-full" style="background: <?= h($_brandHex) ?>;"></div>
                 </div>
                 <p class="font-medium text-gray-900 text-xs">Classic</p>
             </div>
@@ -188,22 +207,25 @@ ob_start();
                  class="border-2 rounded-lg p-2.5 cursor-pointer transition hover:shadow-md text-center"
                  :class="selectedTemplate === 'split' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
                 <div class="w-full aspect-[3/4] rounded mb-2 overflow-hidden relative bg-white border border-gray-200">
-                    <div class="absolute top-0 left-0 w-1/2 h-2/5 bg-indigo-500">
+                    <div class="absolute top-0 left-0 w-1/2 h-2/5" style="background: <?= h($_brandHex) ?>;">
                         <div class="absolute top-1.5 left-1.5 right-1.5 h-1 bg-white/30 rounded"></div>
                     </div>
                     <div class="absolute top-0 right-0 w-1/2 h-2/5 bg-white p-1.5">
                         <div class="h-0.5 bg-gray-200 rounded mb-0.5"></div>
-                        <div class="h-1.5 bg-indigo-100 rounded"></div>
+                        <div class="h-1.5 rounded" style="background: rgba(<?= $_bR ?>,<?= $_bG ?>,<?= $_bB ?>,0.1);"></div>
                     </div>
-                    <div class="absolute left-1.5 right-1.5 space-y-0.5" style="top: 45%;">
-                        <div class="flex gap-0.5"><div class="w-2 h-2 bg-indigo-100 rounded"></div><div class="h-0.5 bg-gray-100 rounded flex-1 mt-0.5"></div></div>
-                        <div class="flex gap-0.5 flex-row-reverse"><div class="w-2 h-2 bg-indigo-100 rounded"></div><div class="h-0.5 bg-gray-100 rounded flex-1 mt-0.5"></div></div>
+                    <!-- Angled divider -->
+                    <div class="absolute left-0 right-0 h-1.5" style="top: 40%; background: <?= h($_brandHex) ?>; clip-path: polygon(0 0, 100% 60%, 100% 100%, 0 100%); opacity: 0.15;"></div>
+                    <div class="absolute left-1.5 right-1.5 space-y-0.5" style="top: 47%;">
+                        <div class="flex gap-0.5"><div class="w-2 h-2 rounded" style="background: rgba(<?= $_bR ?>,<?= $_bG ?>,<?= $_bB ?>,0.1);"></div><div class="h-0.5 bg-gray-100 rounded flex-1 mt-0.5"></div></div>
+                        <div class="flex gap-0.5 flex-row-reverse"><div class="w-2 h-2 rounded" style="background: rgba(<?= $_bR ?>,<?= $_bG ?>,<?= $_bB ?>,0.1);"></div><div class="h-0.5 bg-gray-100 rounded flex-1 mt-0.5"></div></div>
                     </div>
-                    <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0.5">
-                        <div class="w-1 h-1 rounded-full bg-indigo-400"></div>
-                        <div class="w-px h-1.5 bg-indigo-200"></div>
-                        <div class="w-1 h-1 rounded-full bg-indigo-400"></div>
+                    <div class="absolute bottom-5 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0.5">
+                        <div class="w-1 h-1 rounded-full" style="background: <?= h($_brandHex) ?>;"></div>
+                        <div class="w-px h-1.5" style="background: rgba(<?= $_bR ?>,<?= $_bG ?>,<?= $_bB ?>,0.3);"></div>
+                        <div class="w-1 h-1 rounded-full" style="background: <?= h($_brandHex) ?>;"></div>
                     </div>
+                    <div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-8 h-1.5 rounded-full" style="background: <?= h($_brandHex) ?>;"></div>
                 </div>
                 <p class="font-medium text-gray-900 text-xs">Split</p>
             </div>
@@ -213,29 +235,30 @@ ob_start();
                  :class="selectedTemplate === 'dark' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
                 <div class="w-full aspect-[3/4] rounded mb-2 overflow-hidden relative" style="background: #0f172a">
                     <!-- Terminal title bar -->
-                    <div class="absolute top-2 left-2 right-2 rounded-t" style="background: rgba(255,255,255,0.05);">
-                        <div class="flex items-center gap-0.5 px-1.5 py-0.5">
+                    <div class="absolute top-2 left-2 right-2 rounded-t" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                        <div class="flex items-center gap-0.5 px-1.5 py-0.5" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
                             <div class="w-1 h-1 rounded-full bg-red-400/60"></div>
                             <div class="w-1 h-1 rounded-full bg-yellow-400/60"></div>
                             <div class="w-1 h-1 rounded-full bg-green-400/60"></div>
                         </div>
-                        <div class="px-1.5 pb-1 space-y-0.5">
+                        <div class="px-1.5 pb-1 pt-0.5 space-y-0.5">
                             <div class="h-0.5 bg-white/10 rounded w-3/4"></div>
                             <div class="h-0.5 bg-white/10 rounded w-1/2"></div>
+                            <div class="h-1.5 rounded-full mt-0.5" style="background: rgba(<?= $_bR ?>,<?= $_bG ?>,<?= $_bB ?>,0.6);"></div>
                         </div>
                     </div>
                     <!-- Scroll cards -->
                     <div class="absolute left-2 right-1 flex gap-0.5" style="top: 55%;">
-                        <div class="w-4 h-3 bg-white/5 rounded border-t border-indigo-400/40 flex-shrink-0"></div>
-                        <div class="w-4 h-3 bg-white/5 rounded border-t border-indigo-400/40 flex-shrink-0"></div>
-                        <div class="w-4 h-3 bg-white/5 rounded border-t border-indigo-400/40 flex-shrink-0"></div>
+                        <div class="w-4 h-3 bg-white/5 rounded flex-shrink-0" style="border-top: 1px solid rgba(<?= $_bR ?>,<?= $_bG ?>,<?= $_bB ?>,0.5);"></div>
+                        <div class="w-4 h-3 bg-white/5 rounded flex-shrink-0" style="border-top: 1px solid rgba(<?= $_bR ?>,<?= $_bG ?>,<?= $_bB ?>,0.5);"></div>
+                        <div class="w-4 h-3 bg-white/5 rounded flex-shrink-0" style="border-top: 1px solid rgba(<?= $_bR ?>,<?= $_bG ?>,<?= $_bB ?>,0.5);"></div>
                     </div>
                     <!-- Chat bubbles -->
                     <div class="absolute left-2 right-2 space-y-0.5" style="bottom: 8px;">
-                        <div class="flex gap-0.5"><div class="w-1.5 h-1.5 rounded-full bg-indigo-400/30"></div><div class="h-1.5 bg-white/5 rounded-r rounded-bl flex-1"></div></div>
-                        <div class="flex gap-0.5"><div class="w-1.5 h-1.5 rounded-full bg-indigo-400/30"></div><div class="h-1.5 bg-white/5 rounded-r rounded-bl w-3/4"></div></div>
+                        <div class="flex gap-0.5"><div class="w-1.5 h-1.5 rounded-full" style="background: rgba(<?= $_bR ?>,<?= $_bG ?>,<?= $_bB ?>,0.4);"></div><div class="h-1.5 bg-white/5 rounded-r rounded-bl flex-1"></div></div>
+                        <div class="flex gap-0.5"><div class="w-1.5 h-1.5 rounded-full" style="background: rgba(<?= $_bR ?>,<?= $_bG ?>,<?= $_bB ?>,0.4);"></div><div class="h-1.5 bg-white/5 rounded-r rounded-bl w-3/4"></div></div>
                     </div>
-                    <div class="absolute left-2 right-2 h-px" style="top: 50%; background: rgba(99,102,241,0.3); box-shadow: 0 0 3px rgba(99,102,241,0.3);"></div>
+                    <div class="absolute left-2 right-2 h-px" style="top: 50%; background: rgba(<?= $_bR ?>,<?= $_bG ?>,<?= $_bB ?>,0.4); box-shadow: 0 0 4px rgba(<?= $_bR ?>,<?= $_bG ?>,<?= $_bB ?>,0.4);"></div>
                 </div>
                 <p class="font-medium text-gray-900 text-xs">Dark</p>
             </div>

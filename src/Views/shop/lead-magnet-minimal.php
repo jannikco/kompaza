@@ -67,8 +67,11 @@
                 <div x-show="error" x-cloak class="mt-4 p-3 bg-red-50 text-red-700 text-sm rounded" x-text="error"></div>
 
                 <button type="submit" :disabled="loading"
-                        class="mt-8 w-full btn-brand px-6 py-3 text-white font-medium rounded-lg transition text-base disabled:opacity-50">
-                    <span x-show="!loading"><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
+                        class="mt-8 w-full btn-brand px-10 py-4 text-white font-bold rounded-full transition text-lg uppercase tracking-wide disabled:opacity-50">
+                    <span x-show="!loading" class="inline-flex items-center justify-center space-x-2">
+                        <span><?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?></span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </span>
                     <span x-show="loading" x-cloak><?= h($sh('form_sending', 'Sending...')) ?></span>
                 </button>
 
@@ -206,9 +209,9 @@
     <div class="max-w-2xl mx-auto px-4 sm:px-6 text-center">
         <p class="text-gray-500 mb-4"><?= h($sh('mid_cta_1', 'Don\'t Miss Out')) ?></p>
         <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
-           class="inline-flex items-center text-sm font-medium px-5 py-2.5 rounded-lg transition"
-           style="color: rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>); border: 1px solid rgb(<?= $r ?>,<?= $g ?>,<?= $b ?>);">
+           class="btn-brand inline-flex items-center justify-center px-10 py-4 text-white font-bold rounded-full transition text-lg uppercase tracking-wide">
             <?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?>
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
         </a>
     </div>
 </section>
@@ -284,14 +287,23 @@
 </section>
 <?php endif; ?>
 
+<!-- Guarantee -->
+<section class="bg-white py-14 lg:py-18">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 text-center">
+        <h3 class="text-lg font-semibold text-gray-900 mb-2"><?= h($sh('guarantee_title', '100% Free, No Strings Attached')) ?></h3>
+        <p class="text-gray-500 text-sm max-w-md mx-auto"><?= h($sh('guarantee_desc', 'This guide is completely free. No credit card required, no hidden fees. Just actionable insights delivered to your inbox.')) ?></p>
+    </div>
+</section>
+
 <!-- 11. Bottom CTA — Subtle, not full-width brand banner -->
 <section class="bg-gray-50 py-20 lg:py-28">
     <div class="max-w-2xl mx-auto px-4 sm:px-6 text-center">
         <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-4"><?= h($sh('cta_title', 'Ready to Get Started?')) ?></h2>
         <p class="text-gray-500 mb-8 max-w-lg mx-auto"><?= h($sh('cta_subtitle', 'Download your free copy now and start implementing today.')) ?></p>
         <a href="#signup-form" onclick="document.getElementById('signup-form').scrollIntoView({behavior: 'smooth'}); return false;"
-           class="btn-brand inline-flex items-center justify-center px-8 py-3 text-white font-medium rounded-lg transition text-base">
+           class="btn-brand inline-flex items-center justify-center px-10 py-4 text-white font-bold rounded-full transition text-lg uppercase tracking-wide">
             <?= h($leadMagnet['hero_cta_text'] ?? 'Download Free') ?>
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
         </a>
     </div>
 </section>
