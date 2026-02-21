@@ -70,6 +70,7 @@ $id = LeadMagnet::create([
     'hero_cta_text' => sanitize($_POST['hero_cta_text'] ?? 'Download Free'),
     'hero_badge' => sanitize($_POST['hero_badge'] ?? ''),
     'hero_headline_accent' => sanitize($_POST['hero_headline_accent'] ?? ''),
+    'template' => in_array($_POST['template'] ?? '', ['bold', 'minimal', 'classic', 'split', 'dark']) ? $_POST['template'] : 'bold',
     'hero_bg_color' => sanitize($_POST['hero_bg_color'] ?? '#1e40af'),
     'hero_image_path' => $heroImagePath,
     'cover_image_path' => $coverImagePath,

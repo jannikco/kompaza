@@ -215,6 +215,7 @@ CREATE TABLE IF NOT EXISTS lead_magnets (
     hero_subheadline TEXT DEFAULT NULL,
     hero_cta_text VARCHAR(100) DEFAULT 'Download Free',
     hero_bg_color VARCHAR(7) DEFAULT '#1e40af',
+    template VARCHAR(20) DEFAULT 'bold',
     hero_image_path VARCHAR(500) DEFAULT NULL,
     features_headline VARCHAR(255) DEFAULT NULL,
     features JSON DEFAULT NULL,
@@ -1003,14 +1004,14 @@ CREATE TABLE IF NOT EXISTS company_accounts (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     tenant_id INT UNSIGNED NOT NULL,
     company_name VARCHAR(255) NOT NULL,
-    admin_user_id INT UNSIGNED NOT NULL,
+    admin_user_id INT UNSIGNED DEFAULT NULL,
     total_licenses INT UNSIGNED DEFAULT 0,
     status ENUM('active','suspended','cancelled') DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_tenant (tenant_id),
     FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE,
-    FOREIGN KEY (admin_user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (admin_user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS team_members (

@@ -15,7 +15,13 @@ if (!$leadMagnet || $leadMagnet['status'] !== 'published') {
 
 LeadMagnet::incrementViews($leadMagnet['id']);
 
-view('shop/lead-magnet', [
+$template = $leadMagnet['template'] ?? 'bold';
+$validTemplates = ['bold', 'minimal', 'classic', 'split', 'dark'];
+if (!in_array($template, $validTemplates)) {
+    $template = 'bold';
+}
+
+view('shop/lead-magnet-' . $template, [
     'tenant' => $tenant,
     'leadMagnet' => $leadMagnet,
 ]);

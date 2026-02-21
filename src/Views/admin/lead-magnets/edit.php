@@ -66,7 +66,8 @@ ob_start();
     beforeAfter: <?= h(json_encode($existingBeforeAfter)) ?>,
     authorBio: <?= h(json_encode($leadMagnet['author_bio'] ?? '')) ?>,
     testimonialTemplates: <?= h(json_encode($existingTestimonialTemplates)) ?>,
-    socialProof: <?= h(json_encode($existingSocialProof)) ?>
+    socialProof: <?= h(json_encode($existingSocialProof)) ?>,
+    selectedTemplate: <?= h(json_encode($leadMagnet['template'] ?? 'bold')) ?>
 }">
 <form method="POST" action="/admin/lead-magnets/opdater" enctype="multipart/form-data" class="space-y-8">
     <?= csrfField() ?>
@@ -112,6 +113,94 @@ ob_start();
                     value="<?= h($leadMagnet['meta_description'] ?? '') ?>"
                     class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="SEO description (max 160 characters)">
+            </div>
+        </div>
+    </div>
+
+    <!-- Landing Page Template -->
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Landing Page Template</h3>
+        <p class="text-gray-500 text-sm mb-4">Choose the design style for this lead magnet's landing page.</p>
+        <input type="hidden" name="template" :value="selectedTemplate">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <!-- Bold -->
+            <div @click="selectedTemplate = 'bold'"
+                 class="border-2 rounded-lg p-2.5 cursor-pointer transition hover:shadow-md text-center"
+                 :class="selectedTemplate === 'bold' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
+                <div class="w-full aspect-[3/4] rounded mb-2 overflow-hidden relative" style="background: linear-gradient(135deg, #4f46e5, #1e1b4b)">
+                    <div class="absolute top-2 left-2 right-2 h-1.5 bg-white/30 rounded"></div>
+                    <div class="absolute top-5 left-2 w-8 h-1 bg-white/50 rounded"></div>
+                    <div class="absolute bottom-6 left-2 right-2 grid grid-cols-3 gap-0.5">
+                        <div class="h-3 bg-white/15 rounded"></div>
+                        <div class="h-3 bg-white/15 rounded"></div>
+                        <div class="h-3 bg-white/15 rounded"></div>
+                    </div>
+                    <svg class="absolute bottom-0 w-full" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 10 Q25 2 50 7 Q75 0 100 10 Z" fill="rgba(255,255,255,0.1)"/></svg>
+                </div>
+                <p class="font-medium text-gray-900 text-xs">Bold</p>
+            </div>
+            <!-- Minimal -->
+            <div @click="selectedTemplate = 'minimal'"
+                 class="border-2 rounded-lg p-2.5 cursor-pointer transition hover:shadow-md text-center"
+                 :class="selectedTemplate === 'minimal' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
+                <div class="w-full aspect-[3/4] rounded mb-2 overflow-hidden relative bg-white border border-gray-200">
+                    <div class="absolute top-2 left-2 right-2 h-1.5 bg-gray-100 rounded"></div>
+                    <div class="absolute top-5 left-2 w-10 h-1 bg-gray-200 rounded"></div>
+                    <div class="absolute top-9 left-2 right-2 space-y-1.5">
+                        <div class="h-2 bg-gray-50 rounded"></div>
+                        <div class="h-2 bg-gray-50 rounded"></div>
+                    </div>
+                    <div class="absolute bottom-2 left-2 right-2 h-2 bg-gray-100 rounded"></div>
+                </div>
+                <p class="font-medium text-gray-900 text-xs">Minimal</p>
+            </div>
+            <!-- Classic -->
+            <div @click="selectedTemplate = 'classic'"
+                 class="border-2 rounded-lg p-2.5 cursor-pointer transition hover:shadow-md text-center"
+                 :class="selectedTemplate === 'classic' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
+                <div class="w-full aspect-[3/4] rounded mb-2 overflow-hidden relative" style="background: #faf7f2">
+                    <div class="absolute top-2 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-amber-900/20 rounded"></div>
+                    <div class="absolute top-5 left-3 right-3 h-px bg-amber-900/10"></div>
+                    <div class="absolute top-7 left-3 right-3 space-y-1">
+                        <div class="h-1 bg-amber-900/10 rounded"></div>
+                        <div class="h-1 bg-amber-900/10 rounded w-4/5"></div>
+                    </div>
+                    <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-10 h-2 bg-amber-900/15 rounded"></div>
+                </div>
+                <p class="font-medium text-gray-900 text-xs">Classic</p>
+            </div>
+            <!-- Split -->
+            <div @click="selectedTemplate = 'split'"
+                 class="border-2 rounded-lg p-2.5 cursor-pointer transition hover:shadow-md text-center"
+                 :class="selectedTemplate === 'split' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
+                <div class="w-full aspect-[3/4] rounded mb-2 overflow-hidden relative bg-gray-50 border border-gray-200">
+                    <div class="absolute top-0 left-0 w-1/2 h-1/2 bg-indigo-100"></div>
+                    <div class="absolute top-0 right-0 w-1/2 h-1/2 p-1.5">
+                        <div class="h-1 bg-gray-200 rounded mb-0.5"></div>
+                        <div class="h-0.5 bg-gray-100 rounded w-4/5"></div>
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-1/2 h-1/2 p-1.5">
+                        <div class="h-1 bg-gray-200 rounded mb-0.5"></div>
+                        <div class="h-0.5 bg-gray-100 rounded w-3/5"></div>
+                    </div>
+                    <div class="absolute bottom-0 right-0 w-1/2 h-1/2 bg-indigo-50"></div>
+                </div>
+                <p class="font-medium text-gray-900 text-xs">Split</p>
+            </div>
+            <!-- Dark -->
+            <div @click="selectedTemplate = 'dark'"
+                 class="border-2 rounded-lg p-2.5 cursor-pointer transition hover:shadow-md text-center"
+                 :class="selectedTemplate === 'dark' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
+                <div class="w-full aspect-[3/4] rounded mb-2 overflow-hidden relative" style="background: #0f172a">
+                    <div class="absolute top-2 left-2 right-2 h-1.5 bg-white/10 rounded"></div>
+                    <div class="absolute top-5 left-2 w-8 h-1 bg-indigo-400/30 rounded"></div>
+                    <div class="absolute top-10 left-2 right-2 grid grid-cols-2 gap-1">
+                        <div class="h-4 bg-white/5 rounded border border-white/10"></div>
+                        <div class="h-4 bg-white/5 rounded border border-white/10"></div>
+                    </div>
+                    <div class="absolute bottom-2 left-2 right-2 h-2 bg-indigo-500/20 rounded border border-indigo-400/20"></div>
+                </div>
+                <p class="font-medium text-gray-900 text-xs">Dark</p>
             </div>
         </div>
     </div>

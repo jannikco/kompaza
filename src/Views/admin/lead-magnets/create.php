@@ -85,7 +85,7 @@ ob_start();
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                                 <span>Generate with AI</span>
                             </button>
-                            <button @click="step = 3" class="text-sm text-gray-500 hover:text-gray-900 transition">
+                            <button @click="step = 4" class="text-sm text-gray-500 hover:text-gray-900 transition">
                                 Skip AI &rarr;
                             </button>
                         </div>
@@ -163,8 +163,160 @@ ob_start();
         </div>
     </template>
 
-    <!-- ==================== STEP 2: Pick Your Style ==================== -->
+    <!-- ==================== STEP 2: Choose Template ==================== -->
     <template x-if="step === 2">
+        <div>
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Choose Your Template</h2>
+                    <p class="text-gray-500">Select a landing page design that fits your content best.</p>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+                    <!-- Bold -->
+                    <div @click="selectedTemplate = 'bold'"
+                         class="border-2 rounded-xl p-3 cursor-pointer transition hover:shadow-md text-center relative"
+                         :class="selectedTemplate === 'bold' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
+                        <template x-if="recommendedTemplate === 'bold'">
+                            <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">AI Pick</div>
+                        </template>
+                        <div class="w-full aspect-[3/4] rounded-lg mb-3 overflow-hidden relative" style="background: linear-gradient(135deg, #4f46e5, #1e1b4b)">
+                            <div class="absolute top-3 left-3 right-3 h-2 bg-white/30 rounded"></div>
+                            <div class="absolute top-7 left-3 w-10 h-1.5 bg-white/50 rounded"></div>
+                            <div class="absolute top-10 left-3 right-3 h-1 bg-white/20 rounded"></div>
+                            <div class="absolute bottom-8 left-3 right-3 grid grid-cols-3 gap-1">
+                                <div class="h-5 bg-white/15 rounded"></div>
+                                <div class="h-5 bg-white/15 rounded"></div>
+                                <div class="h-5 bg-white/15 rounded"></div>
+                            </div>
+                            <svg class="absolute bottom-0 w-full" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 10 Q25 2 50 7 Q75 0 100 10 Z" fill="rgba(255,255,255,0.1)"/></svg>
+                        </div>
+                        <p class="font-semibold text-gray-900 text-sm">Bold</p>
+                        <p class="text-gray-400 text-[11px]">High-energy, animated</p>
+                    </div>
+
+                    <!-- Minimal -->
+                    <div @click="selectedTemplate = 'minimal'"
+                         class="border-2 rounded-xl p-3 cursor-pointer transition hover:shadow-md text-center relative"
+                         :class="selectedTemplate === 'minimal' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
+                        <template x-if="recommendedTemplate === 'minimal'">
+                            <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">AI Pick</div>
+                        </template>
+                        <div class="w-full aspect-[3/4] rounded-lg mb-3 overflow-hidden relative bg-white border border-gray-200">
+                            <div class="absolute top-3 left-3 right-3 h-2 bg-gray-100 rounded"></div>
+                            <div class="absolute top-7 left-3 w-12 h-1 bg-gray-200 rounded"></div>
+                            <div class="absolute top-10 left-3 right-3 h-0.5 bg-gray-100 rounded"></div>
+                            <div class="absolute top-14 left-3 right-3 space-y-2">
+                                <div class="h-3 bg-gray-50 rounded"></div>
+                                <div class="h-3 bg-gray-50 rounded"></div>
+                            </div>
+                            <div class="absolute bottom-3 left-3 right-3 h-3 bg-gray-100 rounded"></div>
+                        </div>
+                        <p class="font-semibold text-gray-900 text-sm">Minimal</p>
+                        <p class="text-gray-400 text-[11px]">Clean, professional</p>
+                    </div>
+
+                    <!-- Classic -->
+                    <div @click="selectedTemplate = 'classic'"
+                         class="border-2 rounded-xl p-3 cursor-pointer transition hover:shadow-md text-center relative"
+                         :class="selectedTemplate === 'classic' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
+                        <template x-if="recommendedTemplate === 'classic'">
+                            <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">AI Pick</div>
+                        </template>
+                        <div class="w-full aspect-[3/4] rounded-lg mb-3 overflow-hidden relative" style="background: #faf7f2">
+                            <div class="absolute top-3 left-1/2 -translate-x-1/2 w-16 h-2 bg-amber-900/20 rounded"></div>
+                            <div class="absolute top-7 left-4 right-4 h-px bg-amber-900/10"></div>
+                            <div class="absolute top-10 left-4 right-4 space-y-1.5">
+                                <div class="h-1 bg-amber-900/10 rounded"></div>
+                                <div class="h-1 bg-amber-900/10 rounded w-4/5"></div>
+                                <div class="h-1 bg-amber-900/10 rounded w-3/5"></div>
+                            </div>
+                            <div class="absolute bottom-8 left-4 right-4 h-px bg-amber-900/10"></div>
+                            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 w-14 h-2.5 bg-amber-900/15 rounded"></div>
+                        </div>
+                        <p class="font-semibold text-gray-900 text-sm">Classic</p>
+                        <p class="text-gray-400 text-[11px]">Elegant, editorial</p>
+                    </div>
+
+                    <!-- Split -->
+                    <div @click="selectedTemplate = 'split'"
+                         class="border-2 rounded-xl p-3 cursor-pointer transition hover:shadow-md text-center relative"
+                         :class="selectedTemplate === 'split' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
+                        <template x-if="recommendedTemplate === 'split'">
+                            <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">AI Pick</div>
+                        </template>
+                        <div class="w-full aspect-[3/4] rounded-lg mb-3 overflow-hidden relative bg-gray-50 border border-gray-200">
+                            <div class="absolute top-0 left-0 w-1/2 h-1/2 bg-indigo-100"></div>
+                            <div class="absolute top-0 right-0 w-1/2 h-1/2 p-2">
+                                <div class="h-1.5 bg-gray-200 rounded mb-1"></div>
+                                <div class="h-1 bg-gray-100 rounded w-4/5"></div>
+                            </div>
+                            <div class="absolute bottom-0 left-0 w-1/2 h-1/2 p-2">
+                                <div class="h-1.5 bg-gray-200 rounded mb-1"></div>
+                                <div class="h-1 bg-gray-100 rounded w-3/5"></div>
+                            </div>
+                            <div class="absolute bottom-0 right-0 w-1/2 h-1/2 bg-indigo-50"></div>
+                        </div>
+                        <p class="font-semibold text-gray-900 text-sm">Split</p>
+                        <p class="text-gray-400 text-[11px]">Visual, alternating</p>
+                    </div>
+
+                    <!-- Dark -->
+                    <div @click="selectedTemplate = 'dark'"
+                         class="border-2 rounded-xl p-3 cursor-pointer transition hover:shadow-md text-center relative"
+                         :class="selectedTemplate === 'dark' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200'">
+                        <template x-if="recommendedTemplate === 'dark'">
+                            <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">AI Pick</div>
+                        </template>
+                        <div class="w-full aspect-[3/4] rounded-lg mb-3 overflow-hidden relative" style="background: #0f172a">
+                            <div class="absolute top-3 left-3 right-3 h-2 bg-white/10 rounded"></div>
+                            <div class="absolute top-7 left-3 w-10 h-1.5 bg-indigo-400/30 rounded"></div>
+                            <div class="absolute top-14 left-3 right-3 grid grid-cols-2 gap-1.5">
+                                <div class="h-6 bg-white/5 rounded border border-white/10"></div>
+                                <div class="h-6 bg-white/5 rounded border border-white/10"></div>
+                            </div>
+                            <div class="absolute bottom-3 left-3 right-3 h-3 bg-indigo-500/20 rounded border border-indigo-400/20"></div>
+                        </div>
+                        <p class="font-semibold text-gray-900 text-sm">Dark</p>
+                        <p class="text-gray-400 text-[11px]">Tech, futuristic</p>
+                    </div>
+                </div>
+
+                <!-- Selected template description -->
+                <div class="bg-white border border-gray-200 rounded-xl p-4 mb-8 text-center">
+                    <template x-if="selectedTemplate === 'bold'">
+                        <p class="text-gray-600 text-sm">Animated gradients, wave dividers, hover effects, and floating elements. Best for <strong>marketing, product launches, and startups</strong>.</p>
+                    </template>
+                    <template x-if="selectedTemplate === 'minimal'">
+                        <p class="text-gray-600 text-sm">Clean whitespace, thin borders, no decorative effects. Best for <strong>premium brands, professional services, and design-focused</strong> content.</p>
+                    </template>
+                    <template x-if="selectedTemplate === 'classic'">
+                        <p class="text-gray-600 text-sm">Serif headings, single-column layout, elegant dividers. Best for <strong>educational content, thought leadership, and long-form guides</strong>.</p>
+                    </template>
+                    <template x-if="selectedTemplate === 'split'">
+                        <p class="text-gray-600 text-sm">Alternating left/right sections, angled dividers, large images. Best for <strong>visual content, case studies, and portfolio-style guides</strong>.</p>
+                    </template>
+                    <template x-if="selectedTemplate === 'dark'">
+                        <p class="text-gray-600 text-sm">Dark background, frosted glass cards, glowing accents. Best for <strong>tech/developer content, creative agencies, and innovation</strong>.</p>
+                    </template>
+                </div>
+
+                <!-- Navigation -->
+                <div class="flex items-center justify-between">
+                    <button type="button" @click="step = 1" class="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition">
+                        &larr; Back
+                    </button>
+                    <button type="button" @click="step = 3"
+                        class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition">
+                        Next: Pick Style &rarr;
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- ==================== STEP 3: Pick Your Style ==================== -->
+    <template x-if="step === 3">
         <div>
             <div class="max-w-6xl mx-auto">
 
@@ -303,14 +455,14 @@ ob_start();
 
                 <!-- Navigation -->
                 <div class="flex items-center justify-between">
-                    <button type="button" @click="step = 1" class="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition">
+                    <button type="button" @click="step = 2" class="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition">
                         &larr; Back
                     </button>
                     <div class="flex items-center space-x-4">
-                        <button type="button" @click="step = 3" class="text-sm text-gray-500 hover:text-gray-900 transition">
+                        <button type="button" @click="step = 4" class="text-sm text-gray-500 hover:text-gray-900 transition">
                             Skip &rarr;
                         </button>
-                        <button type="button" @click="step = 3"
+                        <button type="button" @click="step = 4"
                             class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition">
                             Next: Review Content &rarr;
                         </button>
@@ -320,9 +472,9 @@ ob_start();
         </div>
     </template>
 
-    <!-- Steps 3-4 are inside the form -->
+    <!-- Steps 4-5 are inside the form -->
     <form method="POST" action="/admin/lead-magnets/gem" enctype="multipart/form-data"
-          x-show="step >= 3" x-transition>
+          x-show="step >= 4" x-transition>
         <?= csrfField() ?>
 
         <!-- Hidden fields for pre-uploaded data -->
@@ -343,6 +495,7 @@ ob_start();
         <input type="hidden" name="section_headings" :value="JSON.stringify(sectionHeadings)">
         <input type="hidden" name="hero_badge" :value="formData.hero_badge">
         <input type="hidden" name="hero_headline_accent" :value="formData.hero_headline_accent">
+        <input type="hidden" name="template" :value="selectedTemplate">
 
         <!-- Hidden fields for formData (always in DOM regardless of step) -->
         <input type="hidden" name="title" :value="formData.title">
@@ -358,8 +511,8 @@ ob_start();
         <input type="hidden" name="author_bio" :value="authorBio">
 
 
-        <!-- ==================== STEP 3: Review Content (Accordion) ==================== -->
-        <template x-if="step === 3">
+        <!-- ==================== STEP 4: Review Content (Accordion) ==================== -->
+        <template x-if="step === 4">
             <div class="space-y-4 max-w-4xl mx-auto">
                 <template x-if="aiGenerated">
                     <div class="p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-start space-x-3 mb-4">
@@ -508,14 +661,14 @@ ob_start();
                                     <img :src="coverImageUrl" class="h-32 rounded-lg border border-gray-300" alt="Cover preview">
                                     <div>
                                         <p class="text-gray-500 text-sm">This cover will be displayed as a 3D book mockup on the landing page.</p>
-                                        <button type="button" @click="step = 2" class="mt-2 text-sm text-indigo-600 hover:text-indigo-500 transition">Change cover</button>
+                                        <button type="button" @click="step = 3" class="mt-2 text-sm text-indigo-600 hover:text-indigo-500 transition">Change cover</button>
                                     </div>
                                 </div>
                             </template>
                             <template x-if="!coverImagePath">
                                 <div class="text-center py-4">
                                     <p class="text-gray-500 text-sm mb-2">No cover selected.</p>
-                                    <button type="button" @click="step = 2" class="text-sm text-indigo-600 hover:text-indigo-500 transition">Go back to pick a cover</button>
+                                    <button type="button" @click="step = 3" class="text-sm text-indigo-600 hover:text-indigo-500 transition">Go back to pick a cover</button>
                                 </div>
                             </template>
                         </div>
@@ -912,18 +1065,18 @@ ob_start();
 
                 <!-- Navigation -->
                 <div class="flex items-center justify-between pt-4">
-                    <button type="button" @click="step = 2" class="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition">
+                    <button type="button" @click="step = 3" class="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition">
                         &larr; Back to Pick Style
                     </button>
-                    <button type="button" @click="goToStep4()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition">
+                    <button type="button" @click="goToStep5()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition">
                         Next: Email & Publish &rarr;
                     </button>
                 </div>
             </div>
         </template>
 
-        <!-- ==================== STEP 4: Email & Publish ==================== -->
-        <template x-if="step === 4">
+        <!-- ==================== STEP 5: Email & Publish ==================== -->
+        <template x-if="step === 5">
             <div class="space-y-8 max-w-4xl mx-auto">
 
                 <!-- PDF File -->
@@ -981,7 +1134,7 @@ ob_start();
 
                 <!-- Submit -->
                 <div class="flex items-center justify-between">
-                    <button type="button" @click="step = 3" class="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition">
+                    <button type="button" @click="step = 4" class="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition">
                         &larr; Back
                     </button>
                     <div class="flex items-center space-x-4">
@@ -1001,12 +1154,13 @@ ob_start();
 <script>
 function leadMagnetWizard() {
     return {
-        step: <?= $aiConfigured ? '1' : '3' ?>,
+        step: <?= $aiConfigured ? '1' : '4' ?>,
         stepLabels: [
             {n: 1, label: 'Upload & Generate'},
-            {n: 2, label: 'Pick Style'},
-            {n: 3, label: 'Review Content'},
-            {n: 4, label: 'Email & Publish'}
+            {n: 2, label: 'Choose Template'},
+            {n: 3, label: 'Pick Style'},
+            {n: 4, label: 'Review Content'},
+            {n: 5, label: 'Email & Publish'}
         ],
         loading: false,
         analyzing: false,
@@ -1041,6 +1195,10 @@ function leadMagnetWizard() {
         uploadedCoverPreview: '',
         coverPrompt: '',
 
+        // Template selection
+        selectedTemplate: 'bold',
+        recommendedTemplate: 'bold',
+
         // Content arrays
         features: [],
         chapters: [],
@@ -1057,7 +1215,7 @@ function leadMagnetWizard() {
 
         init() {
             this.$watch('step', (val) => {
-                if (val === 4) {
+                if (val === 5) {
                     this.$nextTick(() => this.initEmailEditor());
                 }
             });
@@ -1092,8 +1250,8 @@ function leadMagnetWizard() {
             email_body_html: '',
         },
 
-        goToStep4() {
-            this.step = 4;
+        goToStep5() {
+            this.step = 5;
         },
 
         highlightAccent(headline, accent) {
@@ -1181,7 +1339,7 @@ function leadMagnetWizard() {
 
                 if (!result.ai_generated) {
                     this.analyzing = false;
-                    this.step = 3;
+                    this.step = 4;
                     return;
                 }
 
@@ -1196,6 +1354,11 @@ function leadMagnetWizard() {
                 this.formData.meta_description = result.orchestrator.meta_description || '';
                 this.formData.hero_bg_color = result.orchestrator.hero_bg_color || '#1e1b4b';
                 if (result.orchestrator.cover_prompt) this.coverPrompt = result.orchestrator.cover_prompt;
+
+                if (result.orchestrator.recommended_template) {
+                    this.recommendedTemplate = result.orchestrator.recommended_template;
+                    this.selectedTemplate = result.orchestrator.recommended_template;
+                }
 
                 this.analyzing = false;
                 this.showLanguageSelection = true;

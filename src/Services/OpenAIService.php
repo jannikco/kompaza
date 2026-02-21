@@ -160,6 +160,7 @@ Return a JSON object with exactly these fields:
 - "meta_description": SEO meta description (max 155 chars, in detected language)
 - "hero_bg_color": a professional dark hex color for the hero background (e.g. "#1e3a5f")
 - "cover_prompt": a DALL-E image generation prompt describing an ideal abstract book cover. Focus on visual elements, colors, mood, and abstract shapes only. Do NOT include any text or typography. This field must always be in English for DALL-E.
+- "recommended_template": the best landing page template for this content. Choose exactly one of: "bold", "minimal", "classic", "split", "dark". Guidelines: "bold" for high-energy marketing, product launches, sales-focused content. "minimal" for premium brands, professional services, design-focused or luxury content. "classic" for educational, academic, long-form guides, thought leadership. "split" for visual content, case studies, portfolio-style guides with strong imagery. "dark" for tech/developer content, creative agencies, innovation-focused topics.
 PROMPT;
 
         return $this->chatCompletion($orchestratorSystem, $userMessage);
