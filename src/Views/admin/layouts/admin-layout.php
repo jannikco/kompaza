@@ -105,6 +105,11 @@
             </a>
             <?php endif; ?>
 
+            <a href="/admin/redirects" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?= ($currentPage ?? '') === 'redirects' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                Redirects
+            </a>
+
             <?php if (tenantFeature('connectpilot')): ?>
             <div class="pt-4 pb-2 px-3">
                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">ConnectPilot</p>

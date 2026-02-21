@@ -249,6 +249,9 @@ if ($routingMode === 'tenant') {
             '/admin/custom-pages' => 'admin/custom-pages/index',
             '/admin/custom-pages/create' => 'admin/custom-pages/create',
             '/admin/custom-pages/edit' => 'admin/custom-pages/edit',
+            '/admin/redirects' => 'admin/redirects/index',
+            '/admin/redirects/create' => 'admin/redirects/create',
+            '/admin/redirects/edit' => 'admin/redirects/edit',
         ],
         'POST' => [
             '/admin/lead-magnets/ai-generate' => 'admin/lead-magnets/ai-generate',
@@ -338,6 +341,9 @@ if ($routingMode === 'tenant') {
             '/admin/custom-pages/store' => 'admin/custom-pages/store',
             '/admin/custom-pages/update' => 'admin/custom-pages/update',
             '/admin/custom-pages/delete' => 'admin/custom-pages/delete',
+            '/admin/redirects/store' => 'admin/redirects/store',
+            '/admin/redirects/update' => 'admin/redirects/update',
+            '/admin/redirects/delete' => 'admin/redirects/delete',
         ],
     ];
 
@@ -538,6 +544,15 @@ if ($routingMode === 'tenant') {
         // Impersonate login (HMAC-signed, no auth required)
         elseif ($method === 'GET' && $request === '/auth/impersonate') {
             $controller = 'shop/impersonate';
+        }
+    }
+
+    // Before 404: check if path matches a redirect
+    if (!$controller && $method === 'GET') {
+        $redirect = \App\Models\Redirect::findByPath($request, $tenant['id']);
+        if ($redirect) {
+            \App\Models\Redirect::incrementHits($redirect['id']);
+            redirect($redirect['to_path'], (int)$redirect['status_code']);
         }
     }
 
