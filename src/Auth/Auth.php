@@ -23,6 +23,11 @@ class Auth {
             return false;
         }
 
+        // Block unverified tenant admins from logging in
+        if ($user['role'] === 'tenant_admin' && empty($user['email_verified_at'])) {
+            return false;
+        }
+
         self::login($user);
         return true;
     }

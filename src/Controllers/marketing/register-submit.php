@@ -1,10 +1,10 @@
 <?php
 
-use App\Auth\Auth;
 use App\Database\Database;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Plan;
+use App\Services\BrevoService;
 
 // Only POST allowed
 if (!isPost()) {
@@ -15,6 +15,12 @@ if (!isPost()) {
 if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
     flashMessage('error', 'Invalid request. Please try again.');
     redirect('/register');
+}
+
+// Honeypot check — bots fill this hidden field, humans don't
+if (!empty($_POST['website'])) {
+    // Silently reject — show success page to not tip off the bot
+    redirect('/verify-pending?email=' . urlencode($_POST['email'] ?? ''));
 }
 
 // Rate limiting
@@ -127,7 +133,7 @@ try {
         'trial_ends_at' => date('Y-m-d H:i:s', strtotime('+7 days')),
     ]);
 
-    // Create tenant admin user
+    // Create tenant admin user (email_verified_at stays NULL until verified)
     $userId = User::create([
         'tenant_id' => $tenantId,
         'role' => 'tenant_admin',
@@ -143,11 +149,24 @@ try {
         'owner_user_id' => $userId,
     ]);
 
+    // Generate email verification token
+    $token = bin2hex(random_bytes(32));
+    $db = Database::getConnection();
+    $stmt = $db->prepare("
+        INSERT INTO email_verification_tokens (user_id, token, expires_at, created_at)
+        VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 24 HOUR), NOW())
+    ");
+    $stmt->execute([$userId, $token]);
+
     Database::commit();
 
-    // Log the user in
-    $user = User::find($userId);
-    Auth::login($user);
+    // Send verification email via Brevo
+    try {
+        $brevo = new BrevoService();
+        $brevo->sendVerificationEmail($email, $name, $token);
+    } catch (\Exception $mailErr) {
+        error_log('Verification email failed: ' . $mailErr->getMessage());
+    }
 
     // Audit
     logAudit('tenant_created', 'tenant', $tenantId, [
@@ -156,10 +175,8 @@ try {
         'plan' => $planSlug,
     ]);
 
-    // Redirect to the new tenant's admin panel
-    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $redirectUrl = $scheme . '://' . $slug . '.' . PLATFORM_DOMAIN . '/admin';
-    redirect($redirectUrl);
+    // Redirect to "check your email" page (NOT auto-logged in)
+    redirect('/verify-pending?email=' . urlencode($email));
 
 } catch (\Exception $e) {
     Database::rollback();

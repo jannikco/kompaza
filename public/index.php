@@ -42,6 +42,8 @@ if ($routingMode === 'marketing') {
             '/about' => 'about',
             '/register' => 'register',
             '/login' => 'login',
+            '/verify-pending' => 'verify-pending',
+            '/verify-email' => 'verify-email',
         ],
         'POST' => [
             '/register' => 'register-submit',

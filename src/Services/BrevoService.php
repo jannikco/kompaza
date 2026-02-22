@@ -142,6 +142,28 @@ class BrevoService {
     }
 
     /**
+     * Send email verification link to a new user.
+     */
+    public function sendVerificationEmail(string $email, string $name, string $token): array {
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $verifyUrl = $scheme . '://' . PLATFORM_DOMAIN . '/verify-email?token=' . urlencode($token);
+
+        ob_start();
+        $userName = $name;
+        $verificationUrl = $verifyUrl;
+        include VIEWS_PATH . '/emails/verify-email.php';
+        $htmlContent = ob_get_clean();
+
+        return $this->sendTransactionalEmail(
+            ['email' => $email, 'name' => $name],
+            'Verify your email address - Kompaza',
+            $htmlContent,
+            MAIL_FROM_ADDRESS,
+            MAIL_FROM_NAME
+        );
+    }
+
+    /**
      * Check if this service instance has a valid API key configured.
      */
     public function isConfigured(): bool {

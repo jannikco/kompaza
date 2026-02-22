@@ -90,6 +90,11 @@
                             <input type="hidden" name="plan" value="<?= h($selectedPlan) ?>">
                         <?php endif; ?>
 
+                        <!-- Honeypot -->
+                        <div style="position:absolute;left:-9999px" aria-hidden="true">
+                            <input type="text" name="website" tabindex="-1" autocomplete="off" value="">
+                        </div>
+
                         <!-- Company Name -->
                         <div>
                             <label for="company_name" class="block text-sm font-medium text-gray-700 mb-1.5">Company name</label>
