@@ -24,7 +24,8 @@ class Auth {
         }
 
         // Block unverified tenant admins from logging in
-        if ($user['role'] === 'tenant_admin' && empty($user['email_verified_at'])) {
+        // Use array_key_exists to handle case where column doesn't exist yet (MySQL 8.0 migration issue)
+        if ($user['role'] === 'tenant_admin' && array_key_exists('email_verified_at', $user) && empty($user['email_verified_at'])) {
             return false;
         }
 
