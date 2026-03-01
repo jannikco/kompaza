@@ -207,6 +207,7 @@ if ($routingMode === 'tenant') {
             '/admin/connectpilot/konto' => 'admin/connectpilot/account',
             '/admin/tilmeldinger' => 'admin/signups/index',
             '/admin/tilmeldinger/eksport' => 'admin/signups/export',
+            '/admin/homepage' => 'admin/homepage/index',
             '/admin/indstillinger' => 'admin/settings/index',
             '/admin/brugere' => 'admin/users/index',
             '/admin/brugere/opret' => 'admin/users/create',
@@ -254,6 +255,16 @@ if ($routingMode === 'tenant') {
             '/admin/redirects' => 'admin/redirects/index',
             '/admin/redirects/create' => 'admin/redirects/create',
             '/admin/redirects/edit' => 'admin/redirects/edit',
+            '/admin/order-bumps' => 'admin/order-bumps/index',
+            '/admin/order-bumps/create' => 'admin/order-bumps/create',
+            '/admin/order-bumps/edit' => 'admin/order-bumps/edit',
+            '/admin/upsells' => 'admin/upsells/index',
+            '/admin/upsells/create' => 'admin/upsells/create',
+            '/admin/upsells/edit' => 'admin/upsells/edit',
+            '/admin/abandoned-carts' => 'admin/abandoned-carts/index',
+            '/admin/payment-links' => 'admin/payment-links/index',
+            '/admin/payment-links/create' => 'admin/payment-links/create',
+            '/admin/payment-links/edit' => 'admin/payment-links/edit',
         ],
         'POST' => [
             '/admin/lead-magnets/ai-analyze' => 'admin/lead-magnets/ai-analyze',
@@ -282,6 +293,7 @@ if ($routingMode === 'tenant') {
             '/admin/connectpilot/kampagner/slet' => 'admin/connectpilot/campaigns/delete',
             '/admin/connectpilot/konto/gem' => 'admin/connectpilot/account-store',
             '/admin/tilmeldinger/slet' => 'admin/signups/delete',
+            '/admin/homepage/update' => 'admin/homepage/update',
             '/admin/indstillinger/opdater' => 'admin/settings/update',
             '/admin/brugere/gem' => 'admin/users/store',
             '/admin/brugere/opdater' => 'admin/users/update',
@@ -348,6 +360,15 @@ if ($routingMode === 'tenant') {
             '/admin/redirects/store' => 'admin/redirects/store',
             '/admin/redirects/update' => 'admin/redirects/update',
             '/admin/redirects/delete' => 'admin/redirects/delete',
+            '/admin/order-bumps/store' => 'admin/order-bumps/store',
+            '/admin/order-bumps/update' => 'admin/order-bumps/update',
+            '/admin/order-bumps/delete' => 'admin/order-bumps/delete',
+            '/admin/upsells/store' => 'admin/upsells/store',
+            '/admin/upsells/update' => 'admin/upsells/update',
+            '/admin/upsells/delete' => 'admin/upsells/delete',
+            '/admin/payment-links/store' => 'admin/payment-links/store',
+            '/admin/payment-links/update' => 'admin/payment-links/update',
+            '/admin/payment-links/delete' => 'admin/payment-links/delete',
         ],
     ];
 
@@ -526,6 +547,40 @@ if ($routingMode === 'tenant') {
         // Discount code validation API
         elseif ($method === 'POST' && $request === '/api/discount/validate') {
             $controller = 'api/discount-validate';
+        }
+        // Payment link: /pay/{token}
+        elseif ($method === 'GET' && preg_match('#^/pay/([a-f0-9]{32})$#', $request, $matches)) {
+            $controller = 'shop/payment-link';
+            $dynamicParams['token'] = $matches[1];
+        }
+        // Payment link checkout submit
+        elseif ($method === 'POST' && $request === '/pay/checkout') {
+            $controller = 'shop/payment-link-checkout';
+        }
+        // Direct buy: /buy/{slug}
+        elseif ($method === 'GET' && preg_match('#^/buy/([a-z0-9\-]+)$#', $request, $matches)) {
+            $controller = 'shop/buy';
+            $dynamicParams['slug'] = $matches[1];
+        }
+        // Upsell page after checkout
+        elseif ($method === 'GET' && $request === '/checkout/upsell') {
+            $controller = 'shop/checkout-upsell';
+        }
+        // Accept upsell
+        elseif ($method === 'POST' && $request === '/checkout/upsell/accept') {
+            $controller = 'shop/checkout-upsell-accept';
+        }
+        // Decline upsell (redirect to downsell or thank-you)
+        elseif ($method === 'POST' && $request === '/checkout/upsell/decline') {
+            $controller = 'shop/checkout-upsell-decline';
+        }
+        // Abandoned cart: save email for recovery
+        elseif ($method === 'POST' && $request === '/api/cart/save-email') {
+            $controller = 'api/cart-save-email';
+        }
+        // Abandoned cart recovery cron
+        elseif ($method === 'GET' && $request === '/api/cron/process-abandoned-carts') {
+            $controller = 'api/cron/process-abandoned-carts';
         }
         // Email sequence cron processor
         elseif ($method === 'GET' && $request === '/api/cron/process-email-sequences') {
