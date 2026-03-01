@@ -19,7 +19,7 @@ $heroJson = json_encode($heroConfig, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLA
         </a>
     </div>
 
-    <form method="POST" action="/admin/homepage/update" @submit="serializeConfig()">
+    <form method="POST" action="/admin/homepage/update" x-ref="mainForm" @submit.prevent="serializeConfig(); $refs.mainForm.submit()">
         <?= csrfField() ?>
         <input type="hidden" name="homepage_template" :value="selectedTemplate">
         <input type="hidden" name="homepage_sections_json" x-ref="configJson">
