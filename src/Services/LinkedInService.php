@@ -163,6 +163,90 @@ class LinkedInService {
         return $this->makeRequest($url, 'POST');
     }
 
+    /**
+     * Fetch comments on a LinkedIn post.
+     *
+     * @param string $postUrn Post URN (e.g. "urn:li:activity:123")
+     * @param int    $start   Pagination start offset
+     * @param int    $count   Number of comments to fetch
+     * @return array|false Array of comment data or false on failure
+     */
+    public function getPostComments(string $postUrn, int $start = 0, int $count = 20) {
+        $this->randomDelay();
+
+        $params = http_build_query([
+            'commentsUrn' => $postUrn,
+            'count' => $count,
+            'start' => $start,
+            'sortOrder' => 'REVERSE_CHRONOLOGICAL',
+        ]);
+
+        $url = 'https://www.linkedin.com/voyager/api/feed/dash/comments?' . $params;
+
+        return $this->makeRequest($url);
+    }
+
+    /**
+     * Post a comment (or reply to a comment) on a LinkedIn post.
+     *
+     * @param string      $postUrn          Post URN (thread)
+     * @param string      $text             Comment text
+     * @param string|null $parentCommentUrn Parent comment URN for replies
+     * @return array|false API response or false on failure
+     */
+    public function postComment(string $postUrn, string $text, ?string $parentCommentUrn = null) {
+        $this->randomDelay();
+
+        $url = 'https://www.linkedin.com/voyager/api/feed/dash/comments';
+
+        $data = [
+            'commentary' => $text,
+            'threadUrn' => $postUrn,
+        ];
+
+        if ($parentCommentUrn) {
+            $data['parentComment'] = $parentCommentUrn;
+        }
+
+        return $this->makeRequest($url, 'POST', $data);
+    }
+
+    /**
+     * Extract a LinkedIn post URN from various URL formats.
+     *
+     * Supported formats:
+     * - linkedin.com/feed/update/urn:li:activity:123/
+     * - linkedin.com/feed/update/urn:li:ugcPost:123/
+     * - linkedin.com/posts/username_slug-123-abcd/
+     *
+     * @param string $postUrl LinkedIn post URL
+     * @return string|null Extracted URN or null on failure
+     */
+    public static function extractPostUrn(string $postUrl): ?string {
+        // Direct activity URN in URL
+        if (preg_match('#/feed/update/(urn:li:activity:\d+)#', $postUrl, $matches)) {
+            return $matches[1];
+        }
+
+        // UGC post URN in URL
+        if (preg_match('#/feed/update/(urn:li:ugcPost:\d+)#', $postUrl, $matches)) {
+            return $matches[1];
+        }
+
+        // Posts URL format: /posts/username_slug-ACTIVITYID-abcd
+        // The activity ID is typically a 19-digit number
+        if (preg_match('#/posts/[^/]+-(\d{19,})-#', $postUrl, $matches)) {
+            return 'urn:li:activity:' . $matches[1];
+        }
+
+        // Fallback: try to find any activity ID in the URL
+        if (preg_match('#activity[:\-](\d{19,})#', $postUrl, $matches)) {
+            return 'urn:li:activity:' . $matches[1];
+        }
+
+        return null;
+    }
+
     // -------------------------------------------------------------------------
     // Private helpers
     // -------------------------------------------------------------------------

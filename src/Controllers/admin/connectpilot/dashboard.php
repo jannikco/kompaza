@@ -2,6 +2,7 @@
 
 use App\Models\Campaign;
 use App\Models\LinkedInLead;
+use App\Models\PostAutomation;
 
 $tenantId = currentTenantId();
 $tenant = currentTenant();
@@ -26,6 +27,11 @@ foreach ($campaigns as $c) {
 $totalLeads = LinkedInLead::countByTenant($tenantId);
 $recentCampaigns = array_slice($campaigns, 0, 5);
 
+// Post automation stats
+$activePostAutomations = PostAutomation::countActiveByTenant($tenantId);
+$totalAutoDMs = PostAutomation::totalDMsSentByTenant($tenantId);
+$recentAutomations = PostAutomation::recentByTenant($tenantId, 5);
+
 // Recent activity log
 $stmt = $db->prepare("SELECT * FROM connectpilot_activity_log WHERE tenant_id = ? ORDER BY created_at DESC LIMIT 10");
 $stmt->execute([$tenantId]);
@@ -40,4 +46,7 @@ view('admin/connectpilot/dashboard', [
     'totalMessagesSent' => $totalMessagesSent,
     'recentCampaigns' => $recentCampaigns,
     'recentActivity' => $recentActivity,
+    'activePostAutomations' => $activePostAutomations,
+    'totalAutoDMs' => $totalAutoDMs,
+    'recentAutomations' => $recentAutomations,
 ]);

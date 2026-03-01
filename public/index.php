@@ -204,6 +204,10 @@ if ($routingMode === 'tenant') {
             '/admin/connectpilot/kampagner/opret' => 'admin/connectpilot/campaigns/create',
             '/admin/connectpilot/kampagner/rediger' => 'admin/connectpilot/campaigns/edit',
             '/admin/connectpilot/leads' => 'admin/connectpilot/leads/index',
+            '/admin/connectpilot/automations' => 'admin/connectpilot/automations/index',
+            '/admin/connectpilot/automations/create' => 'admin/connectpilot/automations/create',
+            '/admin/connectpilot/automations/edit' => 'admin/connectpilot/automations/edit',
+            '/admin/connectpilot/automations/comments' => 'admin/connectpilot/automations/comments',
             '/admin/connectpilot/konto' => 'admin/connectpilot/account',
             '/admin/tilmeldinger' => 'admin/signups/index',
             '/admin/tilmeldinger/eksport' => 'admin/signups/export',
@@ -265,6 +269,22 @@ if ($routingMode === 'tenant') {
             '/admin/payment-links' => 'admin/payment-links/index',
             '/admin/payment-links/create' => 'admin/payment-links/create',
             '/admin/payment-links/edit' => 'admin/payment-links/edit',
+            '/admin/invoices' => 'admin/invoices/index',
+            '/admin/invoices/create' => 'admin/invoices/create',
+            '/admin/invoices/edit' => 'admin/invoices/edit',
+            '/admin/countdown-timers' => 'admin/countdown-timers/index',
+            '/admin/countdown-timers/create' => 'admin/countdown-timers/create',
+            '/admin/countdown-timers/edit' => 'admin/countdown-timers/edit',
+            '/admin/funnels' => 'admin/funnels/index',
+            '/admin/funnels/create' => 'admin/funnels/create',
+            '/admin/funnels/edit' => 'admin/funnels/edit',
+            '/admin/ab-tests' => 'admin/ab-tests/index',
+            '/admin/ab-tests/create' => 'admin/ab-tests/create',
+            '/admin/ab-tests/edit' => 'admin/ab-tests/edit',
+            '/admin/webinars' => 'admin/webinars/index',
+            '/admin/webinars/create' => 'admin/webinars/create',
+            '/admin/webinars/edit' => 'admin/webinars/edit',
+            '/admin/analytics' => 'admin/analytics/index',
         ],
         'POST' => [
             '/admin/lead-magnets/ai-analyze' => 'admin/lead-magnets/ai-analyze',
@@ -292,6 +312,9 @@ if ($routingMode === 'tenant') {
             '/admin/connectpilot/kampagner/opdater' => 'admin/connectpilot/campaigns/update',
             '/admin/connectpilot/kampagner/slet' => 'admin/connectpilot/campaigns/delete',
             '/admin/connectpilot/konto/gem' => 'admin/connectpilot/account-store',
+            '/admin/connectpilot/automations/store' => 'admin/connectpilot/automations/store',
+            '/admin/connectpilot/automations/update' => 'admin/connectpilot/automations/update',
+            '/admin/connectpilot/automations/delete' => 'admin/connectpilot/automations/delete',
             '/admin/tilmeldinger/slet' => 'admin/signups/delete',
             '/admin/homepage/update' => 'admin/homepage/update',
             '/admin/indstillinger/opdater' => 'admin/settings/update',
@@ -369,6 +392,26 @@ if ($routingMode === 'tenant') {
             '/admin/payment-links/store' => 'admin/payment-links/store',
             '/admin/payment-links/update' => 'admin/payment-links/update',
             '/admin/payment-links/delete' => 'admin/payment-links/delete',
+            '/admin/invoices/store' => 'admin/invoices/store',
+            '/admin/invoices/update' => 'admin/invoices/update',
+            '/admin/invoices/delete' => 'admin/invoices/delete',
+            '/admin/invoices/send' => 'admin/invoices/send',
+            '/admin/invoices/send-reminder' => 'admin/invoices/send-reminder',
+            '/admin/invoices/record-payment' => 'admin/invoices/record-payment',
+            '/admin/countdown-timers/store' => 'admin/countdown-timers/store',
+            '/admin/countdown-timers/update' => 'admin/countdown-timers/update',
+            '/admin/countdown-timers/delete' => 'admin/countdown-timers/delete',
+            '/admin/funnels/store' => 'admin/funnels/store',
+            '/admin/funnels/update' => 'admin/funnels/update',
+            '/admin/funnels/delete' => 'admin/funnels/delete',
+            '/admin/ab-tests/store' => 'admin/ab-tests/store',
+            '/admin/ab-tests/update' => 'admin/ab-tests/update',
+            '/admin/ab-tests/delete' => 'admin/ab-tests/delete',
+            '/admin/ab-tests/start' => 'admin/ab-tests/start',
+            '/admin/ab-tests/stop' => 'admin/ab-tests/stop',
+            '/admin/webinars/store' => 'admin/webinars/store',
+            '/admin/webinars/update' => 'admin/webinars/update',
+            '/admin/webinars/delete' => 'admin/webinars/delete',
         ],
     ];
 
@@ -506,6 +549,10 @@ if ($routingMode === 'tenant') {
             Auth::requireTenantAdmin();
             $controller = 'api/connectpilot/validate-cookie';
         }
+        elseif ($method === 'POST' && $request === '/api/connectpilot/validate-post') {
+            Auth::requireTenantAdmin();
+            $controller = 'api/connectpilot/validate-post';
+        }
         // Course API endpoints
         elseif ($method === 'POST' && $request === '/api/courses/upload-chunk') {
             Auth::requireTenantAdmin();
@@ -581,6 +628,32 @@ if ($routingMode === 'tenant') {
         // Abandoned cart recovery cron
         elseif ($method === 'GET' && $request === '/api/cron/process-abandoned-carts') {
             $controller = 'api/cron/process-abandoned-carts';
+        }
+        // Countdown timer API
+        elseif ($method === 'GET' && $request === '/api/countdown-timer') {
+            $controller = 'api/countdown-timer';
+        }
+        // Invoice view (public, token-based)
+        elseif ($method === 'GET' && preg_match('#^/invoice/view/([a-f0-9]{32})$#', $request, $matches)) {
+            $controller = 'shop/invoice-view';
+            $dynamicParams['token'] = $matches[1];
+        }
+        // Checkout payment page (Stripe Payment Element)
+        elseif ($method === 'GET' && $request === '/checkout/betaling') {
+            $controller = 'shop/checkout-payment';
+        }
+        // Checkout payment success callback
+        elseif ($method === 'GET' && $request === '/checkout/payment-success') {
+            $controller = 'shop/checkout-payment-success';
+        }
+        // Webinar registration page: /webinar/{slug}
+        elseif ($method === 'GET' && preg_match('#^/webinar/([a-z0-9\-]+)$#', $request, $matches)) {
+            $controller = 'shop/webinar';
+            $dynamicParams['slug'] = $matches[1];
+        }
+        // Webinar registration submit
+        elseif ($method === 'POST' && $request === '/webinar/register') {
+            $controller = 'shop/webinar-register';
         }
         // Email sequence cron processor
         elseif ($method === 'GET' && $request === '/api/cron/process-email-sequences') {
