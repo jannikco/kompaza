@@ -17,6 +17,11 @@ if (!isPost()) redirect('/membership');
 
 header('Content-Type: application/json');
 
+if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
+    echo json_encode(['error' => 'Invalid request. Please refresh and try again.']);
+    exit;
+}
+
 $tenantId = currentTenantId();
 $userId = currentUserId();
 $user = currentUser();

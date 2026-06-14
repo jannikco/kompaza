@@ -279,6 +279,7 @@ function membershipPlans() {
                 const formData = new FormData();
                 formData.append('plan_id', planId);
                 formData.append('billing_interval', this.billingInterval);
+                formData.append('<?= CSRF_TOKEN_NAME ?>', '<?= generateCsrfToken() ?>');
 
                 const response = await fetch('/membership/checkout', {
                     method: 'POST',
