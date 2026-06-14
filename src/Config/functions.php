@@ -374,3 +374,118 @@ function tenantFeature($feature) {
     $key = 'feature_' . $feature;
     return !empty($tenant[$key]);
 }
+
+/**
+ * Get or create a long-lived anonymous visitor id (used for analytics / A-B stickiness).
+ */
+function getOrCreateVisitorId() {
+    if (!empty($_COOKIE['kz_vid'])) {
+        return $_COOKIE['kz_vid'];
+    }
+    $vid = bin2hex(random_bytes(16));
+    setcookie('kz_vid', $vid, time() + (365 * 24 * 60 * 60), '/', '', true, false);
+    $_COOKIE['kz_vid'] = $vid;
+    return $vid;
+}
+
+/**
+ * Rough device-type classification from the User-Agent (desktop|mobile|tablet).
+ */
+function detectDeviceType() {
+    $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
+    if (preg_match('/iPad|Tablet|PlayBook|Silk|Android(?!.*Mobile)/i', $ua)) {
+        return 'tablet';
+    }
+    if (preg_match('/Mobile|iPhone|iPod|Windows Phone|IEMobile|BlackBerry|Opera Mini/i', $ua)) {
+        return 'mobile';
+    }
+    return 'desktop';
+}
+
+/**
+ * Best-effort storefront page-view tracking for the analytics dashboard. Never throws.
+ */
+function recordPageView($tenantId, $pageType, $pageId = null) {
+    if (!$tenantId) return;
+    try {
+        \App\Models\PageView::record([
+            'tenant_id' => $tenantId,
+            'page_type' => $pageType,
+            'page_id' => $pageId,
+            'page_url' => substr(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/', 0, 500),
+            'visitor_id' => getOrCreateVisitorId(),
+            'user_id' => currentUserId(),
+            'referrer' => isset($_SERVER['HTTP_REFERER']) ? substr($_SERVER['HTTP_REFERER'], 0, 500) : null,
+            'utm_source' => isset($_GET['utm_source']) ? substr((string)$_GET['utm_source'], 0, 255) : null,
+            'utm_medium' => isset($_GET['utm_medium']) ? substr((string)$_GET['utm_medium'], 0, 255) : null,
+            'utm_campaign' => isset($_GET['utm_campaign']) ? substr((string)$_GET['utm_campaign'], 0, 255) : null,
+            'device_type' => detectDeviceType(),
+        ]);
+    } catch (\Throwable $e) {
+        if (APP_DEBUG) error_log('recordPageView failed: ' . $e->getMessage());
+    }
+}
+
+/**
+ * Assign (stickily, per visitor) an A/B-test variant for a page and count one view on
+ * first assignment. Returns ['test_id','variant_row_id','page_id'] or null if no test
+ * is running for this page. page_id is the page the chosen variant should render.
+ */
+function abAssignVariant($tenantId, $pageType, $pageId) {
+    if (!$tenantId) return null;
+    try {
+        $variants = \App\Models\AbTest::findActiveForPage($tenantId, $pageType, $pageId);
+        if (!$variants) return null;
+        $testId = (int)$variants[0]['id'];
+        $cookie = 'kz_ab_' . $testId;
+
+        $chosen = null;
+        if (!empty($_COOKIE[$cookie])) {
+            $rowId = (int)$_COOKIE[$cookie];
+            foreach ($variants as $v) {
+                if ((int)$v['variant_id'] === $rowId) { $chosen = $v; break; }
+            }
+        }
+        if (!$chosen) {
+            $chosen = \App\Models\AbTest::selectVariant($variants);
+            if (!$chosen) return null;
+            setcookie($cookie, (string)$chosen['variant_id'], time() + (30 * 24 * 60 * 60), '/', '', true, false);
+            $_COOKIE[$cookie] = (string)$chosen['variant_id'];
+            \App\Models\AbTestVariant::incrementViews((int)$chosen['variant_id']);
+        }
+        // In findActiveForPage: variant_id = variant row id, variant_page_id = the page it renders
+        return [
+            'test_id' => $testId,
+            'variant_row_id' => (int)$chosen['variant_id'],
+            'page_id' => (int)$chosen['variant_page_id'],
+        ];
+    } catch (\Throwable $e) {
+        if (APP_DEBUG) error_log('abAssignVariant failed: ' . $e->getMessage());
+        return null;
+    }
+}
+
+/**
+ * Record an A/B conversion for the visitor's assigned variant whose rendered page matches
+ * $shownPageId (the page the visitor actually converted on). Never throws.
+ */
+function abRecordConversion($tenantId, $pageType, $shownPageId) {
+    if (!$tenantId) return;
+    try {
+        foreach ($_COOKIE as $name => $val) {
+            if (strpos($name, 'kz_ab_') !== 0) continue;
+            $testId = (int)substr($name, 6);
+            if (!$testId) continue;
+            $test = \App\Models\AbTest::find($testId, $tenantId);
+            if (!$test || $test['status'] !== 'running' || $test['original_type'] !== $pageType) continue;
+            $rowId = (int)$val;
+            $variant = \App\Models\AbTestVariant::find($rowId);
+            if (!$variant || (int)$variant['ab_test_id'] !== $testId) continue;
+            if ((int)$variant['variant_id'] === (int)$shownPageId) {
+                \App\Models\AbTestVariant::incrementConversions($rowId);
+            }
+        }
+    } catch (\Throwable $e) {
+        if (APP_DEBUG) error_log('abRecordConversion failed: ' . $e->getMessage());
+    }
+}

@@ -718,6 +718,11 @@ if ($routingMode === 'tenant') {
         elseif ($method === 'POST' && $request === '/webinar/register') {
             $controller = 'shop/webinar-register';
         }
+        // Funnel entry: /funnel/{slug}
+        elseif ($method === 'GET' && preg_match('#^/funnel/([a-z0-9\-]+)$#', $request, $matches)) {
+            $controller = 'shop/funnel';
+            $dynamicParams['slug'] = $matches[1];
+        }
         // Email sequence cron processor
         elseif ($method === 'GET' && $request === '/api/cron/process-email-sequences') {
             $controller = 'api/cron/process-email-sequences';
@@ -761,6 +766,16 @@ if ($routingMode === 'tenant') {
                 $dynamicParams['slug'] = $request_slug;
             }
         }
+    }
+
+    // Best-effort storefront analytics: record GET page views on shop pages only.
+    if ($controller && $method === 'GET' && strpos($controller, 'shop/') === 0 && $controller !== 'shop/logout') {
+        $pvMap = [
+            'shop/product' => 'product', 'shop/article' => 'article', 'shop/ebook' => 'ebook',
+            'shop/course' => 'course', 'shop/course-player' => 'course', 'shop/lead-magnet' => 'lead_magnet',
+            'shop/custom-page' => 'custom_page', 'shop/webinar' => 'webinar', 'shop/home' => 'home',
+        ];
+        recordPageView($tenant['id'], $pvMap[$controller] ?? 'page');
     }
 
     // Load controller
