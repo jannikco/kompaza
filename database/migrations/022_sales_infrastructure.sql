@@ -120,4 +120,6 @@ CREATE TABLE countdown_timers (
 -- 4. STRIPE PAYMENT ELEMENT SUPPORT
 -- =============================================
 -- Add payment_method_types to orders for tracking which payment method was actually used
-ALTER TABLE orders MODIFY COLUMN payment_method ENUM('invoice','card','klarna','mobilepay','applepay','googlepay') DEFAULT 'invoice';
+-- VARCHAR (not ENUM): existing prod data uses legacy values like 'stripe'; the app
+-- writes 'card'/'invoice'. A narrow ENUM truncates legacy rows.
+ALTER TABLE orders MODIFY COLUMN payment_method VARCHAR(50) DEFAULT 'invoice';
