@@ -48,10 +48,17 @@ class WebinarRegistration {
         return $stmt->execute([$id]);
     }
 
-    public static function delete($id) {
+    public static function delete($id, $tenantId = null) {
         $db = Database::getConnection();
-        $stmt = $db->prepare("DELETE FROM webinar_registrations WHERE id = ?");
-        return $stmt->execute([$id]);
+        // webinar_registrations has no tenant_id column; scope via parent webinar when provided.
+        $sql = "DELETE FROM webinar_registrations WHERE id = ?";
+        $params = [$id];
+        if ($tenantId !== null) {
+            $sql .= " AND webinar_id IN (SELECT id FROM webinars WHERE tenant_id = ?)";
+            $params[] = $tenantId;
+        }
+        $stmt = $db->prepare($sql);
+        return $stmt->execute($params);
     }
 
     public static function countByWebinar($webinarId) {

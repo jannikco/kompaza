@@ -732,6 +732,10 @@ if ($routingMode === 'tenant') {
         elseif ($method === 'GET' && $request === '/api/cron/process-email-sequences') {
             $controller = 'api/cron/process-email-sequences';
         }
+        // Membership lifecycle email cron
+        elseif ($method === 'GET' && $request === '/api/cron/process-membership-events') {
+            $controller = 'api/cron/process-membership-events';
+        }
         // Ebook checkout API
         elseif ($method === 'POST' && $request === '/api/ebook-checkout') {
             $controller = 'api/ebook-checkout';

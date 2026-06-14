@@ -52,10 +52,16 @@ class LiveSessionRegistration {
         return $db->lastInsertId();
     }
 
-    public static function delete($sessionId, $userId) {
+    public static function delete($sessionId, $userId, $tenantId = null) {
         $db = Database::getConnection();
-        $stmt = $db->prepare("DELETE FROM live_session_registrations WHERE session_id = ? AND user_id = ?");
-        return $stmt->execute([$sessionId, $userId]);
+        $sql = "DELETE FROM live_session_registrations WHERE session_id = ? AND user_id = ?";
+        $params = [$sessionId, $userId];
+        if ($tenantId !== null) {
+            $sql .= " AND tenant_id = ?";
+            $params[] = $tenantId;
+        }
+        $stmt = $db->prepare($sql);
+        return $stmt->execute($params);
     }
 
     public static function isRegistered($sessionId, $userId) {
