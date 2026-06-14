@@ -69,10 +69,29 @@ Multi-tenant SaaS platform combining content marketing, lead generation, order m
 - `/admin/indstillinger` - Settings
 
 ## Deployment
-- Server: `ssh root@app1` (short alias for app1.profectify.com)
-- Web root: `/var/www/kompaza.com/public/`
-- Deploy: `ssh root@app1 "cd /var/www/kompaza.com && git pull"`
-- Database: `kompaza`
+- **Server access: `ssh root@app2`** (ssh config `Host app2` → `46.225.234.17`; the box's
+  internal hostname is `app1`). NOTE: the `app1` / `app1.profectify.com` alias is
+  **firewalled** — ports 22 and 3306 are blocked from outside, so `ssh root@app1` and
+  remote MySQL to `app1` both time out. Use `root@app2`.
+- Web root: `/var/www/kompaza.com/` (public docroot `/var/www/kompaza.com/public/`)
+- Database: `kompaza` on **MariaDB 11.8**. As root on the server, `mysql kompaza` works
+  via socket auth (no password). PHP runtime is **8.4** (`php8.4-fpm`), not 8.2.
+- First time as root: `git config --global --add safe.directory /var/www/kompaza.com`
+- **The server cannot `git pull` from GitHub** — its remote is `git@github-kompaza:...`
+  but the `github-kompaza` SSH host alias is missing from root's `~/.ssh/config`
+  ("Could not resolve hostname"). Until that's fixed, deploy by shipping a git bundle:
+  ```bash
+  # local: git bundle create /tmp/k.bundle <prevHEAD>..main   (or full: ... main)
+  # scp /tmp/k.bundle root@app2:/tmp/
+  # server: cd /var/www/kompaza.com && git fetch /tmp/k.bundle main && git merge --ff-only FETCH_HEAD
+  ```
+  Then: `composer dump-autoload -o`, `chown -R www-data:www-data storage/ public/uploads/`,
+  `systemctl restart php8.4-fpm`. (`update_repo.sh` is stale: it `git pull`s and restarts
+  `php8.2-fpm` — both wrong here.)
+- **Migrations** are applied manually. Run `bash scripts/apply-launch-migrations.sh kompaza`
+  on the server (MYSQL_OPTS for explicit creds). ALWAYS `mysqldump` a backup first.
+  Heads-up: prod `orders.payment_method` is `VARCHAR(50)` (legacy data includes `stripe`),
+  and `orders.status` is `VARCHAR` — do not narrow these to ENUMs.
 - Wildcard SSL via Let's Encrypt + Cloudflare DNS challenge
 
 ## Important Notes
