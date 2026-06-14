@@ -1,0 +1,75 @@
+<?php
+
+use App\Models\UpsellOffer;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Product;
+
+if (!isPost()) redirect('/');
+
+$tenantId = currentTenantId();
+$orderId = $_SESSION['upsell_order_id'] ?? null;
+$offerId = (int)($_POST['offer_id'] ?? $_SESSION['upsell_offer_id'] ?? 0);
+
+if (!$orderId || !$offerId) {
+    redirect('/');
+}
+
+$order = Order::find($orderId, $tenantId);
+$offer = UpsellOffer::find($offerId, $tenantId);
+
+if (!$order || !$offer) {
+    unset($_SESSION['upsell_order_id'], $_SESSION['upsell_offer_id']);
+    redirect('/');
+}
+
+$product = Product::find($offer['product_id'], $tenantId);
+if (!$product) {
+    unset($_SESSION['upsell_order_id'], $_SESSION['upsell_offer_id']);
+    flashMessage('success', 'Your order has been placed!');
+    redirect('/konto/ordrer/' . $orderId);
+}
+
+// Add upsell item to the order
+$upsellPrice = (float)$offer['offer_price_dkk'];
+$taxRate = 0.25;
+$upsellTax = round($upsellPrice * $taxRate, 2);
+$upsellTotal = round($upsellPrice + $upsellTax, 2);
+
+OrderItem::create([
+    'order_id' => $orderId,
+    'product_id' => $product['id'],
+    'product_name' => $product['name'],
+    'product_sku' => $product['sku'] ?? null,
+    'quantity' => 1,
+    'unit_price_dkk' => $upsellPrice,
+    'total_price_dkk' => $upsellPrice,
+    'is_digital' => $product['is_digital'] ?? 0,
+    'digital_file_path' => $product['digital_file_path'] ?? null,
+]);
+
+// Update order totals
+$newSubtotal = (float)$order['subtotal_dkk'] + $upsellPrice;
+$newTax = round($newSubtotal * $taxRate, 2);
+$newTotal = round($newSubtotal + $newTax, 2);
+
+Order::update($orderId, [
+    'subtotal_dkk' => $newSubtotal,
+    'tax_dkk' => $newTax,
+    'total_dkk' => $newTotal,
+    'has_upsells' => 1,
+]);
+
+// Track acceptance
+UpsellOffer::incrementAccepted($offerId);
+
+logAudit('upsell_accepted', 'upsell_offer', $offerId, [
+    'order_id' => $orderId,
+    'offer_price_dkk' => $upsellPrice,
+]);
+
+// Clean up session
+unset($_SESSION['upsell_order_id'], $_SESSION['upsell_offer_id']);
+
+flashMessage('success', 'Your order has been placed with the additional offer!');
+redirect('/konto/ordrer/' . $orderId);

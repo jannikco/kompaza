@@ -21,6 +21,25 @@ if (!$course) {
 Auth::requireCustomer();
 
 $userId = currentUserId();
+
+// Membership access check: auto-enroll if user has membership access
+if (tenantFeature('memberships')) {
+    $canAccessViaMembership = \App\Services\MembershipGuard::canAccessCourse($userId, $tenantId, $course['id']);
+    if ($canAccessViaMembership) {
+        $existingEnrollment = CourseEnrollment::findByUserAndCourse($userId, $course['id']);
+        if (!$existingEnrollment) {
+            $totalLessons = CourseLesson::countByCourse($course['id']);
+            CourseEnrollment::create([
+                'tenant_id' => $tenantId,
+                'course_id' => $course['id'],
+                'user_id' => $userId,
+                'enrollment_source' => 'membership',
+                'total_lessons' => $totalLessons,
+            ]);
+        }
+    }
+}
+
 $enrollment = CourseEnrollment::findByUserAndCourse($userId, $course['id']);
 
 if (!$enrollment) {

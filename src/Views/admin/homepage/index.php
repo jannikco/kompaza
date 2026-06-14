@@ -19,10 +19,67 @@ $heroJson = json_encode($heroConfig, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLA
         </a>
     </div>
 
+    <!-- AI Assistant -->
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm mb-6 overflow-hidden">
+        <button type="button" @click="aiOpen = !aiOpen"
+                class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition">
+            <div class="flex items-center">
+                <div class="w-8 h-8 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-lg flex items-center justify-center mr-3">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <div class="text-left">
+                    <h3 class="text-sm font-semibold text-gray-900">AI Homepage Assistant</h3>
+                    <p class="text-xs text-gray-500">Describe your business and let AI design your homepage</p>
+                </div>
+            </div>
+            <svg class="w-5 h-5 text-gray-400 transition-transform" :class="aiOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div x-show="aiOpen" x-collapse x-cloak class="px-6 pb-5 border-t border-gray-100">
+            <div class="pt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Describe your business and how you'd like your homepage to look</label>
+                <textarea x-model="aiPrompt" rows="3"
+                          class="w-full px-4 py-3 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                          placeholder="e.g. I sell online fitness courses and nutrition plans. I want a modern, energetic homepage that encourages visitors to browse courses and sign up for our newsletter."
+                          :disabled="aiLoading"></textarea>
+                <div class="flex items-center justify-between mt-3">
+                    <p class="text-xs text-gray-400">AI will generate template, hero text, CTAs, and sections. You can review and tweak before saving.</p>
+                    <button type="button" @click="generateWithAI()"
+                            :disabled="aiLoading || aiPrompt.trim().length < 10"
+                            class="inline-flex items-center px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        <template x-if="!aiLoading">
+                            <span class="flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                Generate
+                            </span>
+                        </template>
+                        <template x-if="aiLoading">
+                            <span class="flex items-center">
+                                <svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                                Generating...
+                            </span>
+                        </template>
+                    </button>
+                </div>
+                <!-- Error message -->
+                <template x-if="aiError">
+                    <div class="mt-3 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700" x-text="aiError"></div>
+                </template>
+                <!-- Success message -->
+                <template x-if="aiSuccess">
+                    <div class="mt-3 px-4 py-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
+                        Homepage generated successfully! Review the changes below, then click <strong>Save Homepage</strong> when you're happy.
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
     <form method="POST" action="/admin/homepage/update" x-ref="mainForm" @submit.prevent="serializeConfig(); $refs.mainForm.submit()">
         <?= csrfField() ?>
         <input type="hidden" name="homepage_template" :value="selectedTemplate">
         <input type="hidden" name="homepage_sections_json" x-ref="configJson">
+        <input type="hidden" name="tagline" :value="tagline">
+        <input type="hidden" name="hero_subtitle" :value="heroSubtitle">
 
         <!-- Template Picker -->
         <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6">
@@ -101,6 +158,29 @@ $heroJson = json_encode($heroConfig, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLA
                         <div class="text-xs text-gray-500 mt-0.5">Split hero, refined editorial feel.</div>
                     </div>
                 </label>
+            </div>
+        </div>
+
+        <!-- Hero Text -->
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                Hero Text
+            </h3>
+            <p class="text-sm text-gray-500 mb-4">The main headline and subtitle displayed in your hero section.</p>
+            <div class="grid grid-cols-1 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tagline</label>
+                    <input type="text" x-model="tagline"
+                           class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                           placeholder="e.g. Transform Your Business Today" maxlength="100">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Hero Subtitle</label>
+                    <input type="text" x-model="heroSubtitle"
+                           class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                           placeholder="e.g. We help small businesses grow with expert courses and tools." maxlength="200">
+                </div>
             </div>
         </div>
 
@@ -313,9 +393,18 @@ $heroJson = json_encode($heroConfig, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLA
 function homepageEditor() {
     return {
         selectedTemplate: '<?= h($template) ?>',
+        tagline: <?= json_encode($tenant['tagline'] ?? '', JSON_UNESCAPED_UNICODE) ?>,
+        heroSubtitle: <?= json_encode($tenant['hero_subtitle'] ?? '', JSON_UNESCAPED_UNICODE) ?>,
         hero: <?= $heroJson ?>,
         sections: [],
         _rawSections: <?= $sectionsJson ?>,
+
+        // AI Assistant state
+        aiOpen: false,
+        aiPrompt: '',
+        aiLoading: false,
+        aiError: '',
+        aiSuccess: false,
 
         init() {
             // Add UI-only properties
@@ -324,6 +413,68 @@ function homepageEditor() {
                 _expanded: false,
                 _quillInit: false
             }));
+        },
+
+        async generateWithAI() {
+            if (this.aiLoading || this.aiPrompt.trim().length < 10) return;
+
+            this.aiLoading = true;
+            this.aiError = '';
+            this.aiSuccess = false;
+
+            try {
+                const response = await fetch('/admin/homepage/ai-generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt: this.aiPrompt.trim(),
+                        '<?= CSRF_TOKEN_NAME ?>': '<?= generateCsrfToken() ?>'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    this.aiError = result.error || 'Generation failed. Please try again.';
+                    return;
+                }
+
+                const data = result.data;
+
+                // Apply template
+                if (data.template) {
+                    this.selectedTemplate = data.template;
+                }
+
+                // Apply hero CTAs
+                if (data.hero) {
+                    this.hero = {
+                        cta_primary_text: data.hero.cta_primary_text || '',
+                        cta_primary_url: data.hero.cta_primary_url || '',
+                        cta_secondary_text: data.hero.cta_secondary_text || '',
+                        cta_secondary_url: data.hero.cta_secondary_url || '',
+                    };
+                }
+
+                // Apply sections
+                if (data.sections && data.sections.length > 0) {
+                    this.sections = data.sections.map(s => ({
+                        ...s,
+                        _expanded: false,
+                        _quillInit: false
+                    }));
+                }
+
+                // Apply tagline and hero subtitle
+                if (data.tagline) this.tagline = data.tagline;
+                if (data.hero_subtitle) this.heroSubtitle = data.hero_subtitle;
+
+                this.aiSuccess = true;
+            } catch (e) {
+                this.aiError = 'Network error. Please check your connection and try again.';
+            } finally {
+                this.aiLoading = false;
+            }
         },
 
         get richtextCount() {

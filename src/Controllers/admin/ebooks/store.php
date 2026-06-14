@@ -67,6 +67,7 @@ $id = Ebook::create([
     'price_dkk' => (float)($_POST['price_dkk'] ?? 0),
     'meta_description' => sanitize($_POST['meta_description'] ?? ''),
     'status' => sanitize($_POST['status'] ?? 'draft'),
+    'membership_tier_level' => isset($_POST['membership_tier_level']) && $_POST['membership_tier_level'] !== '' ? (int)$_POST['membership_tier_level'] : null,
 ]);
 
 logAudit('ebook_created', 'ebook', $id);

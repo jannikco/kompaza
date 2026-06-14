@@ -38,11 +38,16 @@ class StripeService {
      * @return array Stripe PaymentIntent object
      * @throws \Exception on failure
      */
-    public function createPaymentIntent(int $amount, string $currency = 'dkk', array $metadata = []): array {
+    public function createPaymentIntent(int $amount, string $currency = 'dkk', array $metadata = [], bool $usePaymentElement = true): array {
         $params = [
             'amount' => $amount,
             'currency' => strtolower($currency),
         ];
+
+        // Enable automatic payment methods for Payment Element
+        if ($usePaymentElement) {
+            $params['automatic_payment_methods[enabled]'] = 'true';
+        }
 
         if (!empty($metadata)) {
             foreach ($metadata as $key => $value) {
@@ -181,10 +186,65 @@ class StripeService {
     }
 
     /**
+     * Create a Stripe Checkout Session for membership subscription.
+     */
+    public function createMembershipCheckoutSession(
+        string $customerId,
+        string $priceId,
+        array $metadata,
+        string $successUrl,
+        string $cancelUrl
+    ): array {
+        $params = [
+            'customer' => $customerId,
+            'mode' => 'subscription',
+            'line_items[0][price]' => $priceId,
+            'line_items[0][quantity]' => 1,
+            'success_url' => $successUrl,
+            'cancel_url' => $cancelUrl,
+        ];
+
+        foreach ($metadata as $key => $value) {
+            $params["metadata[{$key}]"] = $value;
+            $params["subscription_data[metadata][{$key}]"] = $value;
+        }
+
+        return $this->makeRequest('POST', '/checkout/sessions', $params);
+    }
+
+    /**
+     * Create a Stripe Customer Portal session for managing billing.
+     */
+    public function createMembershipPortalSession(string $customerId, string $returnUrl): array {
+        return $this->makeRequest('POST', '/billing_portal/sessions', [
+            'customer' => $customerId,
+            'return_url' => $returnUrl,
+        ]);
+    }
+
+    /**
+     * Retrieve a Stripe Subscription.
+     */
+    public function retrieveSubscription(string $subscriptionId): array {
+        return $this->makeRequest('GET', '/subscriptions/' . urlencode($subscriptionId));
+    }
+
+    /**
      * Check if this service instance has a valid secret key configured.
      */
     public function isConfigured(): bool {
         return !empty($this->secretKey);
+    }
+
+    /**
+     * Get the publishable key for the frontend.
+     */
+    public static function getPublishableKey(?int $tenantId = null): string {
+        if ($tenantId) {
+            $tenantKey = \App\Models\Setting::get('stripe_publishable_key', $tenantId);
+            if (!empty($tenantKey)) return $tenantKey;
+        }
+        return defined('STRIPE_PUBLISHABLE_KEY') ? STRIPE_PUBLISHABLE_KEY : '';
     }
 
     // -------------------------------------------------------------------------

@@ -127,6 +127,71 @@ ob_start();
                             </div>
                         </div>
 
+                        <!-- Order Bumps -->
+                        <?php if (!empty($orderBumps)): ?>
+                        <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border-2 border-dashed border-yellow-300 p-6">
+                            <div class="flex items-center gap-2 mb-4">
+                                <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <h2 class="text-lg font-bold text-gray-900">Special Add-ons</h2>
+                            </div>
+                            <div class="space-y-3">
+                                <?php foreach ($orderBumps as $bump): ?>
+                                <label class="flex items-start gap-3 p-4 bg-white rounded-lg border border-yellow-200 cursor-pointer hover:border-yellow-400 transition"
+                                       x-data="{ checked: false }">
+                                    <input type="checkbox" name="order_bumps[]" value="<?= (int)$bump['id'] ?>"
+                                           x-model="checked"
+                                           @change="checked ? addBump(<?= (int)$bump['id'] ?>, <?= (float)$bump['bump_price_dkk'] ?>, '<?= h(addslashes($bump['product_name'])) ?>') : removeBump(<?= (int)$bump['id'] ?>)"
+                                           class="mt-1 w-4 h-4 rounded border-gray-300 text-brand focus:ring-brand flex-shrink-0">
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm font-semibold text-gray-900">
+                                                <?= h($bump['display_text'] ?: 'Add ' . $bump['product_name'] . ' for only ' . formatMoney($bump['bump_price_dkk'])) ?>
+                                            </span>
+                                            <span class="text-sm font-bold text-brand ml-2"><?= formatMoney($bump['bump_price_dkk']) ?></span>
+                                        </div>
+                                        <?php if ($bump['description']): ?>
+                                            <p class="text-xs text-gray-500 mt-1"><?= h($bump['description']) ?></p>
+                                        <?php endif; ?>
+                                        <?php if ((float)$bump['bump_price_dkk'] < (float)$bump['product_price']): ?>
+                                            <p class="text-xs text-green-600 font-medium mt-1">Save <?= formatMoney($bump['product_price'] - $bump['bump_price_dkk']) ?> (normally <?= formatMoney($bump['product_price']) ?>)</p>
+                                        <?php endif; ?>
+                                    </div>
+                                </label>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <!-- Payment Plan Option -->
+                        <?php if ($hasPaymentPlan && $paymentPlanInfo): ?>
+                        <div class="bg-white rounded-xl border border-gray-200 p-6">
+                            <h2 class="text-lg font-bold text-gray-900 mb-6">Payment Option</h2>
+                            <div class="space-y-3">
+                                <label class="flex items-center p-4 border rounded-lg cursor-pointer transition"
+                                       :class="form.payment_plan === 'full' ? 'border-brand bg-blue-50 ring-2 ring-brand' : 'border-gray-200 hover:border-gray-300'">
+                                    <input type="radio" name="payment_plan" value="full" x-model="form.payment_plan" class="w-4 h-4 text-brand focus:ring-brand">
+                                    <div class="ml-3">
+                                        <span class="text-sm font-medium text-gray-900">Pay in Full</span>
+                                        <p class="text-xs text-gray-500 mt-0.5">One-time payment of <span x-text="formatPrice(total)"></span></p>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-4 border rounded-lg cursor-pointer transition"
+                                       :class="form.payment_plan === 'installment' ? 'border-brand bg-blue-50 ring-2 ring-brand' : 'border-gray-200 hover:border-gray-300'">
+                                    <input type="radio" name="payment_plan" value="installment" x-model="form.payment_plan" class="w-4 h-4 text-brand focus:ring-brand">
+                                    <div class="ml-3">
+                                        <span class="text-sm font-medium text-gray-900"><?= (int)$paymentPlanInfo['installment_count'] ?> Monthly Payments</span>
+                                        <p class="text-xs text-gray-500 mt-0.5">
+                                            <?= formatMoney($paymentPlanInfo['installment_price']) ?>/month
+                                            <?php if ($paymentPlanInfo['trial_days'] > 0): ?>
+                                                &middot; <?= (int)$paymentPlanInfo['trial_days'] ?>-day free trial
+                                            <?php endif; ?>
+                                        </p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
                         <!-- Payment Method -->
                         <div class="bg-white rounded-xl border border-gray-200 p-6">
                             <h2 class="text-lg font-bold text-gray-900 mb-6">Payment Method</h2>
@@ -207,6 +272,12 @@ ob_start();
                                     <span>Subtotal</span>
                                     <span x-text="formatPrice(subtotal)"></span>
                                 </div>
+                                <template x-for="bump in selectedBumps" :key="bump.id">
+                                    <div class="flex justify-between text-yellow-700">
+                                        <span class="truncate mr-2" x-text="'+ ' + bump.name"></span>
+                                        <span x-text="formatPrice(bump.price)"></span>
+                                    </div>
+                                </template>
                                 <div x-show="discountAmount > 0" x-cloak class="flex justify-between text-green-600">
                                     <span>Discount</span>
                                     <span x-text="'-' + formatPrice(discountAmount)"></span>
@@ -245,6 +316,7 @@ ob_start();
 function checkoutPage() {
     return {
         items: [],
+        selectedBumps: [],
         currency: '<?= h($currency) ?>',
         taxRate: <?= $taxRate ?>,
         sameAsShipping: true,
@@ -255,22 +327,33 @@ function checkoutPage() {
         discountApplied: false,
         discountLabel: '',
         discountError: '',
+        emailSaved: false,
         form: {
             name: '<?= h(currentUser()['name'] ?? '') ?>',
             email: '<?= h(currentUser()['email'] ?? '') ?>',
             phone: '',
             company: '',
             payment_method: 'invoice',
+            payment_plan: 'full',
             shipping: { street: '', city: '', postal: '', country: '' },
             billing: { street: '', city: '', postal: '', country: '' }
         },
 
         init() {
             this.items = JSON.parse(localStorage.getItem('kz_cart_<?= (int)$tenant['id'] ?>') || '[]');
+
+            // Save email for abandoned cart recovery when email is entered
+            this.$watch('form.email', (val) => {
+                if (val && val.includes('@') && !this.emailSaved) {
+                    this.saveEmailForRecovery();
+                }
+            });
         },
 
         get subtotal() {
-            return this.items.reduce((sum, item) => sum + item.price * item.qty, 0);
+            const itemsTotal = this.items.reduce((sum, item) => sum + item.price * item.qty, 0);
+            const bumpsTotal = this.selectedBumps.reduce((sum, b) => sum + b.price, 0);
+            return itemsTotal + bumpsTotal;
         },
 
         get discountedSubtotal() {
@@ -285,8 +368,29 @@ function checkoutPage() {
             return this.discountedSubtotal + this.tax;
         },
 
+        addBump(id, price, name) {
+            if (!this.selectedBumps.find(b => b.id === id)) {
+                this.selectedBumps.push({ id, price, name });
+            }
+        },
+
+        removeBump(id) {
+            this.selectedBumps = this.selectedBumps.filter(b => b.id !== id);
+        },
+
         formatPrice(amount) {
             return amount.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' ' + this.currency;
+        },
+
+        async saveEmailForRecovery() {
+            try {
+                await fetch('/api/cart/save-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: this.form.email, name: this.form.name })
+                });
+                this.emailSaved = true;
+            } catch (e) { /* silent */ }
         },
 
         async applyDiscount() {
@@ -326,7 +430,7 @@ function checkoutPage() {
             const billing = this.sameAsShipping ? this.form.shipping : this.form.billing;
 
             try {
-                const response = await fetch('/checkout', {
+                const response = await fetch('/checkout/submit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -336,10 +440,12 @@ function checkoutPage() {
                         customer_phone: this.form.phone,
                         customer_company: this.form.company,
                         payment_method: this.form.payment_method,
+                        payment_plan: this.form.payment_plan,
                         discount_code: this.discountApplied ? this.discountCode : null,
                         shipping_address: this.form.shipping,
                         billing_address: billing,
-                        items: this.items
+                        items: this.items,
+                        order_bumps: this.selectedBumps.map(b => b.id)
                     })
                 });
                 const data = await response.json();

@@ -51,6 +51,7 @@ $data = [
     'drip_interval_days' => !empty($_POST['drip_interval_days']) ? (int)$_POST['drip_interval_days'] : null,
     'instructor_name' => sanitize($_POST['instructor_name'] ?? ''),
     'instructor_bio' => sanitize($_POST['instructor_bio'] ?? ''),
+    'membership_tier_level' => isset($_POST['membership_tier_level']) && $_POST['membership_tier_level'] !== '' ? (int)$_POST['membership_tier_level'] : null,
 ];
 
 // Handle cover image upload
