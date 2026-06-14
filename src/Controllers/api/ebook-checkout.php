@@ -60,7 +60,8 @@ $feeCents = (int)round($amountCents * ($feePercent / 100));
 try {
     $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost');
 
-    $session = StripeService::createEbookCheckoutSession(
+    $stripe = new StripeService();
+    $session = $stripe->createEbookCheckoutSession(
         $ebook['title'],
         $amountCents,
         'dkk',
@@ -78,14 +79,14 @@ try {
     EbookPurchase::create([
         'tenant_id' => $tenant['id'],
         'ebook_id' => $ebook['id'],
-        'stripe_checkout_session_id' => $session->id,
+        'stripe_checkout_session_id' => $session['id'],
         'amount_cents' => $amountCents,
         'currency' => 'dkk',
         'application_fee_cents' => $feeCents,
         'status' => 'pending',
     ]);
 
-    echo json_encode(['checkout_url' => $session->url]);
+    echo json_encode(['checkout_url' => $session['url']]);
 } catch (\Exception $e) {
     error_log("Ebook checkout error: " . $e->getMessage());
     http_response_code(500);

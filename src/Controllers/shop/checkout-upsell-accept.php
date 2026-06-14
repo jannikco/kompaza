@@ -36,6 +36,36 @@ $taxRate = 0.25;
 $upsellTax = round($upsellPrice * $taxRate, 2);
 $upsellTotal = round($upsellPrice + $upsellTax, 2);
 
+// For card orders, charge the upsell off-session against the card saved at checkout.
+// If the charge can't be made (no saved method, SCA required, decline), keep the
+// original order intact and do not grant the upsell.
+if (($order['payment_method'] ?? '') === 'card' && !empty($order['payment_reference'])) {
+    try {
+        $stripe = new \App\Services\StripeService(null, $tenantId);
+        if (!$stripe->isConfigured()) {
+            throw new \Exception('Stripe not configured');
+        }
+        $origPi = $stripe->retrievePaymentIntent($order['payment_reference']);
+        $customerId = $origPi['customer'] ?? null;
+        $pmId = $origPi['payment_method'] ?? null;
+        if (!$customerId || !$pmId) {
+            throw new \Exception('No saved payment method available for upsell');
+        }
+        $stripe->chargeOffSession((int)round($upsellTotal * 100), 'dkk', $customerId, $pmId, [
+            'order_id' => $orderId,
+            'type' => 'upsell',
+            'upsell_offer_id' => $offerId,
+        ]);
+    } catch (\Exception $e) {
+        if (APP_DEBUG) {
+            error_log('Upsell off-session charge failed: ' . $e->getMessage());
+        }
+        unset($_SESSION['upsell_order_id'], $_SESSION['upsell_offer_id']);
+        flashMessage('error', 'We could not process the additional offer, so your original order stands.');
+        redirect('/konto/ordrer/' . $orderId);
+    }
+}
+
 OrderItem::create([
     'order_id' => $orderId,
     'product_id' => $product['id'],
@@ -46,6 +76,8 @@ OrderItem::create([
     'total_price_dkk' => $upsellPrice,
     'is_digital' => $product['is_digital'] ?? 0,
     'digital_file_path' => $product['digital_file_path'] ?? null,
+    'source' => 'upsell',
+    'upsell_offer_id' => $offerId,
 ]);
 
 // Update order totals
