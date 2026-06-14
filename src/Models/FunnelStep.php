@@ -37,7 +37,7 @@ class FunnelStep {
         return $db->lastInsertId();
     }
 
-    public static function update($id, $data) {
+    public static function update($id, $data, $tenantId = null) {
         $db = Database::getConnection();
         $fields = [];
         $values = [];
@@ -46,14 +46,26 @@ class FunnelStep {
             $values[] = $value;
         }
         $values[] = $id;
-        $stmt = $db->prepare("UPDATE funnel_steps SET " . implode(', ', $fields) . " WHERE id = ?");
+        // funnel_steps has no tenant_id column; scope via parent funnel when provided.
+        $where = "id = ?";
+        if ($tenantId !== null) {
+            $where .= " AND funnel_id IN (SELECT id FROM funnels WHERE tenant_id = ?)";
+            $values[] = $tenantId;
+        }
+        $stmt = $db->prepare("UPDATE funnel_steps SET " . implode(', ', $fields) . " WHERE " . $where);
         return $stmt->execute($values);
     }
 
-    public static function delete($id) {
+    public static function delete($id, $tenantId = null) {
         $db = Database::getConnection();
-        $stmt = $db->prepare("DELETE FROM funnel_steps WHERE id = ?");
-        return $stmt->execute([$id]);
+        $sql = "DELETE FROM funnel_steps WHERE id = ?";
+        $params = [$id];
+        if ($tenantId !== null) {
+            $sql .= " AND funnel_id IN (SELECT id FROM funnels WHERE tenant_id = ?)";
+            $params[] = $tenantId;
+        }
+        $stmt = $db->prepare($sql);
+        return $stmt->execute($params);
     }
 
     public static function deleteByFunnel($funnelId) {

@@ -38,7 +38,7 @@ class StripeService {
      * @return array Stripe PaymentIntent object
      * @throws \Exception on failure
      */
-    public function createPaymentIntent(int $amount, string $currency = 'dkk', array $metadata = [], bool $usePaymentElement = true): array {
+    public function createPaymentIntent(int $amount, string $currency = 'dkk', array $metadata = [], bool $usePaymentElement = true, ?string $customerId = null, ?string $setupFutureUsage = null): array {
         $params = [
             'amount' => $amount,
             'currency' => strtolower($currency),
@@ -49,6 +49,14 @@ class StripeService {
             $params['automatic_payment_methods[enabled]'] = 'true';
         }
 
+        // Attach a customer + save the method for later off-session charges (post-purchase upsells)
+        if ($customerId) {
+            $params['customer'] = $customerId;
+        }
+        if ($setupFutureUsage) {
+            $params['setup_future_usage'] = $setupFutureUsage;
+        }
+
         if (!empty($metadata)) {
             foreach ($metadata as $key => $value) {
                 $params["metadata[{$key}]"] = $value;
@@ -56,6 +64,52 @@ class StripeService {
         }
 
         return $this->makeRequest('POST', '/payment_intents', $params);
+    }
+
+    /**
+     * Charge a saved payment method off-session (used for one-click post-purchase upsells).
+     * Throws on failure; the caller must handle SCA/decline by not granting the item.
+     *
+     * @return array Stripe PaymentIntent object (status 'succeeded' on success)
+     */
+    public function chargeOffSession(int $amount, string $currency, string $customerId, string $paymentMethodId, array $metadata = []): array {
+        $params = [
+            'amount' => $amount,
+            'currency' => strtolower($currency),
+            'customer' => $customerId,
+            'payment_method' => $paymentMethodId,
+            'off_session' => 'true',
+            'confirm' => 'true',
+        ];
+        foreach ($metadata as $key => $value) {
+            $params["metadata[{$key}]"] = $value;
+        }
+        return $this->makeRequest('POST', '/payment_intents', $params);
+    }
+
+    /**
+     * Create a hosted Checkout Session to sell a single ebook through a tenant's
+     * Stripe Connect account (destination charge with an application fee).
+     *
+     * @return array Stripe Checkout Session object (use ['id'] and ['url'])
+     */
+    public function createEbookCheckoutSession(string $name, int $amountCents, string $currency, int $feeCents, string $connectAccountId, string $successUrl, string $cancelUrl, array $metadata = []): array {
+        $params = [
+            'mode' => 'payment',
+            'success_url' => $successUrl,
+            'cancel_url' => $cancelUrl,
+            'line_items[0][quantity]' => 1,
+            'line_items[0][price_data][currency]' => strtolower($currency),
+            'line_items[0][price_data][unit_amount]' => $amountCents,
+            'line_items[0][price_data][product_data][name]' => $name,
+            'payment_intent_data[application_fee_amount]' => $feeCents,
+            'payment_intent_data[transfer_data][destination]' => $connectAccountId,
+        ];
+        foreach ($metadata as $key => $value) {
+            $params["metadata[{$key}]"] = $value;
+            $params["payment_intent_data[metadata][{$key}]"] = $value;
+        }
+        return $this->makeRequest('POST', '/checkout/sessions', $params);
     }
 
     /**

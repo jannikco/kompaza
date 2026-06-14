@@ -55,7 +55,7 @@ class CountdownTimer {
         return $db->lastInsertId();
     }
 
-    public static function update($id, $data) {
+    public static function update($id, $data, $tenantId = null) {
         $db = Database::getConnection();
         $fields = [];
         $values = [];
@@ -64,7 +64,12 @@ class CountdownTimer {
             $values[] = $value;
         }
         $values[] = $id;
-        $stmt = $db->prepare("UPDATE countdown_timers SET " . implode(', ', $fields) . " WHERE id = ?");
+        $where = "id = ?";
+        if ($tenantId !== null) {
+            $where .= " AND tenant_id = ?";
+            $values[] = $tenantId;
+        }
+        $stmt = $db->prepare("UPDATE countdown_timers SET " . implode(', ', $fields) . " WHERE " . $where);
         return $stmt->execute($values);
     }
 

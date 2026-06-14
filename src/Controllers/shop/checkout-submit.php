@@ -194,12 +194,23 @@ if ($paymentMethod === 'card') {
     try {
         $stripe = new StripeService(null, $tenantId);
         if ($stripe->isConfigured()) {
+            // Create a Stripe customer so the card can be reused for one-click upsells
+            $stripeCustomerId = null;
+            try {
+                $customer = $stripe->createCustomer($email, $name, [
+                    'tenant_id' => $tenantId,
+                    'order_number' => $orderNumber,
+                ]);
+                $stripeCustomerId = $customer['id'] ?? null;
+            } catch (Exception $e) {
+                // non-fatal: upsell charging just won't be available for this order
+            }
             // Amount in oerer (smallest DKK unit)
             $amountInOerer = (int)round($total * 100);
             $paymentIntent = $stripe->createPaymentIntent($amountInOerer, 'dkk', [
                 'tenant_id' => $tenantId,
                 'order_number' => $orderNumber,
-            ]);
+            ], true, $stripeCustomerId, $stripeCustomerId ? 'off_session' : null);
             $paymentReference = $paymentIntent['id'];
             $status = 'awaiting_payment';
         } else {
