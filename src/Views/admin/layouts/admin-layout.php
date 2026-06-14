@@ -278,6 +278,18 @@
 
     <!-- Main content -->
     <div class="lg:ml-64">
+        <?php if (currentUserRole() === 'superadmin'): ?>
+        <!-- Superadmin context bar: a platform admin is managing this tenant directly -->
+        <div class="flex items-center justify-between gap-3 px-6 py-2 bg-amber-500 text-amber-950 text-sm font-medium">
+            <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5 19h14a2 2 0 001.84-2.75L13.74 4a2 2 0 00-3.48 0L3.16 16.25A2 2 0 005 19z"/></svg>
+                Managing <strong><?= h($tenant['name'] ?? $tenant['company_name'] ?? 'tenant') ?></strong> as Superadmin
+            </span>
+            <a href="https://superadmin.<?= h(PLATFORM_DOMAIN) ?>/" class="inline-flex items-center gap-1 px-3 py-1 bg-amber-950 text-amber-50 rounded-md hover:bg-black transition">
+                &larr; Back to Superadmin
+            </a>
+        </div>
+        <?php endif; ?>
         <!-- Top bar -->
         <header class="sticky top-0 z-30 flex items-center h-16 px-6 bg-white border-b border-gray-200 shadow-sm">
             <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden text-gray-500 hover:text-gray-900 mr-4">

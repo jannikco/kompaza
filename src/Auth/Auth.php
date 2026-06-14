@@ -49,7 +49,11 @@ class Auth {
         ");
         $stmt->execute([$user['id'], hash('sha256', $token), $expires]);
 
-        setcookie('remember_token', $token, $expires, '/', '', true, true);
+        // Superadmins get a domain-wide cookie so one platform session works across every
+        // {slug}.kompaza.com — letting them manage any tenant's admin directly. Tenant
+        // admins / customers stay host-locked (no cross-tenant session bleed).
+        $cookieDomain = ($user['role'] ?? '') === 'superadmin' ? '.' . PLATFORM_DOMAIN : '';
+        setcookie('remember_token', $token, $expires, '/', $cookieDomain, true, true);
 
         logAudit('user_login', 'user', $user['id']);
     }
@@ -65,7 +69,9 @@ class Auth {
             $stmt->execute([$userId]);
         }
 
+        // Clear both host-locked and domain-wide (superadmin) cookie variants.
         setcookie('remember_token', '', time() - 3600, '/', '', true, true);
+        setcookie('remember_token', '', time() - 3600, '/', '.' . PLATFORM_DOMAIN, true, true);
         self::$currentUser = null;
     }
 
