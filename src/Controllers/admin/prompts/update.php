@@ -50,10 +50,14 @@ if (!trim($promptText)) {
     redirect('/admin/prompts/edit?id=' . $id);
 }
 
+if (!$categoryId) {
+    flashMessage('error', 'Please select a category.');
+    redirect('/admin/prompts/edit?id=' . $id);
+}
+
 $data = [
     'category_id' => $categoryId,
     'title' => $title,
-    'slug' => slugify($title),
     'prompt_text' => $promptText,
     'description' => $description ?: null,
     'use_case' => $useCase ?: null,

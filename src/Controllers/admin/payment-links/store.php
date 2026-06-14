@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\PaymentLink;
+use App\Models\Product;
 
 if (!isPost()) redirect('/admin/payment-links');
 
@@ -17,10 +18,16 @@ if (!$name) {
     redirect('/admin/payment-links/create');
 }
 
+$productId = (int)($_POST['product_id'] ?? 0);
+if (!$productId || !Product::find($productId, $tenantId)) {
+    flashMessage('error', 'Please select a valid product.');
+    redirect('/admin/payment-links/create');
+}
+
 $id = PaymentLink::create([
     'tenant_id' => $tenantId,
     'name' => $name,
-    'product_id' => (int)($_POST['product_id'] ?? 0),
+    'product_id' => $productId,
     'custom_price_dkk' => !empty($_POST['custom_price_dkk']) ? (float)$_POST['custom_price_dkk'] : null,
     'custom_name' => sanitize($_POST['custom_name'] ?? '') ?: null,
     'allow_quantity' => isset($_POST['allow_quantity']) ? 1 : 0,

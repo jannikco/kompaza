@@ -96,7 +96,7 @@ class Prompt {
             $data['description'] ?? null,
             $data['use_case'] ?? null,
             $data['ai_tool'] ?? null,
-            isset($data['tags']) ? json_encode($data['tags']) : null,
+            $data['tags'] ?? null,
             $data['membership_tier_level'] ?? 0,
             $data['is_featured'] ?? false,
             $data['status'] ?? 'published',

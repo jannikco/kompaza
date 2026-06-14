@@ -17,6 +17,13 @@ if (!$link || !PaymentLink::isValid($link)) {
     exit;
 }
 
+// Prevent cross-tenant access: a token only resolves on its own tenant's host
+if ($link['tenant_id'] !== currentTenantId()) {
+    http_response_code(404);
+    view('errors/404');
+    exit;
+}
+
 $product = Product::find($link['product_id'], $link['tenant_id']);
 if (!$product || $product['status'] !== 'published') {
     http_response_code(404);

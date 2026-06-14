@@ -27,7 +27,7 @@ if (in_array($invoice['status'], ['draft', 'paid', 'cancelled'])) {
 }
 
 try {
-    $emailService = EmailServiceFactory::create($tenantId);
+    $emailService = EmailServiceFactory::create($tenant);
     if (!$emailService->isConfigured()) {
         flashMessage('error', 'Email service not configured.');
         redirect('/admin/invoices/edit?id=' . $id);
@@ -56,7 +56,7 @@ try {
     Invoice::update($id, [
         'reminder_sent_count' => $invoice['reminder_sent_count'] + 1,
         'last_reminder_at' => date('Y-m-d H:i:s'),
-    ]);
+    ], $tenantId);
 
     logAudit('invoice_reminder_sent', 'invoice', $id, ['email' => $invoice['customer_email']]);
     flashMessage('success', 'Reminder sent to ' . $invoice['customer_email']);

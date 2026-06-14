@@ -33,7 +33,7 @@ $viewUrl = url('/invoice/view/' . $invoice['view_token']);
 
 // Send email
 try {
-    $emailService = EmailServiceFactory::create($tenantId);
+    $emailService = EmailServiceFactory::create($tenant);
     if (!$emailService->isConfigured()) {
         flashMessage('error', 'Email service not configured.');
         redirect('/admin/invoices/edit?id=' . $id);
@@ -58,7 +58,7 @@ try {
 
     $emailService->sendTransactionalEmail($invoice['customer_email'], $subject, $html);
 
-    Invoice::update($id, ['status' => 'sent']);
+    Invoice::update($id, ['status' => 'sent'], $tenantId);
     logAudit('invoice_sent', 'invoice', $id, ['email' => $invoice['customer_email']]);
 
     flashMessage('success', 'Invoice sent to ' . $invoice['customer_email']);

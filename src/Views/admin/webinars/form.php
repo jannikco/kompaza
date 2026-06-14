@@ -8,7 +8,7 @@ ob_start();
 
 <form method="POST" action="<?= $isEdit ? '/admin/webinars/update' : '/admin/webinars/store' ?>" enctype="multipart/form-data"
       x-data="webinarForm()" class="max-w-4xl">
-    <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+    <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
     <?php if ($isEdit): ?>
     <input type="hidden" name="id" value="<?= $webinar['id'] ?>">
     <?php endif; ?>

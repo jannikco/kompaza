@@ -7,17 +7,27 @@ use App\Models\EmailSequence;
 $tenant = currentTenant();
 $tenantId = currentTenantId();
 
+if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
+    flashMessage('error', 'Invalid request. Please try again.');
+    redirect($_SERVER['HTTP_REFERER'] ?? '/');
+}
+
+if (!checkRateLimit(getClientIp(), 'webinar_register', 10, 3600)) {
+    flashMessage('error', 'Too many submissions. Please try again later.');
+    redirect($_SERVER['HTTP_REFERER'] ?? '/');
+}
+
 $webinarId = (int)($_POST['webinar_id'] ?? 0);
 $name = trim($_POST['name'] ?? '');
 $email = trim($_POST['email'] ?? '');
 
-if (!$webinarId || !$name || !$email) {
-    flashMessage('error', 'Name and email are required.');
+if (!$webinarId || !$name || !$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    flashMessage('error', 'A valid name and email are required.');
     redirect($_SERVER['HTTP_REFERER'] ?? '/');
 }
 
 $webinar = Webinar::find($webinarId, $tenantId);
-if (!$webinar || !in_array($webinar['status'], ['registration_open', 'draft'])) {
+if (!$webinar || $webinar['status'] !== 'registration_open') {
     flashMessage('error', 'Registration is not open for this webinar.');
     redirect('/');
 }

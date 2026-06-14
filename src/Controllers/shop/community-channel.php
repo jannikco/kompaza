@@ -4,6 +4,12 @@ use App\Models\CommunityChannel;
 use App\Models\CommunityPost;
 use App\Services\MembershipGuard;
 
+if (!tenantFeature('community')) {
+    http_response_code(404);
+    view('errors/404');
+    exit;
+}
+
 $tenant = currentTenant();
 $tenantId = currentTenantId();
 
@@ -38,7 +44,7 @@ if (isAuthenticated()) {
     $canPost = $userTierLevel >= (int)$channel['post_tier_level'] && !$channel['is_locked'];
 }
 
-view('shop/community-channel', [
+view('shop/community/channel', [
     'tenant' => $tenant,
     'channel' => $channel,
     'posts' => $posts,

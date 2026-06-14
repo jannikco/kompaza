@@ -41,15 +41,12 @@ ob_start();
 
                             $tierLabel = 'Free';
                             $tierClasses = 'bg-green-100 text-green-700';
-                            if ((int)($session['min_tier_level'] ?? 0) === 2) {
+                            if ((int)($session['min_tier_level'] ?? 0) === 1) {
                                 $tierLabel = 'Pro';
                                 $tierClasses = 'bg-blue-100 text-blue-700';
-                            } elseif ((int)($session['min_tier_level'] ?? 0) >= 3) {
+                            } elseif ((int)($session['min_tier_level'] ?? 0) >= 2) {
                                 $tierLabel = 'Premium';
                                 $tierClasses = 'bg-purple-100 text-purple-700';
-                            } elseif ((int)($session['min_tier_level'] ?? 0) === 1) {
-                                $tierLabel = 'Basic';
-                                $tierClasses = 'bg-gray-100 text-gray-700';
                             }
                         ?>
                         <div class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
@@ -200,14 +197,9 @@ ob_start();
                                         </div>
                                     </div>
 
-                                    <!-- Recording Link -->
+                                    <!-- Recording (playback route not yet implemented) -->
                                     <div class="flex-shrink-0">
-                                        <?php if ($hasRecording && $hasAccess): ?>
-                                            <a href="/live-qa/recording/<?= (int)$session['id'] ?>" class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium rounded-lg transition">
-                                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                Watch Recording
-                                            </a>
-                                        <?php elseif ($hasRecording && !$hasAccess): ?>
+                                        <?php if ($hasRecording && !$hasAccess): ?>
                                             <span class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-400 bg-gray-50 rounded-lg border border-gray-200">
                                                 <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                                                 Upgrade for recording

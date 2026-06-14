@@ -2,6 +2,14 @@
 $pageTitle = 'Edit Prompt: ' . h($prompt['title']);
 $currentPage = 'prompts';
 $tenant = currentTenant();
+
+// Tags are stored as a JSON array; display them comma-separated for editing.
+$tagsValue = '';
+if (!empty($prompt['tags'])) {
+    $decodedTags = json_decode($prompt['tags'], true);
+    $tagsValue = is_array($decodedTags) ? implode(', ', $decodedTags) : (string)$prompt['tags'];
+}
+
 ob_start();
 ?>
 
@@ -66,7 +74,7 @@ ob_start();
 
             <div class="md:col-span-2">
                 <label for="tags" class="block text-sm font-medium text-gray-700 mb-1.5">Tags</label>
-                <input type="text" id="tags" name="tags" value="<?= h($prompt['tags'] ?? '') ?>"
+                <input type="text" id="tags" name="tags" value="<?= h($tagsValue) ?>"
                        class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                        placeholder="marketing, email, sales (comma-separated)">
                 <p class="text-xs text-gray-500 mt-1">Separate tags with commas.</p>

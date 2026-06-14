@@ -8,6 +8,12 @@ use App\Services\MembershipGuard;
 $tenant = currentTenant();
 $tenantId = currentTenantId();
 
+if (!tenantFeature('prompts')) {
+    http_response_code(404);
+    view('errors/404');
+    exit;
+}
+
 $categories = PromptCategory::allByTenant($tenantId);
 $categorySlug = sanitize($_GET['category'] ?? '');
 $search = sanitize($_GET['q'] ?? '');

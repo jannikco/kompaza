@@ -34,7 +34,7 @@ OrderBump::update($id, [
     'applies_to_value' => !empty($_POST['applies_to_value']) ? json_encode(array_map('intval', explode(',', $_POST['applies_to_value']))) : null,
     'sort_order' => (int)($_POST['sort_order'] ?? 0),
     'status' => sanitize($_POST['status'] ?? 'active'),
-]);
+], $tenantId);
 
 logAudit('order_bump_updated', 'order_bump', $id);
 flashMessage('success', 'Order bump updated.');

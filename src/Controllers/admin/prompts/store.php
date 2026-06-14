@@ -41,11 +41,15 @@ if (!trim($promptText)) {
     redirect('/admin/prompts/create');
 }
 
+if (!$categoryId) {
+    flashMessage('error', 'Please select a category.');
+    redirect('/admin/prompts/create');
+}
+
 $id = Prompt::create([
     'tenant_id' => $tenantId,
     'category_id' => $categoryId,
     'title' => $title,
-    'slug' => slugify($title),
     'prompt_text' => $promptText,
     'description' => $description ?: null,
     'use_case' => $useCase ?: null,

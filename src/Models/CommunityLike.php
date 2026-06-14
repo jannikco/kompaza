@@ -36,6 +36,13 @@ class CommunityLike {
         }
     }
 
+    public static function count($tenantId, $entityType, $entityId) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("SELECT COUNT(*) as count FROM community_likes WHERE tenant_id = ? AND entity_type = ? AND entity_id = ?");
+        $stmt->execute([$tenantId, $entityType, $entityId]);
+        return (int)$stmt->fetch()['count'];
+    }
+
     public static function getLikedIds($userId, $tenantId, $entityType, array $entityIds) {
         if (empty($entityIds)) return [];
         $db = Database::getConnection();

@@ -7,7 +7,7 @@ ob_start();
 
 <form method="POST" action="<?= $isEdit ? '/admin/ab-tests/update' : '/admin/ab-tests/store' ?>"
       x-data="abTestForm()" class="max-w-4xl">
-    <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+    <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
     <?php if ($isEdit): ?>
     <input type="hidden" name="id" value="<?= $test['id'] ?>">
     <?php endif; ?>
@@ -164,21 +164,21 @@ ob_start();
         <div class="flex flex-wrap gap-3">
             <?php if ($test['status'] === 'draft' || $test['status'] === 'paused'): ?>
             <form method="POST" action="/admin/ab-tests/start">
-                <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+                <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
                 <input type="hidden" name="id" value="<?= $test['id'] ?>">
                 <button type="submit" class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition">Start Test</button>
             </form>
             <?php endif; ?>
             <?php if ($test['status'] === 'running'): ?>
             <form method="POST" action="/admin/ab-tests/stop">
-                <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+                <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
                 <input type="hidden" name="id" value="<?= $test['id'] ?>">
                 <button type="submit" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition">Stop Test</button>
             </form>
             <!-- Pick Winner -->
             <?php foreach ($variants as $v): ?>
             <form method="POST" action="/admin/ab-tests/stop" class="inline">
-                <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+                <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
                 <input type="hidden" name="id" value="<?= $test['id'] ?>">
                 <input type="hidden" name="winner_variant_id" value="<?= $v['id'] ?>">
                 <button type="submit" class="px-3 py-2 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition">
@@ -189,7 +189,7 @@ ob_start();
             <?php endif; ?>
             <?php if ($test['status'] !== 'running'): ?>
             <form method="POST" action="/admin/ab-tests/delete" onsubmit="return confirm('Delete this test?')">
-                <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+                <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
                 <input type="hidden" name="id" value="<?= $test['id'] ?>">
                 <button type="submit" class="px-4 py-2 bg-white text-red-600 text-sm font-medium rounded-lg border border-red-300 hover:bg-red-50 transition">Delete Test</button>
             </form>

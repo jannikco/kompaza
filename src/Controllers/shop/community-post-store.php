@@ -7,11 +7,22 @@ use App\Services\MembershipGuard;
 
 Auth::requireCustomer();
 
+if (!tenantFeature('community')) {
+    http_response_code(404);
+    view('errors/404');
+    exit;
+}
+
 if (!isPost()) redirect('/community');
 
 if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
     flashMessage('error', 'Invalid request. Please try again.');
     redirect('/community');
+}
+
+if (!checkRateLimit(getClientIp(), 'community_post', 10, 60)) {
+    flashMessage('error', 'You are posting too fast. Please wait a moment.');
+    redirect($_SERVER['HTTP_REFERER'] ?? '/community');
 }
 
 $tenantId = currentTenantId();

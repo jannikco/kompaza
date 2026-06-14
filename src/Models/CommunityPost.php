@@ -74,6 +74,17 @@ class CommunityPost {
         return $stmt->fetchAll();
     }
 
+    public static function countRecentByTenant($tenantId, $days = 7) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("
+            SELECT COUNT(*) as count
+            FROM community_posts
+            WHERE tenant_id = ? AND is_hidden = 0 AND created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
+        ");
+        $stmt->execute([$tenantId, $days]);
+        return (int)$stmt->fetch()['count'];
+    }
+
     public static function create($data) {
         $db = Database::getConnection();
         $stmt = $db->prepare("

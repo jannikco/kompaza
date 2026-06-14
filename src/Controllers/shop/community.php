@@ -3,6 +3,12 @@
 use App\Models\CommunityChannel;
 use App\Services\MembershipGuard;
 
+if (!tenantFeature('community')) {
+    http_response_code(404);
+    view('errors/404');
+    exit;
+}
+
 $tenant = currentTenant();
 $tenantId = currentTenantId();
 
@@ -21,7 +27,7 @@ foreach ($allChannels as $channel) {
     }
 }
 
-view('shop/community', [
+view('shop/community/index', [
     'tenant' => $tenant,
     'channels' => $channels,
     'userTierLevel' => $userTierLevel,

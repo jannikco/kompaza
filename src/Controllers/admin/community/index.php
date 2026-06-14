@@ -13,4 +13,6 @@ view('admin/community/index', [
     'hiddenPosts' => $hiddenPosts,
     'recentPosts' => $recentPosts,
     'channels' => $channels,
+    'totalChannels' => count($channels),
+    'recentPostsCount' => CommunityPost::countRecentByTenant($tenantId, 7),
 ]);

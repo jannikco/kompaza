@@ -125,7 +125,7 @@ ob_start();
                     <?php else: ?>
                     <h3 class="text-xl font-bold text-gray-900 mb-4">Register for Free</h3>
                     <form method="POST" action="/webinar/register">
-                        <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+                        <?= csrfField() ?>
                         <input type="hidden" name="webinar_id" value="<?= $webinar['id'] ?>">
                         <div class="space-y-4">
                             <div>

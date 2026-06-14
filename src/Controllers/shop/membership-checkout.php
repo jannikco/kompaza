@@ -5,6 +5,12 @@ use App\Models\MembershipPlan;
 use App\Models\CustomerMembership;
 use App\Services\StripeService;
 
+if (!tenantFeature('memberships')) {
+    http_response_code(404);
+    view('errors/404');
+    exit;
+}
+
 Auth::requireCustomer();
 
 if (!isPost()) redirect('/membership');

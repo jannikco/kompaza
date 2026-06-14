@@ -89,16 +89,16 @@ ob_start();
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <?php foreach ($prompts as $prompt): ?>
                     <?php
-                        $hasAccess = $userTierLevel >= (int)($prompt['min_tier_level'] ?? 0);
+                        $hasAccess = $userTierLevel >= (int)($prompt['membership_tier_level'] ?? 0);
                         $tierLabel = 'Free';
                         $tierClasses = 'bg-green-100 text-green-700';
-                        if ((int)($prompt['min_tier_level'] ?? 0) === 2) {
+                        if ((int)($prompt['membership_tier_level'] ?? 0) === 2) {
                             $tierLabel = 'Pro';
                             $tierClasses = 'bg-blue-100 text-blue-700';
-                        } elseif ((int)($prompt['min_tier_level'] ?? 0) >= 3) {
+                        } elseif ((int)($prompt['membership_tier_level'] ?? 0) >= 3) {
                             $tierLabel = 'Premium';
                             $tierClasses = 'bg-purple-100 text-purple-700';
-                        } elseif ((int)($prompt['min_tier_level'] ?? 0) === 1) {
+                        } elseif ((int)($prompt['membership_tier_level'] ?? 0) === 1) {
                             $tierLabel = 'Basic';
                             $tierClasses = 'bg-gray-100 text-gray-700';
                         }

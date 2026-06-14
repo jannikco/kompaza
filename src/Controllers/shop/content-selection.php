@@ -6,6 +6,12 @@ use App\Models\MembershipContentSelection;
 use App\Models\Course;
 use App\Models\Ebook;
 
+if (!tenantFeature('memberships')) {
+    http_response_code(404);
+    view('errors/404');
+    exit;
+}
+
 Auth::requireCustomer();
 
 $tenant = currentTenant();

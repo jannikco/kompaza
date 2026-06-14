@@ -7,6 +7,12 @@ use App\Models\CourseEnrollment;
 use App\Models\CourseLesson;
 use App\Models\Course;
 
+if (!tenantFeature('memberships')) {
+    http_response_code(404);
+    view('errors/404');
+    exit;
+}
+
 Auth::requireCustomer();
 
 if (!isPost()) redirect('/membership/content-selection');

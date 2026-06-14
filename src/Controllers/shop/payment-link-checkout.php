@@ -22,6 +22,13 @@ if (!$link || !PaymentLink::isValid($link)) {
     redirect('/');
 }
 
+// Prevent cross-tenant checkout: a token only processes on its own tenant's host
+if ($link['tenant_id'] !== currentTenantId()) {
+    http_response_code(404);
+    view('errors/404');
+    exit;
+}
+
 $tenantId = $link['tenant_id'];
 $product = Product::find($link['product_id'], $tenantId);
 if (!$product || $product['status'] !== 'published') {

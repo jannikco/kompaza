@@ -11,4 +11,6 @@ view('admin/prompts/index', [
     'tenant' => currentTenant(),
     'prompts' => $prompts,
     'categories' => $categories,
+    'totalPrompts' => count($prompts),
+    'totalCategories' => count($categories),
 ]);

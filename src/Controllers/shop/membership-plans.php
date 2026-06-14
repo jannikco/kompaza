@@ -3,6 +3,12 @@
 use App\Models\MembershipPlan;
 use App\Models\CustomerMembership;
 
+if (!tenantFeature('memberships')) {
+    http_response_code(404);
+    view('errors/404');
+    exit;
+}
+
 $tenant = currentTenant();
 $tenantId = currentTenantId();
 $plans = MembershipPlan::allByTenant($tenantId, 'active');

@@ -65,9 +65,9 @@ function communityAvatarColor($name, $colors) {
                     fetch('/api/community/like', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ post_id: <?= (int)$post['id'] ?>, _token: '<?= generateCsrfToken() ?>' })
+                        body: JSON.stringify({ post_id: <?= (int)$post['id'] ?>, '<?= CSRF_TOKEN_NAME ?>': '<?= generateCsrfToken() ?>' })
                     }).then(r => r.json()).then(data => {
-                        if (data.success) { liked = data.liked; count = data.like_count; }
+                        if (data.success) { liked = data.liked; count = data.count; }
                     })
                 " class="flex items-center gap-1.5 text-sm transition"
                    :class="liked ? 'text-red-500' : 'text-gray-400 hover:text-red-500'">
@@ -125,9 +125,9 @@ function communityAvatarColor($name, $colors) {
                                         fetch('/api/community/like', {
                                             method: 'POST',
                                             headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify({ comment_id: <?= (int)$comment['id'] ?>, _token: '<?= generateCsrfToken() ?>' })
+                                            body: JSON.stringify({ comment_id: <?= (int)$comment['id'] ?>, '<?= CSRF_TOKEN_NAME ?>': '<?= generateCsrfToken() ?>' })
                                         }).then(r => r.json()).then(data => {
-                                            if (data.success) { cLiked = data.liked; cCount = data.like_count; }
+                                            if (data.success) { cLiked = data.liked; cCount = data.count; }
                                         })
                                     " class="flex items-center gap-1 text-xs transition"
                                        :class="cLiked ? 'text-red-500' : 'text-gray-400 hover:text-red-500'">

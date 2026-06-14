@@ -86,7 +86,7 @@ class OrderBump {
         return $db->lastInsertId();
     }
 
-    public static function update($id, $data) {
+    public static function update($id, $data, $tenantId = null) {
         $db = Database::getConnection();
         $fields = [];
         $values = [];
@@ -95,7 +95,12 @@ class OrderBump {
             $values[] = $value;
         }
         $values[] = $id;
-        $stmt = $db->prepare("UPDATE order_bumps SET " . implode(', ', $fields) . " WHERE id = ?");
+        $sql = "UPDATE order_bumps SET " . implode(', ', $fields) . " WHERE id = ?";
+        if ($tenantId !== null) {
+            $sql .= " AND tenant_id = ?";
+            $values[] = $tenantId;
+        }
+        $stmt = $db->prepare($sql);
         return $stmt->execute($values);
     }
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\LiveSession;
+use App\Models\LiveSessionRegistration;
 use App\Models\MembershipPlan;
 
 $tenantId = currentTenantId();
@@ -13,9 +14,11 @@ if (!$session) {
 }
 
 $plans = MembershipPlan::allByTenant($tenantId, 'active');
+$registrations = LiveSessionRegistration::allBySession($id);
 
 view('admin/live-sessions/edit', [
     'tenant' => currentTenant(),
     'session' => $session,
     'plans' => $plans,
+    'registrations' => $registrations,
 ]);

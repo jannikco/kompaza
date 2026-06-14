@@ -56,7 +56,7 @@ $typeLabels = ['live' => 'Live', 'replay' => 'Replay', 'evergreen' => 'Evergreen
                     <a href="/webinar/<?= h($w['slug']) ?>" target="_blank" class="text-gray-500 hover:text-gray-700 text-sm mr-3">View</a>
                     <a href="/admin/webinars/edit?id=<?= $w['id'] ?>" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">Edit</a>
                     <form method="POST" action="/admin/webinars/delete" class="inline ml-3" onsubmit="return confirm('Delete this webinar?')">
-                        <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+                        <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
                         <input type="hidden" name="id" value="<?= $w['id'] ?>">
                         <button type="submit" class="text-red-600 hover:text-red-900 text-sm font-medium">Delete</button>
                     </form>

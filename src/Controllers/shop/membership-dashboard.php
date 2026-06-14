@@ -8,6 +8,12 @@ use App\Models\LiveSession;
 use App\Models\LiveSessionRegistration;
 use App\Services\MembershipGuard;
 
+if (!tenantFeature('memberships')) {
+    http_response_code(404);
+    view('errors/404');
+    exit;
+}
+
 Auth::requireCustomer();
 
 $tenant = currentTenant();

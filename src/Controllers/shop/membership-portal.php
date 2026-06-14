@@ -4,9 +4,20 @@ use App\Auth\Auth;
 use App\Models\CustomerMembership;
 use App\Services\StripeService;
 
+if (!tenantFeature('memberships')) {
+    http_response_code(404);
+    view('errors/404');
+    exit;
+}
+
 Auth::requireCustomer();
 
 if (!isPost()) redirect('/membership/dashboard');
+
+if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
+    flashMessage('error', 'Invalid request. Please try again.');
+    redirect('/membership/dashboard');
+}
 
 $tenantId = currentTenantId();
 $userId = currentUserId();

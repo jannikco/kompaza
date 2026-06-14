@@ -94,22 +94,14 @@ ob_start();
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Registered</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Attended</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     <?php foreach ($registrations as $r): ?>
                     <tr>
-                        <td class="px-4 py-2 text-sm text-gray-900"><?= h($r['name'] ?? '-') ?></td>
-                        <td class="px-4 py-2 text-sm text-gray-500"><?= h($r['email'] ?? '-') ?></td>
+                        <td class="px-4 py-2 text-sm text-gray-900"><?= h($r['user_name'] ?? '-') ?></td>
+                        <td class="px-4 py-2 text-sm text-gray-500"><?= h($r['user_email'] ?? '-') ?></td>
                         <td class="px-4 py-2 text-sm text-gray-500"><?= formatDate($r['registered_at']) ?></td>
-                        <td class="px-4 py-2">
-                            <?php if (!empty($r['attended'])): ?>
-                                <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Yes</span>
-                            <?php else: ?>
-                                <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">No</span>
-                            <?php endif; ?>
-                        </td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>

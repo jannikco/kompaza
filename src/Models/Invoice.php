@@ -85,7 +85,7 @@ class Invoice {
         return $db->lastInsertId();
     }
 
-    public static function update($id, $data) {
+    public static function update($id, $data, $tenantId = null) {
         $db = Database::getConnection();
         $fields = [];
         $values = [];
@@ -94,7 +94,12 @@ class Invoice {
             $values[] = $value;
         }
         $values[] = $id;
-        $stmt = $db->prepare("UPDATE invoices SET " . implode(', ', $fields) . " WHERE id = ?");
+        $sql = "UPDATE invoices SET " . implode(', ', $fields) . " WHERE id = ?";
+        if ($tenantId !== null) {
+            $sql .= " AND tenant_id = ?";
+            $values[] = $tenantId;
+        }
+        $stmt = $db->prepare($sql);
         return $stmt->execute($values);
     }
 

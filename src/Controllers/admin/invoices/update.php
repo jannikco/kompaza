@@ -75,7 +75,7 @@ Invoice::update($id, [
     'internal_notes' => sanitize($_POST['internal_notes'] ?? ''),
     'payment_terms' => sanitize($_POST['payment_terms'] ?? ''),
     'footer_text' => sanitize($_POST['footer_text'] ?? ''),
-]);
+], $tenantId);
 
 // Recreate line items
 InvoiceItem::deleteByInvoice($id);

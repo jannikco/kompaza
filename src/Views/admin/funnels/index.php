@@ -62,7 +62,7 @@ $statusColors = ['draft' => 'bg-gray-100 text-gray-700', 'active' => 'bg-green-1
                 <td class="px-6 py-4 text-right">
                     <a href="/admin/funnels/edit?id=<?= $f['id'] ?>" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">Edit</a>
                     <form method="POST" action="/admin/funnels/delete" class="inline ml-3" onsubmit="return confirm('Delete this funnel?')">
-                        <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+                        <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
                         <input type="hidden" name="id" value="<?= $f['id'] ?>">
                         <button type="submit" class="text-red-600 hover:text-red-900 text-sm font-medium">Delete</button>
                     </form>
