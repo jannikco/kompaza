@@ -723,6 +723,11 @@ if ($routingMode === 'tenant') {
             $controller = 'shop/funnel';
             $dynamicParams['slug'] = $matches[1];
         }
+        // Live session recording playback: /live-qa/recording/{id}
+        elseif ($method === 'GET' && preg_match('#^/live-qa/recording/(\d+)$#', $request, $matches)) {
+            $controller = 'shop/live-session-recording';
+            $dynamicParams['id'] = $matches[1];
+        }
         // Email sequence cron processor
         elseif ($method === 'GET' && $request === '/api/cron/process-email-sequences') {
             $controller = 'api/cron/process-email-sequences';
