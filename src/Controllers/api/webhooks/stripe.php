@@ -44,9 +44,17 @@ if ($eventId) {
         $stmt = $db->prepare("INSERT INTO webhook_events (stripe_event_id, event_type) VALUES (?, ?)");
         $stmt->execute([$eventId, $event['type'] ?? null]);
     } catch (\PDOException $e) {
-        http_response_code(200);
-        echo json_encode(['received' => true, 'duplicate' => true]);
-        exit;
+        if ($e->getCode() === '23000') {
+            // Duplicate event id -> we already processed this event; acknowledge and skip.
+            http_response_code(200);
+            echo json_encode(['received' => true, 'duplicate' => true]);
+            exit;
+        }
+        // Any other error (e.g. table not yet migrated): log and continue processing
+        // rather than silently dropping the payment.
+        if (APP_DEBUG) {
+            error_log('webhook_events insert failed: ' . $e->getMessage());
+        }
     }
 }
 
