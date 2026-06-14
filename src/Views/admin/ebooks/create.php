@@ -205,6 +205,22 @@ ob_start();
         </div>
     </div>
 
+    <?php if (tenantFeature('memberships')): ?>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Membership Access</h3>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Membership Tier Level</label>
+            <select name="membership_tier_level" class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="">Not part of membership</option>
+                <option value="0">Free (Tier 0)</option>
+                <option value="1">Pro (Tier 1)</option>
+                <option value="2">Premium (Tier 2)</option>
+            </select>
+            <p class="mt-1 text-xs text-gray-500">If set, members at this tier level or higher can access this ebook through their membership.</p>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <!-- Submit -->
     <div class="flex items-center justify-end space-x-4">
         <a href="/admin/eboger" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">

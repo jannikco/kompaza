@@ -53,8 +53,8 @@ class Order {
     public static function create($data) {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            INSERT INTO orders (tenant_id, order_number, customer_id, customer_name, customer_email, customer_phone, customer_company, billing_address, shipping_address, subtotal_dkk, tax_dkk, shipping_dkk, discount_dkk, total_dkk, currency, payment_method, payment_reference, status, notes, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+            INSERT INTO orders (tenant_id, order_number, customer_id, customer_name, customer_email, customer_phone, customer_company, billing_address, shipping_address, subtotal_dkk, tax_dkk, shipping_dkk, discount_dkk, total_dkk, currency, payment_method, payment_reference, status, notes, payment_plan_type, installment_count, installments_paid, stripe_subscription_id, next_payment_date, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
         ");
         $stmt->execute([
             $data['tenant_id'],
@@ -76,6 +76,11 @@ class Order {
             $data['payment_reference'] ?? null,
             $data['status'] ?? 'pending',
             $data['notes'] ?? null,
+            $data['payment_plan_type'] ?? 'full',
+            $data['installment_count'] ?? null,
+            $data['installments_paid'] ?? 0,
+            $data['stripe_subscription_id'] ?? null,
+            $data['next_payment_date'] ?? null,
         ]);
         return $db->lastInsertId();
     }

@@ -42,6 +42,10 @@ $data = [
     'tags' => !empty($_POST['tags']) ? sanitize($_POST['tags']) : null,
     'is_digital' => isset($_POST['is_digital']) ? 1 : 0,
     'digital_file_path' => sanitize($_POST['digital_file_path'] ?? ''),
+    'payment_plan_enabled' => isset($_POST['payment_plan_enabled']) ? 1 : 0,
+    'installment_count' => !empty($_POST['installment_count']) ? (int)$_POST['installment_count'] : null,
+    'installment_price_dkk' => !empty($_POST['installment_price_dkk']) ? (float)$_POST['installment_price_dkk'] : null,
+    'trial_days' => !empty($_POST['trial_days']) ? (int)$_POST['trial_days'] : null,
     'status' => sanitize($_POST['status'] ?? 'draft'),
     'sort_order' => (int)($_POST['sort_order'] ?? 0),
 ];

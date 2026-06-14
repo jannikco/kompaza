@@ -67,6 +67,7 @@ $id = Course::create([
     'instructor_name' => sanitize($_POST['instructor_name'] ?? ''),
     'instructor_bio' => sanitize($_POST['instructor_bio'] ?? ''),
     'instructor_image_path' => $instructorImagePath,
+    'membership_tier_level' => $_POST['membership_tier_level'] !== '' ? (int)$_POST['membership_tier_level'] : null,
 ]);
 
 logAudit('course_created', 'course', $id);

@@ -46,8 +46,8 @@ class Product {
     public static function create($data) {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            INSERT INTO products (tenant_id, slug, name, description, short_description, image_path, gallery, price_dkk, compare_price_dkk, sku, stock_quantity, track_stock, category, tags, is_digital, digital_file_path, status, sort_order)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO products (tenant_id, slug, name, description, short_description, image_path, gallery, price_dkk, compare_price_dkk, sku, stock_quantity, track_stock, category, tags, is_digital, digital_file_path, payment_plan_enabled, installment_count, installment_price_dkk, trial_days, status, sort_order)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->execute([
             $data['tenant_id'],
@@ -66,6 +66,10 @@ class Product {
             $data['tags'] ?? null,
             $data['is_digital'] ?? 0,
             $data['digital_file_path'] ?? null,
+            $data['payment_plan_enabled'] ?? 0,
+            $data['installment_count'] ?? null,
+            $data['installment_price_dkk'] ?? null,
+            $data['trial_days'] ?? null,
             $data['status'] ?? 'draft',
             $data['sort_order'] ?? 0,
         ]);

@@ -15,6 +15,15 @@ if (!$leadMagnet || $leadMagnet['status'] !== 'published') {
 
 LeadMagnet::incrementViews($leadMagnet['id']);
 
+// A/B test: if a running test targets this lead magnet, render the assigned variant instead
+$ab = abAssignVariant($tenantId, 'lead_magnet', (int)$leadMagnet['id']);
+if ($ab && $ab['page_id'] !== (int)$leadMagnet['id']) {
+    $variantLm = LeadMagnet::find($ab['page_id'], $tenantId);
+    if ($variantLm && $variantLm['status'] === 'published') {
+        $leadMagnet = $variantLm;
+    }
+}
+
 $template = $leadMagnet['template'] ?? 'bold';
 $validTemplates = ['bold', 'minimal', 'classic', 'split', 'dark'];
 if (!in_array($template, $validTemplates)) {

@@ -60,6 +60,9 @@ EmailSignup::create([
 // Increment lead magnet signup count
 LeadMagnet::incrementSignups($leadMagnet['id']);
 
+// A/B test conversion (if this visitor was assigned a variant for this page)
+abRecordConversion($tenantId, 'lead_magnet', (int)$leadMagnet['id']);
+
 // Create download token
 $token = DownloadToken::create([
     'tenant_id' => $tenantId,

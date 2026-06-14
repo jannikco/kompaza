@@ -35,6 +35,9 @@ define('STRIPE_WEBHOOK_SECRET', $_ENV['STRIPE_WEBHOOK_SECRET'] ?? '');
 define('STRIPE_CONNECT_WEBHOOK_SECRET', $_ENV['STRIPE_CONNECT_WEBHOOK_SECRET'] ?? '');
 define('APP_SECRET', $_ENV['APP_SECRET'] ?? 'change-me-in-production');
 
+// Cron authentication (required for /api/cron/* endpoints; empty = endpoints fail closed)
+define('CRON_SECRET', $_ENV['CRON_SECRET'] ?? '');
+
 // S3 / Linode Object Storage
 define('S3_ENDPOINT', $_ENV['S3_ENDPOINT'] ?? 'https://de-fra-1.linodeobjects.com');
 define('S3_REGION', $_ENV['S3_REGION'] ?? 'de-fra-1');

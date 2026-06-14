@@ -108,6 +108,17 @@ $data = [
     'homepage_sections' => $jsonOutput,
 ];
 
+// Update tagline and hero_subtitle if provided
+$tagline = trim($_POST['tagline'] ?? '');
+if ($tagline !== '') {
+    $data['tagline'] = htmlspecialchars($tagline, ENT_QUOTES, 'UTF-8');
+}
+
+$heroSubtitle = trim($_POST['hero_subtitle'] ?? '');
+if ($heroSubtitle !== '') {
+    $data['hero_subtitle'] = htmlspecialchars($heroSubtitle, ENT_QUOTES, 'UTF-8');
+}
+
 Tenant::update($tenantId, $data);
 
 logAudit('homepage_updated', 'tenant', $tenantId);

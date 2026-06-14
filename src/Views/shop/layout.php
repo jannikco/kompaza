@@ -236,5 +236,6 @@ $currency = $tenant['currency'] ?? 'DKK';
         </div>
     </footer>
 
+    <script defer src="/js/countdown-timer.js"></script>
 </body>
 </html>

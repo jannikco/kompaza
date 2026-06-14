@@ -154,6 +154,13 @@ if ($routingMode === 'tenant') {
             '/konto/kurser' => 'shop/account/courses',
             '/konto/certificates' => 'shop/account/certificates',
             '/courses' => 'shop/courses',
+            '/membership' => 'shop/membership-plans',
+            '/membership/dashboard' => 'shop/membership-dashboard',
+            '/membership/success' => 'shop/membership-success',
+            '/membership/content-selection' => 'shop/content-selection',
+            '/prompts' => 'shop/prompts',
+            '/community' => 'shop/community',
+            '/live-qa' => 'shop/live-sessions',
             '/forgot-password' => 'shop/forgot-password',
             '/reset-password' => 'shop/reset-password',
             '/contact' => 'shop/contact',
@@ -174,6 +181,14 @@ if ($routingMode === 'tenant') {
             '/contact' => 'shop/contact-submit',
             '/consultation/submit' => 'shop/consultation-submit',
             '/course/waitlist' => 'shop/course-waitlist',
+            '/membership/checkout' => 'shop/membership-checkout',
+            '/membership/portal' => 'shop/membership-portal',
+            '/membership/content-selection' => 'shop/content-selection-save',
+            '/api/prompts/copy' => 'shop/prompt-copy',
+            '/api/community/post' => 'shop/community-post-store',
+            '/api/community/comment' => 'shop/community-comment-store',
+            '/api/community/like' => 'shop/community-like',
+            '/live-qa/register' => 'shop/live-session-register',
         ],
     ];
 
@@ -285,6 +300,24 @@ if ($routingMode === 'tenant') {
             '/admin/webinars/create' => 'admin/webinars/create',
             '/admin/webinars/edit' => 'admin/webinars/edit',
             '/admin/analytics' => 'admin/analytics/index',
+            // Membership plans
+            '/admin/memberships' => 'admin/memberships/index',
+            '/admin/memberships/create' => 'admin/memberships/create',
+            '/admin/memberships/edit' => 'admin/memberships/edit',
+            '/admin/memberships/members' => 'admin/memberships/members',
+            '/admin/memberships/member' => 'admin/memberships/member-show',
+            // Prompts
+            '/admin/prompts' => 'admin/prompts/index',
+            '/admin/prompts/create' => 'admin/prompts/create',
+            '/admin/prompts/edit' => 'admin/prompts/edit',
+            '/admin/prompts/categories' => 'admin/prompts/categories',
+            // Community
+            '/admin/community' => 'admin/community/index',
+            '/admin/community/channels' => 'admin/community/channels',
+            // Live sessions
+            '/admin/live-sessions' => 'admin/live-sessions/index',
+            '/admin/live-sessions/create' => 'admin/live-sessions/create',
+            '/admin/live-sessions/edit' => 'admin/live-sessions/edit',
         ],
         'POST' => [
             '/admin/lead-magnets/ai-analyze' => 'admin/lead-magnets/ai-analyze',
@@ -317,6 +350,7 @@ if ($routingMode === 'tenant') {
             '/admin/connectpilot/automations/delete' => 'admin/connectpilot/automations/delete',
             '/admin/tilmeldinger/slet' => 'admin/signups/delete',
             '/admin/homepage/update' => 'admin/homepage/update',
+            '/admin/homepage/ai-generate' => 'admin/homepage/ai-generate',
             '/admin/indstillinger/opdater' => 'admin/settings/update',
             '/admin/brugere/gem' => 'admin/users/store',
             '/admin/brugere/opdater' => 'admin/users/update',
@@ -412,6 +446,25 @@ if ($routingMode === 'tenant') {
             '/admin/webinars/store' => 'admin/webinars/store',
             '/admin/webinars/update' => 'admin/webinars/update',
             '/admin/webinars/delete' => 'admin/webinars/delete',
+            // Membership plans
+            '/admin/memberships/store' => 'admin/memberships/store',
+            '/admin/memberships/update' => 'admin/memberships/update',
+            '/admin/memberships/delete' => 'admin/memberships/delete',
+            '/admin/memberships/member-change-tier' => 'admin/memberships/member-change-tier',
+            // Prompts
+            '/admin/prompts/store' => 'admin/prompts/store',
+            '/admin/prompts/update' => 'admin/prompts/update',
+            '/admin/prompts/delete' => 'admin/prompts/delete',
+            '/admin/prompts/categories' => 'admin/prompts/categories',
+            // Community
+            '/admin/community/channels' => 'admin/community/channels',
+            '/admin/community/channel-store' => 'admin/community/channel-store',
+            '/admin/community/channel-update' => 'admin/community/channel-update',
+            '/admin/community/moderate' => 'admin/community/moderate',
+            // Live sessions
+            '/admin/live-sessions/store' => 'admin/live-sessions/store',
+            '/admin/live-sessions/update' => 'admin/live-sessions/update',
+            '/admin/live-sessions/delete' => 'admin/live-sessions/delete',
         ],
     ];
 
@@ -646,6 +699,16 @@ if ($routingMode === 'tenant') {
         elseif ($method === 'GET' && $request === '/checkout/payment-success') {
             $controller = 'shop/checkout-payment-success';
         }
+        // Community channel: /community/{slug}
+        elseif ($method === 'GET' && preg_match('#^/community/([a-z0-9\-]+)$#', $request, $matches)) {
+            $controller = 'shop/community-channel';
+            $dynamicParams['slug'] = $matches[1];
+        }
+        // Community post: /community/{slug}/{id}
+        elseif ($method === 'GET' && preg_match('#^/community/[a-z0-9\-]+/(\d+)$#', $request, $matches)) {
+            $controller = 'shop/community-post';
+            $dynamicParams['id'] = $matches[1];
+        }
         // Webinar registration page: /webinar/{slug}
         elseif ($method === 'GET' && preg_match('#^/webinar/([a-z0-9\-]+)$#', $request, $matches)) {
             $controller = 'shop/webinar';
@@ -654,6 +717,16 @@ if ($routingMode === 'tenant') {
         // Webinar registration submit
         elseif ($method === 'POST' && $request === '/webinar/register') {
             $controller = 'shop/webinar-register';
+        }
+        // Funnel entry: /funnel/{slug}
+        elseif ($method === 'GET' && preg_match('#^/funnel/([a-z0-9\-]+)$#', $request, $matches)) {
+            $controller = 'shop/funnel';
+            $dynamicParams['slug'] = $matches[1];
+        }
+        // Live session recording playback: /live-qa/recording/{id}
+        elseif ($method === 'GET' && preg_match('#^/live-qa/recording/(\d+)$#', $request, $matches)) {
+            $controller = 'shop/live-session-recording';
+            $dynamicParams['id'] = $matches[1];
         }
         // Email sequence cron processor
         elseif ($method === 'GET' && $request === '/api/cron/process-email-sequences') {
@@ -698,6 +771,16 @@ if ($routingMode === 'tenant') {
                 $dynamicParams['slug'] = $request_slug;
             }
         }
+    }
+
+    // Best-effort storefront analytics: record GET page views on shop pages only.
+    if ($controller && $method === 'GET' && strpos($controller, 'shop/') === 0 && $controller !== 'shop/logout') {
+        $pvMap = [
+            'shop/product' => 'product', 'shop/article' => 'article', 'shop/ebook' => 'ebook',
+            'shop/course' => 'course', 'shop/course-player' => 'course', 'shop/lead-magnet' => 'lead_magnet',
+            'shop/custom-page' => 'custom_page', 'shop/webinar' => 'webinar', 'shop/home' => 'home',
+        ];
+        recordPageView($tenant['id'], $pvMap[$controller] ?? 'page');
     }
 
     // Load controller
