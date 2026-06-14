@@ -1,7 +1,18 @@
 <?php
 
-$pageTitle = 'Kompaza - All-in-One Platform for Content Marketing & Lead Generation';
-$metaDescription = 'Create content, capture leads, manage customers, and automate LinkedIn outreach. All from one dashboard. Start your 7-day free trial.';
+use App\Models\Plan;
+
+$pageTitle = 'Kompaza — Build Funnels, Sell Courses & Grow Your Audience';
+$metaDescription = 'The all-in-one platform to build sales funnels and landing pages, sell online courses and memberships, run communities and webinars — with email automation and payments built in. A simpler, more complete ClickFunnels alternative.';
+
+$plans = Plan::allActive();
+$fromPrice = null;
+foreach ($plans as $p) {
+    $m = (int)($p['price_monthly_usd'] ?? 0);
+    if ($m > 0 && ($fromPrice === null || $m < $fromPrice)) {
+        $fromPrice = $m;
+    }
+}
 
 ob_start();
 include VIEWS_PATH . '/marketing/home.php';
