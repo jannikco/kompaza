@@ -280,6 +280,8 @@ foreach ($bumpItems as $bumpItem) {
         'total_price_dkk' => $bumpItem['price'],
         'is_digital' => $bumpProduct['is_digital'] ?? 0,
         'digital_file_path' => $bumpProduct['digital_file_path'] ?? null,
+        'source' => 'order_bump',
+        'order_bump_id' => $bumpItem['bump']['id'],
     ]);
 }
 

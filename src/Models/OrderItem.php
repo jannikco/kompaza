@@ -8,8 +8,8 @@ class OrderItem {
     public static function create($data) {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            INSERT INTO order_items (order_id, product_id, product_name, product_sku, quantity, unit_price_dkk, total_price_dkk, is_digital, digital_file_path)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO order_items (order_id, product_id, product_name, product_sku, quantity, unit_price_dkk, total_price_dkk, is_digital, digital_file_path, source, upsell_offer_id, order_bump_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->execute([
             $data['order_id'],
@@ -21,6 +21,9 @@ class OrderItem {
             $data['total_price_dkk'] ?? 0.00,
             $data['is_digital'] ?? 0,
             $data['digital_file_path'] ?? null,
+            $data['source'] ?? 'cart',
+            $data['upsell_offer_id'] ?? null,
+            $data['order_bump_id'] ?? null,
         ]);
         return $db->lastInsertId();
     }

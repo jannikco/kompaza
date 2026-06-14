@@ -20,7 +20,13 @@ if (!$webhookSecret) {
 }
 
 $stripe = new StripeService($tenant['stripe_secret_key'] ?? null);
-$event = $stripe->constructWebhookEvent($payload, $sigHeader);
+try {
+    $event = $stripe->constructWebhookEvent($payload, $sigHeader);
+} catch (\Throwable $e) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Invalid signature']);
+    exit;
+}
 
 if (!$event) {
     http_response_code(400);
@@ -30,45 +36,52 @@ if (!$event) {
 
 $db = Database::getConnection();
 
+// Idempotency: record each Stripe event id once. Stripe retries deliver duplicates;
+// if we have already seen this event id, acknowledge and skip re-processing.
+$eventId = $event['id'] ?? null;
+if ($eventId) {
+    try {
+        $stmt = $db->prepare("INSERT INTO webhook_events (stripe_event_id, event_type) VALUES (?, ?)");
+        $stmt->execute([$eventId, $event['type'] ?? null]);
+    } catch (\PDOException $e) {
+        http_response_code(200);
+        echo json_encode(['received' => true, 'duplicate' => true]);
+        exit;
+    }
+}
+
 switch ($event['type'] ?? '') {
     case 'payment_intent.succeeded':
         $paymentIntent = $event['data']['object'];
-        $orderId = $paymentIntent['metadata']['order_id'] ?? null;
-        if ($orderId) {
-            $stmt = $db->prepare("UPDATE orders SET payment_status = 'paid', status = 'paid', paid_at = NOW() WHERE id = ? AND stripe_payment_intent_id = ?");
-            $stmt->execute([$orderId, $paymentIntent['id']]);
+        $piId = $paymentIntent['id'];
 
-            // Add status history
+        // Match the order by the payment reference stored at checkout. The status guard
+        // makes fulfillment idempotent — it only runs the first time the PI succeeds.
+        $stmt = $db->prepare("UPDATE orders SET status = 'paid', paid_at = NOW() WHERE payment_reference = ? AND status = 'awaiting_payment'");
+        $stmt->execute([$piId]);
+        $justPaid = $stmt->rowCount() > 0;
+
+        $stmt = $db->prepare("SELECT id, customer_id, tenant_id FROM orders WHERE payment_reference = ?");
+        $stmt->execute([$piId]);
+        $order = $stmt->fetch();
+
+        if ($justPaid && $order) {
+            $orderId = $order['id'];
             $stmt = $db->prepare("INSERT INTO order_status_history (order_id, status, note) VALUES (?, 'paid', 'Payment received via Stripe')");
             $stmt->execute([$orderId]);
 
-            // Handle course purchase enrollment
-            $type = $paymentIntent['metadata']['type'] ?? '';
-            if ($type === 'course_purchase') {
-                $courseId = $paymentIntent['metadata']['course_id'] ?? null;
-                $tenantIdMeta = $paymentIntent['metadata']['tenant_id'] ?? null;
-                if ($courseId && $orderId) {
-                    // Find user from order
-                    $stmt = $db->prepare("SELECT customer_id FROM orders WHERE id = ?");
-                    $stmt->execute([$orderId]);
-                    $order = $stmt->fetch();
-                    if ($order && $order['customer_id']) {
-                        // Check if already enrolled
-                        $stmt = $db->prepare("SELECT id FROM course_enrollments WHERE course_id = ? AND user_id = ?");
-                        $stmt->execute([$courseId, $order['customer_id']]);
-                        $existing = $stmt->fetch();
-                        if (!$existing) {
-                            $stmt = $db->prepare("SELECT COUNT(*) as cnt FROM course_lessons WHERE course_id = ?");
-                            $stmt->execute([$courseId]);
-                            $totalLessons = $stmt->fetch()['cnt'];
-
-                            $stmt = $db->prepare("INSERT INTO course_enrollments (tenant_id, course_id, user_id, enrollment_source, order_id, status, total_lessons, enrolled_at) VALUES (?, ?, ?, 'purchase', ?, 'active', ?, NOW())");
-                            $stmt->execute([$tenantIdMeta, $courseId, $order['customer_id'], $orderId, $totalLessons]);
-
-                            $stmt = $db->prepare("UPDATE courses SET enrollment_count = enrollment_count + 1 WHERE id = ?");
-                            $stmt->execute([$courseId]);
-                        }
-                    }
+            // Course purchase enrollment (the PI carries course metadata)
+            $courseId = $paymentIntent['metadata']['course_id'] ?? null;
+            if (($paymentIntent['metadata']['type'] ?? '') === 'course_purchase' && $courseId && $order['customer_id']) {
+                $stmt = $db->prepare("SELECT id FROM course_enrollments WHERE course_id = ? AND user_id = ?");
+                $stmt->execute([$courseId, $order['customer_id']]);
+                if (!$stmt->fetch()) {
+                    $stmt = $db->prepare("SELECT COUNT(*) as cnt FROM course_lessons WHERE course_id = ?");
+                    $stmt->execute([$courseId]);
+                    $totalLessons = $stmt->fetch()['cnt'];
+                    $stmt = $db->prepare("INSERT INTO course_enrollments (tenant_id, course_id, user_id, enrollment_source, order_id, status, total_lessons, enrolled_at) VALUES (?, ?, ?, 'purchase', ?, 'active', ?, NOW())");
+                    $stmt->execute([$order['tenant_id'], $courseId, $order['customer_id'], $orderId, $totalLessons]);
+                    $db->prepare("UPDATE courses SET enrollment_count = enrollment_count + 1 WHERE id = ?")->execute([$courseId]);
                 }
             }
         }
@@ -76,11 +89,8 @@ switch ($event['type'] ?? '') {
 
     case 'payment_intent.payment_failed':
         $paymentIntent = $event['data']['object'];
-        $orderId = $paymentIntent['metadata']['order_id'] ?? null;
-        if ($orderId) {
-            $stmt = $db->prepare("UPDATE orders SET payment_status = 'unpaid' WHERE id = ? AND stripe_payment_intent_id = ?");
-            $stmt->execute([$orderId, $paymentIntent['id']]);
-        }
+        $stmt = $db->prepare("UPDATE orders SET status = 'payment_failed' WHERE payment_reference = ? AND status = 'awaiting_payment'");
+        $stmt->execute([$paymentIntent['id']]);
         break;
 
     case 'customer.subscription.updated':
