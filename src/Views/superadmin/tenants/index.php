@@ -2,6 +2,13 @@
 $pageTitle = 'Tenants';
 $currentPage = 'tenants';
 ob_start();
+
+$statusColors = [
+    'active'    => 'bg-green-900 text-green-300',
+    'trial'     => 'bg-yellow-900 text-yellow-300',
+    'suspended' => 'bg-red-900 text-red-300',
+    'cancelled' => 'bg-gray-700 text-gray-400',
+];
 ?>
 
 <!-- Header -->
@@ -47,38 +54,34 @@ ob_start();
                 <?php foreach ($tenants as $t): ?>
                 <tr class="hover:bg-gray-700/50">
                     <td class="px-6 py-4">
-                        <div class="text-sm font-medium text-white"><?= h($t['name']) ?></div>
+                        <a href="/tenants/show?id=<?= (int)$t['id'] ?>" class="text-sm font-medium text-white hover:text-indigo-300"><?= h($t['name']) ?></a>
                         <div class="text-xs text-gray-400"><?= h($t['email'] ?? '') ?></div>
                     </td>
                     <td class="px-6 py-4">
-                        <a href="https://<?= h($t['slug']) ?>.<?= PLATFORM_DOMAIN ?>" target="_blank" class="text-sm text-indigo-400 hover:text-indigo-300">
+                        <a href="https://<?= h($t['slug']) ?>.<?= PLATFORM_DOMAIN ?>" target="_blank" rel="noopener" class="text-sm text-indigo-400 hover:text-indigo-300">
                             <?= h($t['slug']) ?>
                         </a>
                     </td>
                     <td class="px-6 py-4">
-                        <?php
-                        $statusColors = [
-                            'active' => 'bg-green-900 text-green-300',
-                            'trial' => 'bg-yellow-900 text-yellow-300',
-                            'suspended' => 'bg-red-900 text-red-300',
-                            'cancelled' => 'bg-gray-700 text-gray-400',
-                        ];
-                        $statusClass = $statusColors[$t['status']] ?? 'bg-gray-700 text-gray-400';
-                        ?>
+                        <?php $statusClass = $statusColors[$t['status']] ?? 'bg-gray-700 text-gray-400'; ?>
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?= $statusClass ?>">
                             <?= ucfirst(h($t['status'])) ?>
                         </span>
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-300"><?= h($t['plan_name'] ?? 'None') ?></td>
-                    <td class="px-6 py-4 text-sm text-gray-300"><?= $t['user_count'] ?? 0 ?></td>
+                    <td class="px-6 py-4 text-sm text-gray-300"><?= (int)($t['user_count'] ?? 0) ?></td>
                     <td class="px-6 py-4 text-sm text-gray-400"><?= formatDate($t['created_at']) ?></td>
-                    <td class="px-6 py-4 text-right space-x-3">
-                        <form method="POST" action="/tenants/impersonate" class="inline">
-                            <?= csrfField() ?>
-                            <input type="hidden" name="tenant_id" value="<?= $t['id'] ?>">
-                            <button type="submit" class="text-yellow-400 hover:text-yellow-300 text-sm font-medium">Login As</button>
-                        </form>
-                        <a href="/tenants/edit?id=<?= $t['id'] ?>" class="text-indigo-400 hover:text-indigo-300 text-sm font-medium">Edit</a>
+                    <td class="px-6 py-4 text-right">
+                        <div class="flex items-center justify-end gap-3">
+                            <a href="https://<?= h($t['slug']) ?>.<?= PLATFORM_DOMAIN ?>/admin" target="_blank" rel="noopener" class="text-gray-300 hover:text-white text-sm font-medium">Manage</a>
+                            <a href="/tenants/show?id=<?= (int)$t['id'] ?>" class="text-gray-300 hover:text-white text-sm font-medium">View</a>
+                            <a href="/tenants/edit?id=<?= (int)$t['id'] ?>" class="text-indigo-400 hover:text-indigo-300 text-sm font-medium">Edit</a>
+                            <form method="POST" action="/tenants/impersonate" class="inline">
+                                <?= csrfField() ?>
+                                <input type="hidden" name="tenant_id" value="<?= (int)$t['id'] ?>">
+                                <button type="submit" class="text-yellow-400 hover:text-yellow-300 text-sm font-medium">Login As</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 <?php endforeach; ?>
