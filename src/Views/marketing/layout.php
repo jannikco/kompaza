@@ -13,6 +13,11 @@
     <meta property="og:description" content="<?= h($metaDescription ?? 'All-in-one platform for content marketing, lead generation, and LinkedIn outreach.') ?>">
     <meta property="og:type" content="website">
     <meta property="og:url" content="<?= url() ?>">
+    <meta property="og:image" content="<?= url('images/marketing/brand-funnel.jpg') ?>">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= h($pageTitle ?? 'Kompaza') ?>">
+    <meta name="twitter:description" content="<?= h($metaDescription ?? 'All-in-one platform to build funnels, sell courses, and grow your audience.') ?>">
+    <meta name="twitter:image" content="<?= url('images/marketing/brand-funnel.jpg') ?>">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -131,7 +136,7 @@
                         <img src="/images/kompaza-logo.png" alt="Kompaza" class="h-8">
                     </a>
                     <p class="text-gray-400 text-sm leading-relaxed">
-                        The all-in-one platform for content marketing, lead generation, and LinkedIn automation.
+                        The all-in-one platform to build funnels, sell courses, run communities, and grow your audience.
                     </p>
                 </div>
 
