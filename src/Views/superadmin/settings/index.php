@@ -8,18 +8,127 @@ foreach ($settings as $s) {
     $settingsMap[$s['setting_key']] = $s['setting_value'];
 }
 
+$integrationStatus = $integrationStatus ?? [];
+$platformEmailProvider = $platformEmailProvider ?? ($settingsMap['platform_email_service'] ?? 'brevo');
+$lastUpdatedAt = $lastUpdatedAt ?? null;
+
+$providerLabels = [
+    'brevo'   => 'Brevo',
+    'mailgun' => 'Mailgun',
+    'smtp'    => 'Own SMTP Server',
+];
+
+// Helper closures for the read-only status panel.
+$badgeOk = function (bool $ok, string $okLabel = 'Configured', string $missingLabel = 'Not set'): string {
+    if ($ok) {
+        return '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-900/50 border border-green-700 text-green-300">'
+            . '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>'
+            . h($okLabel) . '</span>';
+    }
+    return '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-900/50 border border-red-700 text-red-300">'
+        . '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>'
+        . h($missingLabel) . '</span>';
+};
+
 ob_start();
 ?>
 
-<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 max-w-2xl">
-    <h2 class="text-lg font-semibold text-white mb-6">Platform Settings</h2>
-
-    <?php $flash = getFlashMessage(); ?>
-    <?php if ($flash): ?>
-    <div class="mb-4 p-3 rounded-lg <?= $flash['type'] === 'success' ? 'bg-green-900/50 border border-green-700 text-green-300' : 'bg-red-900/50 border border-red-700 text-red-300' ?>">
-        <?= h($flash['message']) ?>
+<!-- ============================================ -->
+<!-- Read-only: Platform integration status       -->
+<!-- ============================================ -->
+<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 max-w-3xl mb-6">
+    <div class="flex items-start justify-between mb-1">
+        <h2 class="text-lg font-semibold text-white flex items-center">
+            <svg class="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Platform Integration Status
+        </h2>
+        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-700 text-gray-300 border border-gray-600">Read-only</span>
     </div>
-    <?php endif; ?>
+    <p class="text-sm text-gray-400 mb-5">Server-level configuration loaded from the environment. To change these values, update the <code class="text-gray-300 bg-gray-900 px-1.5 py-0.5 rounded">.env</code> file on the server and reload PHP-FPM.</p>
+
+    <div class="space-y-3">
+        <!-- Stripe secret key -->
+        <div class="flex items-center justify-between py-2.5 px-3 rounded-lg bg-gray-900/40 border border-gray-700">
+            <div>
+                <p class="text-sm font-medium text-white">Stripe Platform Secret Key</p>
+                <p class="text-xs text-gray-400">Used for platform billing &amp; subscription charges (<code class="text-gray-400">STRIPE_SECRET_KEY</code>)</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <?php if (!empty($integrationStatus['stripe_secret'])): ?>
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium <?= !empty($integrationStatus['stripe_live']) ? 'bg-indigo-900/50 border border-indigo-700 text-indigo-300' : 'bg-yellow-900/50 border border-yellow-700 text-yellow-300' ?>">
+                        <?= !empty($integrationStatus['stripe_live']) ? 'Live mode' : 'Test mode' ?>
+                    </span>
+                <?php endif; ?>
+                <?= $badgeOk(!empty($integrationStatus['stripe_secret'])) ?>
+            </div>
+        </div>
+
+        <!-- Stripe publishable key -->
+        <div class="flex items-center justify-between py-2.5 px-3 rounded-lg bg-gray-900/40 border border-gray-700">
+            <div>
+                <p class="text-sm font-medium text-white">Stripe Publishable Key</p>
+                <p class="text-xs text-gray-400">Client-side checkout key (<code class="text-gray-400">STRIPE_PUBLISHABLE_KEY</code>)</p>
+            </div>
+            <?= $badgeOk(!empty($integrationStatus['stripe_publishable'])) ?>
+        </div>
+
+        <!-- Stripe webhook secret -->
+        <div class="flex items-center justify-between py-2.5 px-3 rounded-lg bg-gray-900/40 border border-gray-700">
+            <div>
+                <p class="text-sm font-medium text-white">Stripe Webhook Secret</p>
+                <p class="text-xs text-gray-400">Verifies inbound Stripe webhooks (<code class="text-gray-400">STRIPE_WEBHOOK_SECRET</code>)</p>
+            </div>
+            <?= $badgeOk(!empty($integrationStatus['stripe_webhook'])) ?>
+        </div>
+
+        <!-- Email provider -->
+        <div class="flex items-center justify-between py-2.5 px-3 rounded-lg bg-gray-900/40 border border-gray-700">
+            <div>
+                <p class="text-sm font-medium text-white">Platform Email Provider</p>
+                <p class="text-xs text-gray-400">Provider used when tenants pick "Kompaza" as their email service</p>
+            </div>
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-900/50 border border-indigo-700 text-indigo-300">
+                <?= h($providerLabels[$platformEmailProvider] ?? ucfirst($platformEmailProvider)) ?>
+            </span>
+        </div>
+
+        <!-- CRON secret -->
+        <div class="flex items-center justify-between py-2.5 px-3 rounded-lg bg-gray-900/40 border border-gray-700">
+            <div>
+                <p class="text-sm font-medium text-white">Cron Secret</p>
+                <p class="text-xs text-gray-400">Required to run scheduled <code class="text-gray-400">/api/cron/*</code> jobs (<code class="text-gray-400">CRON_SECRET</code>)</p>
+            </div>
+            <?= $badgeOk(!empty($integrationStatus['cron_secret'])) ?>
+        </div>
+
+        <!-- App debug -->
+        <div class="flex items-center justify-between py-2.5 px-3 rounded-lg bg-gray-900/40 border border-gray-700">
+            <div>
+                <p class="text-sm font-medium text-white">Debug Mode</p>
+                <p class="text-xs text-gray-400">Environment: <span class="text-gray-300 font-medium"><?= h((string) ($integrationStatus['app_env'] ?? 'unknown')) ?></span> (<code class="text-gray-400">APP_DEBUG</code>)</p>
+            </div>
+            <?php if (!empty($integrationStatus['app_debug'])): ?>
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-900/50 border border-yellow-700 text-yellow-300">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4a2 2 0 00-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"/></svg>
+                    Enabled
+                </span>
+            <?php else: ?>
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-700 border border-gray-600 text-gray-300">Disabled</span>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- Editable: Platform settings                  -->
+<!-- ============================================ -->
+<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 max-w-2xl">
+    <div class="flex items-start justify-between mb-6">
+        <h2 class="text-lg font-semibold text-white">Platform Settings</h2>
+        <?php if ($lastUpdatedAt): ?>
+        <span class="text-xs text-gray-500">Last updated <?= h(formatDate($lastUpdatedAt, 'd M Y H:i')) ?></span>
+        <?php endif; ?>
+    </div>
 
     <form method="POST" action="/settings/update" class="space-y-6">
         <?= csrfField() ?>
@@ -36,7 +145,7 @@ ob_start();
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-300 mb-1">Default Trial Days</label>
-                <input type="number" name="default_trial_days" value="<?= h($settingsMap['default_trial_days'] ?? '7') ?>" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2">
+                <input type="number" min="0" name="default_trial_days" value="<?= h($settingsMap['default_trial_days'] ?? '7') ?>" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2">
             </div>
             <div class="flex items-center gap-2">
                 <input type="hidden" name="maintenance_mode" value="0">
@@ -95,7 +204,7 @@ ob_start();
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-1">SMTP Port</label>
-                        <input type="number" name="platform_smtp_port" value="<?= h($settingsMap['platform_smtp_port'] ?? '587') ?>" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2" placeholder="587">
+                        <input type="number" min="0" name="platform_smtp_port" value="<?= h($settingsMap['platform_smtp_port'] ?? '587') ?>" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2" placeholder="587">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-1">SMTP Username</label>
@@ -130,7 +239,7 @@ ob_start();
         </div>
 
         <div class="pt-4">
-            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium">Save Settings</button>
+            <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium">Save Settings</button>
         </div>
     </form>
 </div>
