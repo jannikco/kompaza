@@ -11,8 +11,9 @@ use App\Models\EmailSequence;
 use App\Services\EmailServiceFactory;
 
 // Verify cron secret to prevent unauthorized access
-$cronSecret = $_GET['key'] ?? $_SERVER['HTTP_X_CRON_KEY'] ?? '';
-if (empty($cronSecret) || $cronSecret !== (defined('CRON_SECRET') ? CRON_SECRET : '')) {
+$cronKey = $_GET['key'] ?? $_SERVER['HTTP_X_CRON_KEY'] ?? '';
+$cronSecret = defined('CRON_SECRET') ? CRON_SECRET : '';
+if ($cronSecret === '' || !hash_equals($cronSecret, $cronKey)) {
     http_response_code(403);
     echo json_encode(['error' => 'Unauthorized']);
     exit;

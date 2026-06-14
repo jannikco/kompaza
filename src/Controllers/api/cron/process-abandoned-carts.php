@@ -6,9 +6,10 @@ use App\Database\Database;
 
 header('Content-Type: application/json');
 
-// Simple cron key auth
-$cronKey = $_GET['key'] ?? '';
-if (defined('CRON_SECRET_KEY') && $cronKey !== CRON_SECRET_KEY) {
+// Verify cron secret to prevent unauthorized access (fails closed if CRON_SECRET is unset)
+$cronKey = $_GET['key'] ?? $_SERVER['HTTP_X_CRON_KEY'] ?? '';
+$cronSecret = defined('CRON_SECRET') ? CRON_SECRET : '';
+if ($cronSecret === '' || !hash_equals($cronSecret, $cronKey)) {
     http_response_code(403);
     echo json_encode(['error' => 'Unauthorized']);
     exit;
