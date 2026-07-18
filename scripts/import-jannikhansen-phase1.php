@@ -33,16 +33,35 @@ $pdo = new PDO(
     [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
 );
 
-// JH DB (same host, different database)
-$jhPdo = new PDO(
-    sprintf('mysql:host=%s;port=%s;dbname=jannikhansen;charset=utf8mb4',
-        $_ENV['DB_HOST'] ?? 'localhost',
-        $_ENV['DB_PORT'] ?? '3306'
-    ),
-    $_ENV['DB_USERNAME'] ?? 'root',
-    $_ENV['DB_PASSWORD'] ?? '',
-    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
-);
+// JH DB — try socket root first (server ops), then env credentials, then fail soft
+$jhPdo = null;
+$jhTries = [
+    ['mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=jannikhansen;charset=utf8mb4', 'root', ''],
+    ['mysql:host=127.0.0.1;dbname=jannikhansen;charset=utf8mb4', 'root', ''],
+    [
+        sprintf('mysql:host=%s;port=%s;dbname=jannikhansen;charset=utf8mb4',
+            $_ENV['DB_HOST'] ?? 'localhost',
+            $_ENV['DB_PORT'] ?? '3306'
+        ),
+        $_ENV['DB_USERNAME'] ?? 'root',
+        $_ENV['DB_PASSWORD'] ?? '',
+    ],
+];
+foreach ($jhTries as [$dsn, $user, $pass]) {
+    try {
+        $jhPdo = new PDO($dsn, $user, $pass, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ]);
+        echo "JH DB connected via $user\n";
+        break;
+    } catch (Exception $e) {
+        // try next
+    }
+}
+if (!$jhPdo) {
+    die("ERROR: cannot connect to jannikhansen database (need root socket or grants)\n");
+}
 
 $tenant = $pdo->query("SELECT * FROM tenants WHERE slug='jannikhansen' LIMIT 1")->fetch();
 if (!$tenant) die("ERROR: run 032 first\n");
