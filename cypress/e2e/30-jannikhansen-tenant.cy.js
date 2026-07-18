@@ -71,17 +71,20 @@ describe('Jannik Hansen tenant — marketing pages', () => {
 
   it('office-os hero photo is jannik-pr from uploads', () => {
     cy.visit('/office-os');
-    cy.get('img[alt*="Jannik"], picture img').first().should(($img) => {
+    cy.get('img[alt*="Jannik"], picture img').first().then(($img) => {
       const src = $img[0].currentSrc || $img.attr('src') || '';
       expect(src).to.match(/\/uploads\/\d+\/img\//);
-      expect($img[0].naturalWidth).to.be.greaterThan(0);
+      cy.request(src).its('status').should('eq', 200);
     });
     // WebP source must also point at uploads
     cy.get('picture source').each(($s) => {
       const srcset = $s.attr('srcset') || '';
       if (srcset.includes('jannik') || srcset.includes('.webp')) {
         expect(srcset, srcset).to.include('/uploads/');
-        expect(srcset).not.to.match(/srcset=["']?\/img\//);
+        expect(srcset).not.to.include('"/img/');
+        // request first URL in srcset
+        const first = srcset.split(',')[0].trim().split(/\s+/)[0];
+        if (first) cy.request(first).its('status').should('eq', 200);
       }
     });
   });
