@@ -5,6 +5,8 @@ $companyName = $tenant['company_name'] ?? $tenant['name'] ?? 'Store';
 $logoUrl = imageUrl($tenant['logo_url'] ?? '') ?: null;
 $faviconUrl = imageUrl($tenant['favicon_url'] ?? '') ?: null;
 $customCss = $tenant['custom_css'] ?? null;
+$customFooterHtml = $tenant['custom_footer_html'] ?? null;
+$googleAnalyticsId = $tenant['google_analytics_id'] ?? null;
 $tenantId = $tenant['id'] ?? null;
 $currency = $tenant['currency'] ?? 'DKK';
 ?>
@@ -68,6 +70,15 @@ $currency = $tenant['currency'] ?? 'DKK';
     </style>
     <?php if ($customCss): ?>
         <style><?= $customCss ?></style>
+    <?php endif; ?>
+    <?php if (!empty($googleAnalyticsId)): ?>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<?= h($googleAnalyticsId) ?>"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '<?= h($googleAnalyticsId) ?>');
+    </script>
     <?php endif; ?>
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col font-sans antialiased" x-data="{ mobileMenu: false }">
@@ -235,6 +246,10 @@ $currency = $tenant['currency'] ?? 'DKK';
             </div>
         </div>
     </footer>
+
+    <?php if (!empty($customFooterHtml)): ?>
+        <?= $customFooterHtml ?>
+    <?php endif; ?>
 
     <script defer src="/js/countdown-timer.js"></script>
 </body>
