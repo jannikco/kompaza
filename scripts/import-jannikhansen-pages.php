@@ -110,12 +110,37 @@ function transformJhHtml(string $html, int $tenantId): string
 {
     $uploadBase = "/uploads/{$tenantId}/img";
 
-    // Image / asset paths
-    $html = str_replace(['src="/img/', "src='/img/"], ["src=\"{$uploadBase}/", "src='{$uploadBase}/"], $html);
-    $html = str_replace(['url(/img/', 'url("/img/', "url('/img/"], ["url({$uploadBase}/", "url(\"{$uploadBase}/", "url('{$uploadBase}/"], $html);
-    $html = str_replace(['content="/img/', 'href="/img/'], ["content=\"{$uploadBase}/", "href=\"{$uploadBase}/"], $html);
+    // Image / asset paths — cover every common HTML attribute browsers use
+    // (srcset is critical: <picture><source srcset="/img/..."> takes priority over <img src>)
+    $replacements = [
+        'src="/img/' => "src=\"{$uploadBase}/",
+        "src='/img/" => "src='{$uploadBase}/",
+        'srcset="/img/' => "srcset=\"{$uploadBase}/",
+        "srcset='/img/" => "srcset='{$uploadBase}/",
+        'data-src="/img/' => "data-src=\"{$uploadBase}/",
+        "data-src='/img/" => "data-src='{$uploadBase}/",
+        'data-srcset="/img/' => "data-srcset=\"{$uploadBase}/",
+        "data-srcset='/img/" => "data-srcset='{$uploadBase}/",
+        'poster="/img/' => "poster=\"{$uploadBase}/",
+        "poster='/img/" => "poster='{$uploadBase}/",
+        'content="/img/' => "content=\"{$uploadBase}/",
+        "content='/img/" => "content='{$uploadBase}/",
+        'href="/img/' => "href=\"{$uploadBase}/",
+        "href='/img/" => "href='{$uploadBase}/",
+        'url(/img/' => "url({$uploadBase}/",
+        'url("/img/' => "url(\"{$uploadBase}/",
+        "url('/img/" => "url('{$uploadBase}/",
+        // Space after url(
+        'url( /img/' => "url({$uploadBase}/",
+    ];
+    $html = str_replace(array_keys($replacements), array_values($replacements), $html);
 
-    // Absolute jannikhansen URLs → relative
+    // Catch remaining /img/ inside srcset multi-value lists: "foo 1x, /img/bar 2x"
+    $html = preg_replace('#([,\s])/img/#', '$1' . $uploadBase . '/', $html);
+
+    // Absolute jannikhansen asset URLs → tenant uploads
+    $html = preg_replace('#https?://(www\.)?jannikhansen\.com/img/#i', $uploadBase . '/', $html);
+    // Absolute jannikhansen page URLs → relative
     $html = preg_replace('#https?://(www\.)?jannikhansen\.com#i', '', $html);
 
     // Map marketing paths that stay as custom pages
