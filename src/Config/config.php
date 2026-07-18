@@ -76,6 +76,7 @@ date_default_timezone_set('Europe/Copenhagen');
 
 // Load helper functions
 require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/jh-prices.php';
 
 // Load database connection
 require_once __DIR__ . '/../Database/Database.php';

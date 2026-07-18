@@ -1,8 +1,8 @@
 <?php
 /**
- * Guest-friendly buy endpoint for imported JH sales pages.
- * POST /{office-os|creator-os|founder-os}/buy
- * Maps to published course with same slug and starts Stripe Checkout.
+ * Guest-friendly buy for imported JH sales pages.
+ * POST /{office-os|creator-os|founder-os}/buy|buy-plan
+ * Supports multi-currency + 3-installment plan (Stripe subscription).
  */
 
 use App\Models\Course;
@@ -10,13 +10,14 @@ use App\Models\CourseEnrollment;
 use App\Models\CourseLesson;
 use App\Models\User;
 use App\Services\StripeService;
-use App\Database\Database;
 use App\Auth\Auth;
 
 $tenant = currentTenant();
 $tenantId = currentTenantId();
 $product = $dynamicParams['product'] ?? ($_GET['product'] ?? '');
 $product = preg_replace('/[^a-z0-9\-]/', '', strtolower($product));
+$planMode = !empty($dynamicParams['plan']) || str_ends_with($_SERVER['REQUEST_URI'] ?? '', '/buy-plan')
+    || (($_POST['sku'] ?? '') === 'plan');
 
 $allowed = ['office-os', 'creator-os', 'founder-os'];
 if (!in_array($product, $allowed, true)) {
@@ -28,7 +29,6 @@ if (!isPost()) {
     redirect('/' . $product);
 }
 
-// Soft CSRF: accept missing token from imported static HTML, but rate-limit
 $ip = getClientIp();
 if (!checkRateLimit($ip, 'track_buy_' . $product, 20, 3600)) {
     flashMessage('error', 'Too many checkout attempts. Please try again later.');
@@ -42,57 +42,28 @@ if (!$course || $course['status'] !== 'published') {
 }
 
 $email = trim($_POST['email'] ?? $_POST['customer_email'] ?? '');
-$name = trim($_POST['name'] ?? $_POST['customer_name'] ?? 'Customer');
-if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    // Guest may not have posted email — Stripe Checkout will collect it
-    $email = null;
+if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $email = '';
 }
 
-// Free course: enroll immediately
-if (($course['pricing_type'] ?? '') === 'free' || (float)($course['price_dkk'] ?? 0) <= 0) {
-    $userId = currentUserId();
-    if (!$userId && $email) {
-        $existing = User::findByEmail($email, $tenantId);
-        if ($existing) {
-            $userId = (int)$existing['id'];
-        } else {
-            $userId = (int)User::create([
-                'tenant_id' => $tenantId,
-                'role' => 'customer',
-                'name' => $name,
-                'email' => $email,
-                'password' => bin2hex(random_bytes(8)),
-                'status' => 'active',
-            ]);
-        }
-        $user = User::find($userId);
-        Auth::login($user);
-    }
-    if ($userId) {
-        $existing = CourseEnrollment::findByUserAndCourse($userId, $course['id']);
-        if (!$existing) {
-            $totalLessons = CourseLesson::countByCourse($course['id']) ?? 0;
-            CourseEnrollment::create([
-                'tenant_id' => $tenantId,
-                'course_id' => $course['id'],
-                'user_id' => $userId,
-                'enrollment_source' => 'free',
-                'status' => 'active',
-                'total_lessons' => $totalLessons,
-            ]);
-        }
-        flashMessage('success', 'You are enrolled! Start learning.');
-        redirect('/course/' . $course['slug'] . '/learn');
-    }
-    flashMessage('error', 'Please log in or provide an email to enroll.');
-    redirect('/login?redirect=' . urlencode('/course/' . $course['slug']));
+$currency = currentCurrency();
+$sku = $planMode ? 'plan' : 'full';
+$amountMajor = jhTrackAmount($product, $sku, $currency);
+// Fallback to course DKK if catalog missing
+if ($amountMajor <= 0) {
+    $amountMajor = (float)$course['price_dkk'];
+    $currency = 'dkk';
 }
-
-$priceDkk = (float)$course['price_dkk'];
-$amountCents = (int)round($priceDkk * 100);
+$amountCents = (int)round($amountMajor * 100);
 if ($amountCents < 50) {
     flashMessage('error', 'Invalid price configuration.');
     redirect('/' . $product);
+}
+
+$tracks = jhTrackPrices();
+$name = ($currency === 'dkk' ? ($tracks[$product]['name'] ?? $course['title']) : ($tracks[$product]['name_en'] ?? $course['title']));
+if ($planMode) {
+    $name .= ' — 3 monthly installments';
 }
 
 try {
@@ -106,20 +77,37 @@ try {
     }
 
     $base = 'https://' . ($tenant['slug'] ?? 'jannikhansen') . '.' . PLATFORM_DOMAIN;
-    $session = $stripe->createOneTimeCheckoutSession(
-        $course['title'],
-        $amountCents,
-        $tenant['currency'] ?? 'dkk',
-        $base . '/purchase/success?session_id={CHECKOUT_SESSION_ID}',
-        $base . '/' . $product,
-        [
-            'type' => 'course_purchase',
-            'tenant_id' => $tenantId,
-            'course_id' => $course['id'],
-            'course_slug' => $course['slug'],
-        ],
-        $email
-    );
+    $meta = [
+        'type' => 'course_purchase',
+        'tenant_id' => $tenantId,
+        'course_id' => $course['id'],
+        'course_slug' => $course['slug'],
+        'sku' => $sku,
+        'currency' => $currency,
+    ];
+
+    if ($planMode) {
+        $session = $stripe->createInstallmentCheckoutSession(
+            $name,
+            $amountCents,
+            $currency,
+            $base . '/purchase/success?session_id={CHECKOUT_SESSION_ID}',
+            $base . '/' . $product,
+            $meta,
+            $email ?: null,
+            3
+        );
+    } else {
+        $session = $stripe->createOneTimeCheckoutSession(
+            $name,
+            $amountCents,
+            $currency,
+            $base . '/purchase/success?session_id={CHECKOUT_SESSION_ID}',
+            $base . '/' . $product,
+            $meta,
+            $email ?: null
+        );
+    }
 
     $url = $session['url'] ?? null;
     if (!$url) {

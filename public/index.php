@@ -605,6 +605,55 @@ if ($routingMode === 'tenant') {
         elseif ($method === 'POST' && preg_match('#^/(office-os|creator-os|founder-os)/(buy|buy-plan)$#', $request, $matches)) {
             $controller = 'shop/track-buy';
             $dynamicParams['product'] = $matches[1];
+            $dynamicParams['plan'] = ($matches[2] === 'buy-plan') ? 1 : 0;
+        }
+        // Workshop opt-in + watch
+        elseif ($method === 'POST' && $request === '/workshop/submit') {
+            $controller = 'shop/workshop-submit';
+        }
+        elseif ($method === 'GET' && $request === '/workshop/watch') {
+            $controller = 'shop/workshop-watch';
+        }
+        // Per-track workshop page → custom page or track page
+        elseif ($method === 'GET' && preg_match('#^/(office-os|creator-os|founder-os)/workshop$#', $request, $matches)) {
+            // Prefer dedicated custom page if present
+            $wsSlug = $matches[1] . '-workshop';
+            $wsPage = \App\Models\CustomPage::findBySlug($wsSlug, $tenant['id']);
+            if ($wsPage) {
+                $controller = 'shop/custom-page';
+                $dynamicParams['slug'] = $wsSlug;
+            } else {
+                redirect('/' . $matches[1]);
+            }
+        }
+        // Sticky currency
+        elseif ($method === 'GET' && $request === '/set-currency' && !empty($_GET['cur'])) {
+            $cur = strtolower($_GET['cur']);
+            if (in_array($cur, ['dkk', 'eur', 'gbp', 'usd'], true)) {
+                setcookie('kz_cur', $cur, time() + 365 * 86400, '/', '', true, false);
+            }
+            $back = $_GET['return'] ?? '/';
+            if (!str_starts_with($back, '/')) $back = '/';
+            redirect($back);
+        }
+        // EN path prefix → redirects table handles most; also soft-map /en/foo
+        elseif ($method === 'GET' && preg_match('#^/en(/.*)?$#', $request, $m)) {
+            $rest = $m[1] ?? '';
+            if ($rest === '' || $rest === '/') {
+                redirect('/en-home');
+            }
+            // fall through to redirects / custom pages after normalization
+            $mapped = '/en' . $rest;
+            $redir = \App\Models\Redirect::findByPath($mapped, $tenant['id']);
+            if ($redir) {
+                redirect($redir['to_path'], (int)$redir['status_code']);
+            }
+            $slug = 'en-' . trim($rest, '/');
+            $slug = preg_replace('/[^a-z0-9\-]/', '', $slug);
+            if ($slug && \App\Models\CustomPage::findBySlug($slug, $tenant['id'])) {
+                $controller = 'shop/custom-page';
+                $dynamicParams['slug'] = $slug;
+            }
         }
         // Library book buy (guest checkout → Stripe or free download)
         elseif ($method === 'POST' && preg_match('#^/(bibliotek|library)/([a-z0-9\-]+)/buy$#', $request, $matches)) {

@@ -1,18 +1,16 @@
 <?php
 /**
  * Library book checkout for imported JH pages.
- * POST /bibliotek/{slug}/buy  or  /library/{slug}/buy
+ * POST /bibliotek/{slug}/buy | /library/{slug}/buy | /ebog/{slug}/buy
+ * Multi-currency; free books → download token; paid → Stripe; bundle grants all books.
  */
 
 use App\Models\Ebook;
 use App\Models\EbookPurchase;
-use App\Models\DownloadToken;
-use App\Models\User;
-use App\Models\LeadMagnet;
 use App\Models\EmailSignup;
 use App\Services\StripeService;
 use App\Services\EmailServiceFactory;
-use App\Auth\Auth;
+use App\Database\Database;
 
 $tenant = currentTenant();
 $tenantId = currentTenantId();
@@ -37,9 +35,28 @@ if (!$ebook || $ebook['status'] !== 'published') {
 
 $email = trim($_POST['email'] ?? $_POST['customer_email'] ?? '');
 $name = trim($_POST['name'] ?? $_POST['customer_name'] ?? 'Reader');
+$currency = currentCurrency();
+
+// Multi-currency: re-price from tier if we stored DKK as base
+// For imported books price_dkk is DKK; convert using catalog ratios when currency != dkk
+$priceDkk = (float)$ebook['price_dkk'];
+if ($currency !== 'dkk' && $priceDkk > 0) {
+    $tiers = jhLibraryTier();
+    // Detect tier by matching DKK amount
+    $tierKey = 'single';
+    foreach ($tiers as $k => $row) {
+        if (abs(($row['dkk'] ?? -1) - $priceDkk) < 0.01) {
+            $tierKey = $k;
+            break;
+        }
+    }
+    $priceMajor = (float)($tiers[$tierKey][$currency] ?? $priceDkk);
+} else {
+    $priceMajor = $priceDkk;
+}
 
 // Free book → lead capture + download token
-if ((float)($ebook['price_dkk'] ?? 0) <= 0) {
+if ($priceMajor <= 0) {
     if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         flashMessage('error', 'Please enter a valid email to get your free book.');
         redirect('/ebog/' . $slug);
@@ -55,11 +72,11 @@ if ((float)($ebook['price_dkk'] ?? 0) <= 0) {
             'source_slug' => $slug,
             'ip_address' => $ip,
         ]);
-    } catch (\Exception $e) { /* ignore dupes */ }
+    } catch (\Exception $e) { /* ignore */ }
 
     $token = bin2hex(random_bytes(24));
     try {
-        $db = \App\Database\Database::getConnection();
+        $db = Database::getConnection();
         $db->prepare("
             INSERT INTO download_tokens (tenant_id, token, source_type, source_id, email, max_downloads, expires_at)
             VALUES (?, ?, 'ebook', ?, ?, 10, DATE_ADD(NOW(), INTERVAL 30 DAY))
@@ -68,7 +85,6 @@ if ((float)($ebook['price_dkk'] ?? 0) <= 0) {
         error_log('free book token: ' . $e->getMessage());
     }
 
-    // Best-effort email with link
     try {
         $svc = EmailServiceFactory::create($tenant);
         if ($svc && method_exists($svc, 'isConfigured') && $svc->isConfigured() && method_exists($svc, 'sendTransactionalEmail')) {
@@ -80,14 +96,11 @@ if ((float)($ebook['price_dkk'] ?? 0) <= 0) {
         error_log('free book email: ' . $e->getMessage());
     }
 
-    // Always land on download token page for free books
     flashMessage('success', 'Your free book is ready.');
     redirect('/ebog/download/' . $token);
 }
 
-// Paid book → Stripe Checkout (platform keys; no Connect required)
-$priceDkk = (float)$ebook['price_dkk'];
-$amountCents = (int)round($priceDkk * 100);
+$amountCents = (int)round($priceMajor * 100);
 
 try {
     $stripe = new StripeService(null, $tenantId);
@@ -103,7 +116,7 @@ try {
     $session = $stripe->createOneTimeCheckoutSession(
         $ebook['title'],
         $amountCents,
-        $tenant['currency'] ?? 'dkk',
+        $currency,
         $base . '/purchase/success?session_id={CHECKOUT_SESSION_ID}',
         $base . '/ebog/' . $slug,
         [
@@ -111,11 +124,12 @@ try {
             'tenant_id' => $tenantId,
             'ebook_id' => $ebook['id'],
             'ebook_slug' => $ebook['slug'],
+            'currency' => $currency,
+            'is_bundle' => $slug === 'everything-bundle' ? '1' : '0',
         ],
-        $email ?: null
+        ($email && filter_var($email, FILTER_VALIDATE_EMAIL)) ? $email : null
     );
 
-    // Pending purchase row (table may be missing on older installs)
     try {
         if (class_exists(EbookPurchase::class)) {
             EbookPurchase::create([
@@ -124,7 +138,7 @@ try {
                 'customer_email' => $email ?: null,
                 'customer_name' => $name,
                 'amount_cents' => $amountCents,
-                'currency' => strtolower($tenant['currency'] ?? 'dkk'),
+                'currency' => $currency,
                 'status' => 'pending',
                 'stripe_checkout_session_id' => $session['id'] ?? null,
             ]);

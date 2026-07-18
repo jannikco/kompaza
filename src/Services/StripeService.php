@@ -286,6 +286,41 @@ class StripeService {
     }
 
     /**
+     * Subscription Checkout with inline price_data (for installment plans without pre-created Price IDs).
+     */
+    public function createInstallmentCheckoutSession(
+        string $name,
+        int $amountCentsPerMonth,
+        string $currency,
+        string $successUrl,
+        string $cancelUrl,
+        array $metadata = [],
+        ?string $customerEmail = null,
+        int $maxInstallments = 3
+    ): array {
+        $params = [
+            'mode' => 'subscription',
+            'line_items[0][price_data][currency]' => strtolower($currency),
+            'line_items[0][price_data][unit_amount]' => $amountCentsPerMonth,
+            'line_items[0][price_data][recurring][interval]' => 'month',
+            'line_items[0][price_data][product_data][name]' => $name . " ({$maxInstallments} installments)",
+            'line_items[0][quantity]' => 1,
+            'success_url' => $successUrl,
+            'cancel_url' => $cancelUrl,
+        ];
+        if ($customerEmail) {
+            $params['customer_email'] = $customerEmail;
+        }
+        $metadata['max_installments'] = (string)$maxInstallments;
+        $metadata['installment_plan'] = '1';
+        foreach ($metadata as $key => $value) {
+            $params["metadata[{$key}]"] = $value;
+            $params["subscription_data[metadata][{$key}]"] = $value;
+        }
+        return $this->makeRequest('POST', '/checkout/sessions', $params);
+    }
+
+    /**
      * Create a Stripe Checkout Session for membership subscription.
      */
     public function createMembershipCheckoutSession(

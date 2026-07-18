@@ -116,6 +116,23 @@ if ($type === 'ebook_purchase') {
                 ")->execute([$email, $name, $sessionId, $ebook['id'], $tenantId]);
             } catch (\Exception $e) { /* table optional */ }
 
+            // Bundle: grant download tokens for every published ebook on the tenant
+            if (($meta['is_bundle'] ?? '') === '1' || ($ebook['slug'] ?? '') === 'everything-bundle') {
+                $books = $db->prepare("SELECT id, slug FROM ebooks WHERE tenant_id=? AND status='published' AND price_dkk > 0");
+                $books->execute([$tenantId]);
+                $firstToken = null;
+                foreach ($books->fetchAll() as $b) {
+                    $tok = bin2hex(random_bytes(16));
+                    $db->prepare("
+                        INSERT INTO download_tokens (tenant_id, token, source_type, source_id, email, max_downloads, expires_at)
+                        VALUES (?, ?, 'ebook', ?, ?, 20, DATE_ADD(NOW(), INTERVAL 365 DAY))
+                    ")->execute([$tenantId, $tok, $b['id'], $email]);
+                    if (!$firstToken) $firstToken = $tok;
+                }
+                flashMessage('success', 'Payment received! Your complete library is unlocked.');
+                redirect($firstToken ? '/ebog/download/' . $firstToken : '/eboger');
+            }
+
             $token = bin2hex(random_bytes(24));
             $db->prepare("
                 INSERT INTO download_tokens (tenant_id, token, source_type, source_id, email, max_downloads, expires_at)
@@ -130,6 +147,11 @@ if ($type === 'ebook_purchase') {
             redirect('/ebog/' . $ebook['slug']);
         }
     }
+}
+
+// Subscription installment plans also return mode=subscription
+if (($session['mode'] ?? '') === 'subscription' && empty($type)) {
+    $type = $meta['type'] ?? 'course_purchase';
 }
 
 flashMessage('success', 'Payment received. Thank you!');
