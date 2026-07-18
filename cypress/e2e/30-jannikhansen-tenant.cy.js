@@ -7,16 +7,28 @@
 const BASE = Cypress.config('baseUrl') || 'https://jannikhansen.kompaza.com';
 
 function assertNoBrokenImages() {
+  // Force lazy images to load
+  cy.scrollTo('bottom', { ensureScrollable: false });
+  cy.wait(400);
+  cy.scrollTo('top', { ensureScrollable: false });
+  cy.wait(400);
+
   cy.get('body').then(($body) => {
-    const imgs = $body.find('img');
+    const imgs = [...$body.find('img')];
     if (!imgs.length) return;
-    cy.wrap(imgs).each(($img) => {
-      const el = $img[0];
-      const src = el.currentSrc || el.src || '';
-      // Skip empty/data/tracking
-      if (!src || src.startsWith('data:') || src.includes('email/o.gif')) return;
-      // naturalWidth 0 = broken load
-      expect(el.naturalWidth, `image should load: ${src}`).to.be.greaterThan(0);
+
+    // Prefer network assertion for reliability (SVG naturalWidth is often 0 in Electron)
+    const urls = imgs
+      .map((el) => el.currentSrc || el.src || '')
+      .filter((src) => src && !src.startsWith('data:') && !src.includes('email/o.gif'));
+
+    // Deduplicate
+    [...new Set(urls)].forEach((src) => {
+      // Same-origin or absolute
+      cy.request({ url: src, failOnStatusCode: false }).then((res) => {
+        expect(res.status, `image HTTP ${src}`).to.eq(200);
+        expect(res.body, `image body ${src}`).to.not.be.empty;
+      });
     });
   });
 }
@@ -85,14 +97,15 @@ describe('Jannik Hansen tenant — commerce catalog', () => {
 
   it('bibliotek covers load from uploads', () => {
     cy.visit('/bibliotek');
+    cy.scrollTo('bottom', { ensureScrollable: false });
+    cy.wait(500);
     cy.get('img').then(($imgs) => {
-      const coverImgs = [...$imgs].filter((img) => {
-        const s = img.currentSrc || img.src || '';
-        return s.includes('/covers/') || s.includes('uploads');
-      });
-      expect(coverImgs.length, 'expected cover images').to.be.greaterThan(0);
-      coverImgs.slice(0, 12).forEach((img) => {
-        expect(img.naturalWidth, img.src).to.be.greaterThan(0);
+      const coverUrls = [...$imgs]
+        .map((img) => img.currentSrc || img.src || '')
+        .filter((s) => s.includes('/covers/') || s.includes('uploads'));
+      expect(coverUrls.length, 'expected cover images').to.be.greaterThan(0);
+      [...new Set(coverUrls)].slice(0, 15).forEach((src) => {
+        cy.request(src).its('status').should('eq', 200);
       });
     });
   });

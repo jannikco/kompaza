@@ -298,16 +298,18 @@ function uploadPublicFile($tmpFile, $category, $prefix, $ext) {
 
 function imageUrl($pathOrKey, $expiresInSeconds = 604800) {
     if (!$pathOrKey) return '';
-    // Old local paths — serve as-is
+    // Local public uploads — serve as-is (with or without leading slash)
     if (str_starts_with($pathOrKey, '/uploads/')) return $pathOrKey;
+    if (str_starts_with($pathOrKey, 'uploads/')) return '/' . $pathOrKey;
     // Already a full URL (legacy) — return as-is
-    if (str_starts_with($pathOrKey, 'http')) return $pathOrKey;
+    if (str_starts_with($pathOrKey, 'http://') || str_starts_with($pathOrKey, 'https://')) return $pathOrKey;
     // S3 key — generate presigned URL (7-day default)
     if (\App\Services\S3Service::isConfigured()) {
         $s3 = new \App\Services\S3Service();
         return $s3->getPresignedUrl($pathOrKey, $expiresInSeconds);
     }
-    return '';
+    // Last-resort local relative
+    return '/' . ltrim($pathOrKey, '/');
 }
 
 function uploadPrivateFile($tmpFile, $category, $prefix, $ext) {
