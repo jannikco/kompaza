@@ -40,10 +40,22 @@ if (!$ebook || !$ebook['pdf_filename']) {
     exit;
 }
 
-$filePath = STORAGE_PATH . '/books/' . $ebook['pdf_filename'];
 $originalName = $ebook['pdf_original_name'] ?? $ebook['pdf_filename'];
+$tenantId = (int)($ebook['tenant_id'] ?? $downloadToken['tenant_id'] ?? 0);
+$candidates = array_filter([
+    STORAGE_PATH . '/pdfs/' . $tenantId . '/' . $ebook['pdf_filename'],
+    STORAGE_PATH . '/books/' . $ebook['pdf_filename'],
+    STORAGE_PATH . '/pdfs/' . $ebook['pdf_filename'],
+]);
+$filePath = null;
+foreach ($candidates as $cand) {
+    if ($cand && file_exists($cand)) {
+        $filePath = $cand;
+        break;
+    }
+}
 
-if (!file_exists($filePath)) {
+if (!$filePath) {
     http_response_code(404);
     view('errors/404');
     exit;

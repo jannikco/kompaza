@@ -70,16 +70,19 @@ if ((float)($ebook['price_dkk'] ?? 0) <= 0) {
 
     // Best-effort email with link
     try {
-        $svc = EmailServiceFactory::create($tenantId);
-        if ($svc && method_exists($svc, 'sendTransactionalEmail')) {
+        $svc = EmailServiceFactory::create($tenant);
+        if ($svc && method_exists($svc, 'isConfigured') && $svc->isConfigured() && method_exists($svc, 'sendTransactionalEmail')) {
             $url = 'https://' . $tenant['slug'] . '.' . PLATFORM_DOMAIN . '/ebog/download/' . $token;
             $html = '<p>Hi ' . htmlspecialchars($name) . ',</p><p>Your free book <strong>' . htmlspecialchars($ebook['title']) . '</strong> is ready.</p><p><a href="' . htmlspecialchars($url) . '">Download PDF</a></p>';
             $svc->sendTransactionalEmail($email, 'Your free book: ' . $ebook['title'], $html);
         }
-    } catch (\Exception $e) { /* ignore */ }
+    } catch (\Exception $e) {
+        error_log('free book email: ' . $e->getMessage());
+    }
 
-    flashMessage('success', 'Check your email for the download link.');
-    redirect('/ebog/' . $slug . '?free=1');
+    // Always land on download token page for free books
+    flashMessage('success', 'Your free book is ready.');
+    redirect('/ebog/download/' . $token);
 }
 
 // Paid book → Stripe Checkout (platform keys; no Connect required)
