@@ -277,6 +277,108 @@ class StripeService {
     }
 
     /**
+     * Alias for platform SaaS billing portal (same Stripe Billing Portal API).
+     */
+    public function createBillingPortalSession(string $customerId, string $returnUrl): array {
+        return $this->createMembershipPortalSession($customerId, $returnUrl);
+    }
+
+    /**
+     * Create a Stripe Checkout Session for platform SaaS subscription.
+     *
+     * @param string   $customerId Stripe Customer ID
+     * @param string   $priceId    Stripe Price ID
+     * @param string   $successUrl Success redirect URL
+     * @param string   $cancelUrl  Cancel redirect URL
+     * @param int|null $trialDays  Optional trial period in days
+     * @param array    $metadata   Session/subscription metadata
+     * @return array Stripe Checkout Session
+     */
+    public function createSubscriptionCheckout(
+        string $customerId,
+        string $priceId,
+        string $successUrl,
+        string $cancelUrl,
+        ?int $trialDays = null,
+        array $metadata = []
+    ): array {
+        $params = [
+            'customer' => $customerId,
+            'mode' => 'subscription',
+            'line_items[0][price]' => $priceId,
+            'line_items[0][quantity]' => 1,
+            'success_url' => $successUrl,
+            'cancel_url' => $cancelUrl,
+        ];
+
+        if ($trialDays !== null && $trialDays > 0) {
+            $params['subscription_data[trial_period_days]'] = $trialDays;
+        }
+
+        foreach ($metadata as $key => $value) {
+            $params["metadata[{$key}]"] = $value;
+            $params["subscription_data[metadata][{$key}]"] = $value;
+        }
+
+        return $this->makeRequest('POST', '/checkout/sessions', $params);
+    }
+
+    /**
+     * Create a Stripe Connect Express account.
+     *
+     * @param string $email    Account email
+     * @param array  $metadata Metadata to attach
+     * @param string $country  Two-letter country code (default DK)
+     * @return array Stripe Account object
+     */
+    public function createConnectAccount(string $email, array $metadata = [], string $country = 'DK'): array {
+        $params = [
+            'type' => 'express',
+            'email' => $email,
+            'country' => strtoupper($country),
+            'capabilities[card_payments][requested]' => 'true',
+            'capabilities[transfers][requested]' => 'true',
+        ];
+
+        foreach ($metadata as $key => $value) {
+            $params["metadata[{$key}]"] = $value;
+        }
+
+        return $this->makeRequest('POST', '/accounts', $params);
+    }
+
+    /**
+     * Create an Account Link for Stripe Connect onboarding.
+     *
+     * @param string $accountId  Connected account ID (acct_xxx)
+     * @param string $refreshUrl URL if the user needs to restart onboarding
+     * @param string $returnUrl  URL after completing onboarding
+     * @return array Stripe AccountLink object (includes url)
+     */
+    public function createAccountLink(string $accountId, string $refreshUrl, string $returnUrl): array {
+        return $this->makeRequest('POST', '/account_links', [
+            'account' => $accountId,
+            'refresh_url' => $refreshUrl,
+            'return_url' => $returnUrl,
+            'type' => 'account_onboarding',
+        ]);
+    }
+
+    /**
+     * Retrieve a Stripe Connect account.
+     */
+    public function retrieveAccount(string $accountId): array {
+        return $this->makeRequest('GET', '/accounts/' . urlencode($accountId));
+    }
+
+    /**
+     * Create a Stripe Express Dashboard login link for a connected account.
+     */
+    public function createConnectLoginLink(string $accountId): array {
+        return $this->makeRequest('POST', '/accounts/' . urlencode($accountId) . '/login_links');
+    }
+
+    /**
      * Retrieve a Stripe Subscription.
      */
     public function retrieveSubscription(string $subscriptionId): array {

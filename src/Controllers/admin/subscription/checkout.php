@@ -10,60 +10,81 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     redirect('/admin/abonnement');
 }
 
-if (!verifyCsrfToken($_POST['csrf_token'] ?? '')) {
-    flashMessage('error', 'Ugyldig anmodning.');
+$csrf = $_POST[CSRF_TOKEN_NAME] ?? $_POST['csrf_token'] ?? '';
+if (!verifyCsrfToken($csrf)) {
+    flashMessage('error', 'Invalid request. Please try again.');
     redirect('/admin/abonnement');
 }
 
 $admin = Auth::admin();
-$tenantId = $admin['tenant_id'] ?? null;
+$tenantId = $admin['tenant_id'] ?? currentTenantId();
 $planId = (int)($_POST['plan_id'] ?? 0);
 $interval = $_POST['interval'] ?? 'monthly';
 
 if (!$tenantId || !$planId) {
-    flashMessage('error', 'Ugyldige data.');
+    flashMessage('error', 'Invalid plan selection.');
     redirect('/admin/abonnement');
 }
 
 $plan = SubscriptionPlan::find($planId);
-if (!$plan || !$plan['is_active']) {
-    flashMessage('error', 'Ugyldig plan.');
+if (!$plan || empty($plan['is_active'])) {
+    flashMessage('error', 'Invalid plan.');
     redirect('/admin/abonnement');
 }
 
-$priceId = $interval === 'annual' ? $plan['stripe_price_annual_id'] : $plan['stripe_price_monthly_id'];
+$priceId = $interval === 'annual' ? ($plan['stripe_price_annual_id'] ?? null) : ($plan['stripe_price_monthly_id'] ?? null);
 if (!$priceId) {
-    flashMessage('error', 'Denne plan er ikke konfigureret i Stripe endnu.');
+    flashMessage('error', 'This plan is not configured in Stripe yet.');
     redirect('/admin/abonnement');
 }
 
 try {
-    // Get or create Stripe customer
-    $subscription = TenantSubscription::findByTenantId($tenantId);
-    $customerId = $subscription['stripe_customer_id'] ?? null;
+    // Platform billing always uses platform Stripe keys
+    $stripe = new StripeService(defined('STRIPE_SECRET_KEY') ? STRIPE_SECRET_KEY : null);
 
-    if (!$customerId) {
-        $tenant = Tenant::find($tenantId);
-        $customer = StripeService::createCustomer(
-            $admin['email'],
-            $tenant['name'],
-            ['tenant_id' => $tenantId]
-        );
-        $customerId = $customer->id;
+    if (!$stripe->isConfigured()) {
+        flashMessage('error', 'Platform billing is not configured. Contact support.');
+        redirect('/admin/abonnement');
     }
 
-    // Determine trial days (only for new subscriptions)
+    $subscription = TenantSubscription::findByTenantId($tenantId);
+    $customerId = $subscription['stripe_customer_id'] ?? null;
+    $tenant = Tenant::find($tenantId);
+
+    // Prefer stripe_customer_id already on tenant row
+    if (!$customerId && !empty($tenant['stripe_customer_id'])) {
+        $customerId = $tenant['stripe_customer_id'];
+    }
+
+    if (!$customerId) {
+        $customer = $stripe->createCustomer(
+            $admin['email'],
+            $tenant['company_name'] ?? $tenant['name'] ?? '',
+            ['tenant_id' => $tenantId]
+        );
+        $customerId = $customer['id'] ?? null;
+        if (!$customerId) {
+            throw new \Exception('Stripe did not return a customer id.');
+        }
+    }
+
+    // Trial only for brand-new subscriptions
     $trialDays = $subscription ? 0 : 7;
 
-    $session = StripeService::createSubscriptionCheckout(
+    $baseUrl = 'https://' . ($tenant['slug'] ?? '') . '.' . PLATFORM_DOMAIN;
+    $session = $stripe->createSubscriptionCheckout(
         $customerId,
         $priceId,
-        APP_URL . '/admin/abonnement/succes?session_id={CHECKOUT_SESSION_ID}',
-        APP_URL . '/admin/abonnement',
-        $trialDays
+        $baseUrl . '/admin/abonnement/succes?session_id={CHECKOUT_SESSION_ID}',
+        $baseUrl . '/admin/abonnement',
+        $trialDays > 0 ? $trialDays : null,
+        [
+            'tenant_id' => $tenantId,
+            'plan_id' => $planId,
+            'billing_interval' => $interval,
+        ]
     );
 
-    // Create or update local subscription record
     if ($subscription) {
         TenantSubscription::update($subscription['id'], [
             'stripe_customer_id' => $customerId,
@@ -80,10 +101,18 @@ try {
         ]);
     }
 
-    header('Location: ' . $session->url);
+    // Keep tenant.stripe_customer_id in sync
+    Tenant::update($tenantId, ['stripe_customer_id' => $customerId]);
+
+    $sessionUrl = $session['url'] ?? null;
+    if (!$sessionUrl) {
+        throw new \Exception('Stripe Checkout session missing URL.');
+    }
+
+    header('Location: ' . $sessionUrl);
     exit;
 } catch (\Exception $e) {
-    error_log("Stripe checkout error: " . $e->getMessage());
-    flashMessage('error', 'Der opstod en fejl. Prøv igen.');
+    error_log('Stripe checkout error: ' . $e->getMessage());
+    flashMessage('error', 'Something went wrong starting checkout. Please try again.');
     redirect('/admin/abonnement');
 }

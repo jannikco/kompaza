@@ -26,6 +26,13 @@ class Tenant {
         return $stmt->fetch();
     }
 
+    public static function findByStripeConnectId($accountId) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("SELECT * FROM tenants WHERE stripe_connect_id = ? LIMIT 1");
+        $stmt->execute([$accountId]);
+        return $stmt->fetch();
+    }
+
     public static function all($status = null) {
         $db = Database::getConnection();
         if ($status) {
@@ -72,6 +79,23 @@ class Tenant {
         $values[] = $id;
         $stmt = $db->prepare("UPDATE tenants SET " . implode(', ', $fields) . " WHERE id = ?");
         return $stmt->execute($values);
+    }
+
+    /**
+     * Update Stripe Connect columns on a tenant (id, onboarded, charges, payouts).
+     */
+    public static function updateStripeConnect($id, array $data) {
+        $allowed = [
+            'stripe_connect_id',
+            'stripe_connect_onboarded',
+            'stripe_connect_charges_enabled',
+            'stripe_connect_payouts_enabled',
+        ];
+        $filtered = array_intersect_key($data, array_flip($allowed));
+        if (empty($filtered)) {
+            return false;
+        }
+        return self::update($id, $filtered);
     }
 
     public static function count($status = null) {

@@ -131,6 +131,7 @@ try {
         'email' => $email,
         'plan_id' => $planId,
         'trial_ends_at' => date('Y-m-d H:i:s', strtotime('+7 days')),
+        'subscription_status' => 'trialing',
     ]);
 
     // Create tenant admin user (email_verified_at stays NULL until verified)
@@ -144,10 +145,58 @@ try {
         'status' => 'active',
     ]);
 
-    // Set tenant owner
-    Tenant::update($tenantId, [
+    // Apply plan feature flags from features_json so Growth/Enterprise unlock correctly
+    $tenantFeatureUpdate = [
         'owner_user_id' => $userId,
-    ]);
+    ];
+    if ($plan && !empty($plan['features_json'])) {
+        $features = is_string($plan['features_json'])
+            ? json_decode($plan['features_json'], true)
+            : $plan['features_json'];
+        if (is_array($features)) {
+            $featureMap = [
+                'blog' => 'feature_blog',
+                'ebooks' => 'feature_ebooks',
+                'lead_magnets' => 'feature_lead_magnets',
+                'orders' => 'feature_orders',
+                'connectpilot' => 'feature_connectpilot',
+                'courses' => 'feature_courses',
+                'newsletters' => 'feature_newsletters',
+                'consultations' => 'feature_consultations',
+                'mastermind' => 'feature_mastermind',
+                'custom_pages' => 'feature_custom_pages',
+                'memberships' => 'feature_memberships',
+                'prompts' => 'feature_prompts',
+                'community' => 'feature_community',
+            ];
+            foreach ($featureMap as $jsonKey => $column) {
+                if (array_key_exists($jsonKey, $features)) {
+                    $tenantFeatureUpdate[$column] = !empty($features[$jsonKey]) ? 1 : 0;
+                }
+            }
+        }
+    }
+    // Seed onboarding checklist state when column exists (migration 031)
+    try {
+        $dbCheck = Database::getConnection();
+        $col = $dbCheck->query("SHOW COLUMNS FROM tenants LIKE 'onboarding_json'")->fetch();
+        if ($col) {
+            $tenantFeatureUpdate['onboarding_json'] = json_encode([
+                'version' => 1,
+                'dismissed' => false,
+                'steps' => [
+                    'branding' => false,
+                    'homepage' => false,
+                    'first_content' => false,
+                    'payments' => false,
+                    'preview_site' => false,
+                ],
+            ]);
+        }
+    } catch (\Exception $e) {
+        // Column may not exist yet — checklist falls back to client defaults
+    }
+    Tenant::update($tenantId, $tenantFeatureUpdate);
 
     // Generate email verification token
     $token = bin2hex(random_bytes(32));

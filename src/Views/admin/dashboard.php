@@ -108,7 +108,113 @@ $colorMap = [
 
 $pageTitle = 'Dashboard';
 $currentPage = 'dashboard';
+
+// --- Setup checklist (day-0 activation) ---
+$tenantRow = currentTenant() ?: [];
+$onboarding = [];
+if (!empty($tenantRow['onboarding_json'])) {
+    $decoded = is_string($tenantRow['onboarding_json'])
+        ? json_decode($tenantRow['onboarding_json'], true)
+        : $tenantRow['onboarding_json'];
+    if (is_array($decoded)) {
+        $onboarding = $decoded;
+    }
+}
+$onboardingDismissed = !empty($onboarding['dismissed']);
+
+$hasLogo = !empty($tenantRow['logo_url']) || !empty($tenantRow['logo_path']);
+$hasColors = !empty($tenantRow['primary_color']);
+$brandingDone = $hasLogo || (!empty($tenantRow['company_name']) && $hasColors && $tenantRow['company_name'] !== ($tenantRow['name'] ?? ''));
+if ($hasLogo) {
+    $brandingDone = true;
+}
+
+$homepageDone = !empty($tenantRow['homepage_template']) || !empty($tenantRow['homepage_sections']) || !empty($tenantRow['hero_subtitle']);
+// Treat default starter template alone as incomplete unless sections/hero customized
+if ($homepageDone && empty($tenantRow['homepage_sections']) && empty($tenantRow['hero_subtitle']) && empty($tenantRow['hero_image_path'])) {
+    // still allow completed if they visited and saved template choices later — keep soft
+}
+
+$firstContentDone = ($leadMagnetCount + $articleCount + $ebookCount + $courseCount) > 0;
+if (tenantFeature('orders')) {
+    $productCountForSetup = 0;
+    try {
+        $stmtP = $db->prepare("SELECT COUNT(*) as c FROM products WHERE tenant_id = ?");
+        $stmtP->execute([$tenantId]);
+        $productCountForSetup = (int)$stmtP->fetch()['c'];
+        $firstContentDone = $firstContentDone || $productCountForSetup > 0;
+    } catch (\Exception $e) { /* ignore */ }
+}
+
+$paymentsDone = !empty($tenantRow['stripe_secret_key'])
+    || !empty($tenantRow['stripe_publishable_key'])
+    || !empty($tenantRow['stripe_connect_charges_enabled'])
+    || !empty($tenantRow['stripe_connect_id']);
+
+// Preview site: mark done once they have branding + homepage OR first content
+$previewDone = ($brandingDone && $homepageDone) || $firstContentDone;
+
+$checklistSteps = [
+    [
+        'key' => 'branding',
+        'label' => 'Brand your site',
+        'description' => 'Add your logo and brand colors',
+        'href' => '/admin/indstillinger',
+        'done' => $brandingDone,
+    ],
+    [
+        'key' => 'homepage',
+        'label' => 'Design your homepage',
+        'description' => 'Pick a template and customize sections (AI can help)',
+        'href' => '/admin/homepage',
+        'done' => $homepageDone && (!empty($tenantRow['hero_subtitle']) || !empty($tenantRow['homepage_sections']) || !empty($tenantRow['hero_image_path'])),
+    ],
+    [
+        'key' => 'first_content',
+        'label' => 'Create your first offer',
+        'description' => tenantFeature('lead_magnets')
+            ? 'Publish a lead magnet, product, or course'
+            : 'Publish your first piece of content',
+        'href' => tenantFeature('lead_magnets') ? '/admin/lead-magnets/opret' : (tenantFeature('orders') ? '/admin/produkter/opret' : '/admin/artikler/opret'),
+        'done' => $firstContentDone,
+    ],
+    [
+        'key' => 'payments',
+        'label' => 'Connect payments',
+        'description' => 'Add Stripe keys or complete Stripe Connect',
+        'href' => '/admin/stripe-connect',
+        'done' => $paymentsDone,
+    ],
+    [
+        'key' => 'preview_site',
+        'label' => 'Preview your live site',
+        'description' => 'Open your public storefront in a new tab',
+        'href' => '/',
+        'done' => $previewDone,
+    ],
+];
+
+// Soft-detect homepage done if hero/template customized
+foreach ($checklistSteps as &$stepRef) {
+    if ($stepRef['key'] === 'homepage') {
+        $stepRef['done'] = !empty($tenantRow['hero_subtitle'])
+            || !empty($tenantRow['homepage_sections'])
+            || !empty($tenantRow['hero_image_path'])
+            || (!empty($tenantRow['homepage_template']) && $tenantRow['homepage_template'] !== 'starter');
+    }
+}
+unset($stepRef);
+
+$showWelcome = !$onboardingDismissed && isset($_GET['welcome']);
+
 ob_start();
+?>
+
+<?php
+// checklist.php expects $steps, $dismissed, $showWelcome
+$steps = $checklistSteps;
+$dismissed = $onboardingDismissed;
+include VIEWS_PATH . '/admin/components/checklist.php';
 ?>
 
 <!-- Period Toggle -->
@@ -183,7 +289,12 @@ ob_start();
             <?php endif; ?>
         </div>
         <?php if (empty($recentOrders)): ?>
-            <p class="text-sm text-gray-500">No orders yet.</p>
+            <div class="text-center py-6">
+                <p class="text-sm text-gray-500 mb-3">No orders yet.</p>
+                <?php if (tenantFeature('orders')): ?>
+                <a href="/admin/produkter/opret" class="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-500">Create a product to start selling &rarr;</a>
+                <?php endif; ?>
+            </div>
         <?php else: ?>
             <div class="space-y-3">
                 <?php foreach ($recentOrders as $order): ?>

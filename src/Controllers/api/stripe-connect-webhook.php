@@ -11,7 +11,9 @@ $payload = file_get_contents('php://input');
 $sigHeader = $_SERVER['HTTP_STRIPE_SIGNATURE'] ?? '';
 
 try {
-    $event = StripeService::constructWebhookEvent($payload, $sigHeader, STRIPE_CONNECT_WEBHOOK_SECRET);
+    $stripe = new StripeService(defined('STRIPE_SECRET_KEY') ? STRIPE_SECRET_KEY : null);
+    $secret = defined('STRIPE_CONNECT_WEBHOOK_SECRET') ? STRIPE_CONNECT_WEBHOOK_SECRET : null;
+    $event = $stripe->constructWebhookEvent($payload, $sigHeader, $secret);
 } catch (\Exception $e) {
     error_log("Stripe Connect webhook signature failed: " . $e->getMessage());
     http_response_code(400);
@@ -21,11 +23,13 @@ try {
 
 header('Content-Type: application/json');
 
-switch ($event->type) {
+$eventType = $event['type'] ?? '';
+$object = $event['data']['object'] ?? [];
+
+switch ($eventType) {
     case 'checkout.session.completed':
-        $session = $event->data->object;
-        if ($session->mode === 'payment') {
-            $purchase = EbookPurchase::findByCheckoutSession($session->id);
+        if (($object['mode'] ?? '') === 'payment') {
+            $purchase = EbookPurchase::findByCheckoutSession($object['id'] ?? '');
             if ($purchase) {
                 // Generate download token
                 $db = Database::getConnection();
@@ -39,9 +43,9 @@ switch ($event->type) {
 
                 // Update purchase
                 EbookPurchase::update($purchase['id'], [
-                    'customer_email' => $session->customer_details->email ?? null,
-                    'customer_name' => $session->customer_details->name ?? null,
-                    'stripe_payment_intent_id' => $session->payment_intent,
+                    'customer_email' => $object['customer_details']['email'] ?? null,
+                    'customer_name' => $object['customer_details']['name'] ?? null,
+                    'stripe_payment_intent_id' => $object['payment_intent'] ?? null,
                     'status' => 'completed',
                     'download_token_id' => $tokenId,
                     'completed_at' => date('Y-m-d H:i:s'),
@@ -54,13 +58,13 @@ switch ($event->type) {
         break;
 
     case 'account.updated':
-        $account = $event->data->object;
-        $tenant = Tenant::findByStripeConnectId($account->id);
+        $accountId = $object['id'] ?? '';
+        $tenant = $accountId ? Tenant::findByStripeConnectId($accountId) : null;
         if ($tenant) {
             Tenant::updateStripeConnect($tenant['id'], [
-                'stripe_connect_onboarded' => $account->details_submitted ? 1 : 0,
-                'stripe_connect_charges_enabled' => $account->charges_enabled ? 1 : 0,
-                'stripe_connect_payouts_enabled' => $account->payouts_enabled ? 1 : 0,
+                'stripe_connect_onboarded' => !empty($object['details_submitted']) ? 1 : 0,
+                'stripe_connect_charges_enabled' => !empty($object['charges_enabled']) ? 1 : 0,
+                'stripe_connect_payouts_enabled' => !empty($object['payouts_enabled']) ? 1 : 0,
             ]);
         }
         break;

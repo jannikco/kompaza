@@ -1,5 +1,19 @@
 <?php $pageTitle = 'ConnectPilot'; $currentPage = 'connectpilot'; $tenant = currentTenant(); ob_start(); ?>
 
+<?php
+$featureKey = 'connectpilot';
+$title = 'Grow on LinkedIn with ConnectPilot';
+$subtitle = 'Connect your LinkedIn account, run post automations that reply and DM commenters, and (beta) manage outreach campaigns.';
+$steps = [
+    'Paste your LinkedIn session cookies and test the connection',
+    'Create a post automation with keywords and reply/DM templates',
+    'Keep daily limits conservative and check leads regularly',
+];
+$ctaHref = '/admin/connectpilot/konto';
+$ctaLabel = 'Connect LinkedIn';
+include VIEWS_PATH . '/admin/components/feature-intro.php';
+?>
+
 <!-- Connection Status Card -->
 <div class="mb-8">
     <?php if ($linkedinAccount && $linkedinAccount['status'] === 'active'): ?>

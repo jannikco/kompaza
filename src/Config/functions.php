@@ -27,7 +27,18 @@ function generateCsrfToken() {
         return $_COOKIE[CSRF_TOKEN_NAME];
     }
     $token = bin2hex(random_bytes(32));
-    setcookie(CSRF_TOKEN_NAME, $token, time() + (180 * 24 * 60 * 60), '/', '', true, false);
+    // SameSite=Lax reduces CSRF risk for cross-site POSTs while keeping double-submit usable.
+    if (PHP_VERSION_ID >= 70300) {
+        setcookie(CSRF_TOKEN_NAME, $token, [
+            'expires' => time() + (180 * 24 * 60 * 60),
+            'path' => '/',
+            'secure' => true,
+            'httponly' => false,
+            'samesite' => 'Lax',
+        ]);
+    } else {
+        setcookie(CSRF_TOKEN_NAME, $token, time() + (180 * 24 * 60 * 60), '/; samesite=Lax', '', true, false);
+    }
     $_COOKIE[CSRF_TOKEN_NAME] = $token;
     return $token;
 }

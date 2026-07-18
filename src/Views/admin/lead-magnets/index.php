@@ -5,6 +5,20 @@ $tenant = currentTenant();
 ob_start();
 ?>
 
+<?php
+$featureKey = 'lead-magnets';
+$title = 'Capture emails while you sleep';
+$subtitle = 'Lead magnets turn free resources into subscribers. Upload a PDF, generate a landing page with AI, and deliver downloads automatically.';
+$steps = [
+    'Create a lead magnet and upload your PDF (or start with AI)',
+    'Customize the landing page hero, benefits, and form',
+    'Publish and share your /lp/ link to grow your list',
+];
+$ctaHref = '/admin/lead-magnets/opret';
+$ctaLabel = 'Create your first lead magnet';
+include VIEWS_PATH . '/admin/components/feature-intro.php';
+?>
+
 <div class="flex items-center justify-between mb-6">
     <div>
         <h2 class="text-2xl font-bold text-gray-900">Lead Magnets</h2>

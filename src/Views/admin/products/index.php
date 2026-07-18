@@ -5,6 +5,30 @@ $tenant = currentTenant();
 ob_start();
 ?>
 
+<?php
+$featureKey = 'products';
+$title = 'Sell digital or physical products';
+$subtitle = 'Build a catalog, take orders at checkout, and stack order bumps or upsells to increase average order value.';
+$steps = [
+    'Create a product with price, description, and digital file if needed',
+    'Connect Stripe under Settings so card payments work',
+    'Share the product page or add payment links for one-click checkout',
+];
+$ctaHref = '/admin/produkter/opret';
+$ctaLabel = 'Add your first product';
+include VIEWS_PATH . '/admin/components/feature-intro.php';
+
+// Payment readiness banner
+$tenantSettings = currentTenant() ?: [];
+if (empty($tenantSettings['stripe_secret_key']) && empty($tenantSettings['stripe_publishable_key'])) {
+    $type = 'warning';
+    $message = 'Stripe is not configured yet. Customers can only pay by invoice until you add Stripe keys.';
+    $ctaHref = '/admin/indstillinger';
+    $ctaLabel = 'Open Settings';
+    include VIEWS_PATH . '/admin/components/setup-banner.php';
+}
+?>
+
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
     <div>
         <h2 class="text-2xl font-bold text-gray-900">Products</h2>

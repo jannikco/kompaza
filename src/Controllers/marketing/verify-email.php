@@ -51,11 +51,30 @@ Auth::login($user);
 // Audit
 logAudit('email_verified', 'user', $user['id']);
 
-// Redirect to tenant admin panel
+// Redirect to tenant admin panel with welcome onboarding
 $tenant = Tenant::find($user['tenant_id']);
 if ($tenant) {
+    // Send welcome email (best-effort)
+    try {
+        $loginUrl = 'https://' . $tenant['slug'] . '.' . PLATFORM_DOMAIN . '/admin?welcome=1';
+        $userName = $user['name'] ?? '';
+        $companyName = $tenant['company_name'] ?? $tenant['name'] ?? '';
+        $subdomain = $tenant['slug'] . '.' . PLATFORM_DOMAIN;
+        ob_start();
+        include VIEWS_PATH . '/emails/welcome-tenant.php';
+        $html = ob_get_clean();
+        $brevo = new \App\Services\BrevoService();
+        if (method_exists($brevo, 'sendTransactionalEmail')) {
+            $brevo->sendTransactionalEmail($user['email'], 'Welcome to Kompaza — let\'s get you set up', $html);
+        } elseif (method_exists($brevo, 'send')) {
+            $brevo->send($user['email'], 'Welcome to Kompaza — let\'s get you set up', $html);
+        }
+    } catch (\Exception $e) {
+        error_log('Welcome email failed: ' . $e->getMessage());
+    }
+
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $redirectUrl = $scheme . '://' . $tenant['slug'] . '.' . PLATFORM_DOMAIN . '/admin';
+    $redirectUrl = $scheme . '://' . $tenant['slug'] . '.' . PLATFORM_DOMAIN . '/admin?welcome=1';
     redirect($redirectUrl);
 } else {
     flashMessage('success', 'Email verified successfully! You can now log in.');

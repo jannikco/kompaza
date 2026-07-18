@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\PasswordReset;
+use App\Models\User;
 use App\Database\Database;
 
 $tenant = currentTenant();
@@ -43,11 +44,13 @@ if ($password !== $passwordConfirm) {
     return;
 }
 
-// Update password
-$db = Database::getConnection();
-$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-$stmt = $db->prepare("UPDATE users SET password = ? WHERE email = ? AND tenant_id = ?");
-$stmt->execute([$hashedPassword, $reset['email'], $tenant['id']]);
+// Update password (column is password_hash, not password)
+$user = User::findByEmail($reset['email'], $tenant['id']);
+if (!$user) {
+    flashMessage('error', 'Account not found. Please request a new reset link.');
+    redirect('/forgot-password');
+}
+User::updatePassword((int)$user['id'], $password);
 
 // Delete token
 PasswordReset::delete($token);

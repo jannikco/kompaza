@@ -10,6 +10,11 @@ ob_start();
     <p class="text-sm text-gray-500 mt-1">Configure your site branding, contact information, integrations, and advanced options.</p>
 </div>
 
+<?php
+// Prefer $settings when provided; fall back to $tenant (all branding lives on tenant row).
+$settings = $settings ?? $tenant ?? [];
+$tenant = $tenant ?? $settings;
+?>
 <form method="POST" action="/admin/indstillinger/opdater" enctype="multipart/form-data" class="space-y-8">
     <?= csrfField() ?>
 
@@ -73,9 +78,12 @@ ob_start();
             </div>
             <div>
                 <label for="logo" class="block text-sm font-medium text-gray-700 mb-2">Logo</label>
-                <?php if (!empty($settings['logo'])): ?>
+                <?php
+                $currentLogo = $settings['logo_url'] ?? $settings['logo_path'] ?? $settings['logo'] ?? '';
+                if (!empty($currentLogo)):
+                ?>
                     <div class="mb-3 flex items-center space-x-3">
-                        <img src="<?= h($settings['logo']) ?>" alt="Current logo" class="h-10 w-auto rounded border border-gray-300">
+                        <img src="<?= h(imageUrl($currentLogo) ?: $currentLogo) ?>" alt="Current logo" class="h-10 w-auto rounded border border-gray-300">
                         <span class="text-sm text-gray-500">Current logo</span>
                     </div>
                 <?php endif; ?>
@@ -123,21 +131,21 @@ ob_start();
             <div>
                 <label for="contact_email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
                 <input type="email" name="contact_email" id="contact_email"
-                    value="<?= h($settings['contact_email'] ?? '') ?>"
+                    value="<?= h($settings['email'] ?? $settings['contact_email'] ?? '') ?>"
                     class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="info@example.com">
             </div>
             <div>
                 <label for="contact_phone" class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
                 <input type="text" name="contact_phone" id="contact_phone"
-                    value="<?= h($settings['contact_phone'] ?? '') ?>"
+                    value="<?= h($settings['phone'] ?? $settings['contact_phone'] ?? '') ?>"
                     class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="+45 12 34 56 78">
             </div>
             <div>
                 <label for="contact_address" class="block text-sm font-medium text-gray-700 mb-2">Address</label>
                 <input type="text" name="contact_address" id="contact_address"
-                    value="<?= h($settings['contact_address'] ?? '') ?>"
+                    value="<?= h($settings['address'] ?? $settings['contact_address'] ?? '') ?>"
                     class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="Street, City, Postal Code">
             </div>
