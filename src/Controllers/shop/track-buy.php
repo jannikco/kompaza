@@ -46,7 +46,7 @@ if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $email = '';
 }
 
-$currency = currentCurrency();
+$currency = visitorCurrency();
 $sku = $planMode ? 'plan' : 'full';
 $amountMajor = jhTrackAmount($product, $sku, $currency);
 // Fallback to course DKK if catalog missing

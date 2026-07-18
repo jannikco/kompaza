@@ -35,7 +35,7 @@ if (!$ebook || $ebook['status'] !== 'published') {
 
 $email = trim($_POST['email'] ?? $_POST['customer_email'] ?? '');
 $name = trim($_POST['name'] ?? $_POST['customer_name'] ?? 'Reader');
-$currency = currentCurrency();
+$currency = visitorCurrency();
 
 // Multi-currency: re-price from tier if we stored DKK as base
 // For imported books price_dkk is DKK; convert using catalog ratios when currency != dkk

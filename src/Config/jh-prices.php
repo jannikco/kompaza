@@ -39,8 +39,9 @@ function jhLibraryTier(): array {
 
 /**
  * Resolve visitor currency: cookie > CF country > default DKK for DK, EUR else.
+ * Named visitorCurrency to avoid clashing with other apps' helpers.
  */
-function currentCurrency(): string {
+function visitorCurrency(): string {
     $allowed = ['dkk', 'eur', 'gbp', 'usd'];
     $cookie = strtolower($_COOKIE['kz_cur'] ?? $_COOKIE['cur_pref'] ?? '');
     if (in_array($cookie, $allowed, true)) {
@@ -60,8 +61,14 @@ function currentCurrency(): string {
     return 'dkk';
 }
 
+if (!function_exists('currentCurrency')) {
+    function currentCurrency(): string {
+        return visitorCurrency();
+    }
+}
+
 function jhTrackAmount(string $slug, string $sku = 'full', ?string $currency = null): float {
-    $currency = $currency ?: currentCurrency();
+    $currency = $currency ?: visitorCurrency();
     $tracks = jhTrackPrices();
     if (!isset($tracks[$slug])) return 0;
     $sku = $sku === 'buy-plan' ? 'plan' : $sku;

@@ -41,7 +41,6 @@ if (!$tid) die("tenant missing\n");
 echo "Tenant $tid\n";
 
 $jhRoot = '/var/www/html/jannikhansen.com';
-require_once $jhRoot . '/vendor/autoload.php';
 
 // ---- everything-bundle ----
 echo "--- everything-bundle ---\n";
