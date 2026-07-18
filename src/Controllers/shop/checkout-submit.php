@@ -6,6 +6,7 @@ use App\Models\OrderItem;
 use App\Models\OrderBump;
 use App\Models\UpsellOffer;
 use App\Models\AbandonedCart;
+use App\Models\DiscountCode;
 use App\Services\StripeService;
 use App\Services\EmailServiceFactory;
 
@@ -67,9 +68,44 @@ if (!empty($errors)) {
     $returnError(implode(' ', $errors));
 }
 
-// Load and validate cart
-$cart = $_SESSION['cart'] ?? [];
-if (empty($cart)) {
+// Build cart from posted items (localStorage UI) or session fallback.
+// Always re-price from the database — never trust client prices.
+$cartQtyByProduct = [];
+$postedItems = $input['items'] ?? null;
+if (is_array($postedItems) && !empty($postedItems)) {
+    foreach ($postedItems as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+        $productId = (int)($item['id'] ?? $item['product_id'] ?? 0);
+        $quantity = max(1, min(99, (int)($item['qty'] ?? $item['quantity'] ?? 1)));
+        if ($productId > 0) {
+            $cartQtyByProduct[$productId] = ($cartQtyByProduct[$productId] ?? 0) + $quantity;
+        }
+    }
+} else {
+    // Legacy session cart: either [productId => ['quantity' => n]] or list of items
+    $sessionCart = $_SESSION['cart'] ?? [];
+    if (is_array($sessionCart)) {
+        foreach ($sessionCart as $key => $item) {
+            if (is_array($item) && isset($item['product_id'])) {
+                $productId = (int)$item['product_id'];
+                $quantity = max(1, min(99, (int)($item['quantity'] ?? $item['qty'] ?? 1)));
+            } elseif (is_array($item)) {
+                $productId = (int)$key;
+                $quantity = max(1, min(99, (int)($item['quantity'] ?? $item['qty'] ?? 1)));
+            } else {
+                $productId = (int)$key;
+                $quantity = max(1, min(99, (int)$item));
+            }
+            if ($productId > 0) {
+                $cartQtyByProduct[$productId] = ($cartQtyByProduct[$productId] ?? 0) + $quantity;
+            }
+        }
+    }
+}
+
+if (empty($cartQtyByProduct)) {
     $returnError('Your cart is empty.');
 }
 
@@ -77,10 +113,9 @@ $cartItems = [];
 $cartProductIds = [];
 $subtotal = 0;
 
-foreach ($cart as $productId => $item) {
+foreach ($cartQtyByProduct as $productId => $quantity) {
     $product = Product::find($productId, $tenantId);
     if ($product && $product['status'] === 'published') {
-        $quantity = (int)($item['quantity'] ?? 1);
         $lineTotal = (float)$product['price_dkk'] * $quantity;
         $cartItems[] = [
             'product' => $product,
@@ -122,12 +157,21 @@ if (!empty($selectedBumpIds)) {
 
 $subtotal += $bumpsTotal;
 
-// Apply discount if provided
-$discountCode = $input['discount_code'] ?? null;
+// Apply discount if provided (server-side validation; never trust client discount amount)
+$discountCodeInput = trim((string)($input['discount_code'] ?? ''));
 $discountAmount = 0;
-// TODO: validate discount code and calculate discount amount here if needed
+$appliedDiscount = null;
+if ($discountCodeInput !== '') {
+    $validation = DiscountCode::validate($discountCodeInput, $tenantId, $subtotal);
+    if (!empty($validation['valid'])) {
+        $appliedDiscount = $validation['discount'];
+        $discountAmount = (float)$validation['discount_amount'];
+    } else {
+        $returnError($validation['error'] ?? 'Invalid discount code.');
+    }
+}
 
-$taxRate = 0.25; // 25% Danish VAT
+$taxRate = ((float)($tenant['tax_rate'] ?? 25)) / 100;
 $discountedSubtotal = max(0, $subtotal - $discountAmount);
 $tax = round($discountedSubtotal * $taxRate, 2);
 $total = round($discountedSubtotal + $tax, 2);
@@ -261,6 +305,16 @@ if ($paymentPlanType === 'installment' && $installmentCount) {
 }
 
 $orderId = Order::create($orderData);
+
+// Record discount usage against the order
+if ($appliedDiscount && $discountAmount > 0) {
+    DiscountCode::recordUse(
+        (int)$appliedDiscount['id'],
+        (int)$orderId,
+        $customerId,
+        $discountAmount
+    );
+}
 
 // Create order items from cart
 foreach ($cartItems as $cartItem) {

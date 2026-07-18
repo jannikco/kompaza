@@ -1,8 +1,9 @@
 <?php
 
+// Log errors always; only display them when APP_DEBUG is on (set in config.php).
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
 ini_set('log_errors', 1);
 ini_set('error_log', __DIR__ . '/../storage/logs/error.log');
 
@@ -40,6 +41,8 @@ if ($routingMode === 'marketing') {
             '/pricing' => 'pricing',
             '/faq' => 'faq',
             '/about' => 'about',
+            '/privacy' => 'privacy',
+            '/terms' => 'terms',
             '/register' => 'register',
             '/login' => 'login',
             '/verify-pending' => 'verify-pending',
@@ -150,8 +153,9 @@ if ($routingMode === 'superadmin') {
 // TENANT ROUTES ({slug}.kompaza.com or custom domain)
 // ============================================
 if ($routingMode === 'tenant') {
-    // Ensure tenant is valid
+    // Ensure tenant is valid (status + trial gate for public storefront)
     $tenant = TenantResolver::requireTenant();
+    \App\Middleware\TenantMiddleware::handle();
 
     // --- Static routes ---
     $publicRoutes = [
@@ -371,6 +375,7 @@ if ($routingMode === 'tenant') {
             '/admin/homepage/update' => 'admin/homepage/update',
             '/admin/homepage/ai-generate' => 'admin/homepage/ai-generate',
             '/admin/indstillinger/opdater' => 'admin/settings/update',
+            '/admin/onboarding/dismiss' => 'admin/onboarding/dismiss',
             '/admin/brugere/gem' => 'admin/users/store',
             '/admin/brugere/opdater' => 'admin/users/update',
             '/admin/brugere/slet' => 'admin/users/delete',

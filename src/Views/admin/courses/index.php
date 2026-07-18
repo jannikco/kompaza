@@ -5,6 +5,20 @@ $tenant = currentTenant();
 ob_start();
 ?>
 
+<?php
+$featureKey = 'courses';
+$title = 'Build courses your students love';
+$subtitle = 'Structure modules and lessons, sell free or paid access, track progress, and issue certificates.';
+$steps = [
+    'Create a course and set pricing (free, one-time, or subscription)',
+    'Add modules and lessons with video or text content',
+    'Publish and share the course page with your audience',
+];
+$ctaHref = '/admin/kurser/opret';
+$ctaLabel = 'Create your first course';
+include VIEWS_PATH . '/admin/components/feature-intro.php';
+?>
+
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
     <div>
         <h2 class="text-2xl font-bold text-gray-900">Courses</h2>

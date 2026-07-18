@@ -22,8 +22,8 @@ if (empty($email) || empty($password)) {
 
 // Rate limit: 10 attempts per 15 minutes per IP
 $ip = getClientIp();
-if (!checkRateLimit($ip, 'customer_login', 100, 900)) {
-    flashMessage('error', 'For mange loginforsøg. Prøv igen om lidt.');
+if (!checkRateLimit($ip, 'customer_login', 10, 900)) {
+    flashMessage('error', 'Too many login attempts. Please try again in a few minutes.');
     redirect('/login');
 }
 

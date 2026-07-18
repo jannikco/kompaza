@@ -83,16 +83,16 @@ ob_start();
                                     <?php else: ?>
                                         <div x-show="billingInterval === 'monthly'">
                                             <div class="flex items-baseline">
-                                                <span class="text-4xl font-extrabold text-gray-900"><?= formatMoney((int)$plan['price_monthly'] / 100, $currency) ?></span>
+                                                <span class="text-4xl font-extrabold text-gray-900"><?= formatMoney($plan['price_monthly'], $currency) ?></span>
                                                 <span class="text-sm text-gray-500 ml-2">/month</span>
                                             </div>
                                         </div>
                                         <div x-show="billingInterval === 'yearly'" x-cloak>
                                             <div class="flex items-baseline">
-                                                <span class="text-4xl font-extrabold text-gray-900"><?= formatMoney((int)$plan['price_yearly'] / 100 / 12, $currency) ?></span>
+                                                <span class="text-4xl font-extrabold text-gray-900"><?= formatMoney((float)$plan['price_yearly'] / 12, $currency) ?></span>
                                                 <span class="text-sm text-gray-500 ml-2">/month</span>
                                             </div>
-                                            <p class="text-sm text-gray-500 mt-1">Billed <?= formatMoney((int)$plan['price_yearly'] / 100, $currency) ?> per year</p>
+                                            <p class="text-sm text-gray-500 mt-1">Billed <?= formatMoney($plan['price_yearly'], $currency) ?> per year</p>
                                         </div>
                                     <?php endif; ?>
                                 </div>

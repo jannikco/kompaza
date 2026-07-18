@@ -165,8 +165,8 @@
                 <div>
                     <h3 class="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Legal</h3>
                     <ul class="space-y-3 text-sm">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Terms of Service</a></li>
+                        <li><a href="/privacy" class="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
+                        <li><a href="/terms" class="text-gray-400 hover:text-white transition">Terms of Service</a></li>
                     </ul>
                 </div>
             </div>

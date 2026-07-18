@@ -5,40 +5,58 @@ use App\Models\Tenant;
 use App\Services\StripeService;
 
 $admin = Auth::admin();
-$tenantId = $admin['tenant_id'] ?? null;
+$tenantId = $admin['tenant_id'] ?? currentTenantId();
 
 if (!$tenantId) {
-    flashMessage('error', 'Ingen tenant fundet.');
+    flashMessage('error', 'No tenant found.');
     redirect('/admin/stripe-connect');
 }
 
 $tenant = Tenant::find($tenantId);
 
 try {
-    // Create Express account if not exists
-    $accountId = $tenant['stripe_connect_id'] ?? null;
-    if (!$accountId) {
-        $account = StripeService::createConnectAccount($admin['email'], [
-            'tenant_id' => $tenantId,
-            'tenant_slug' => $tenant['slug'],
-        ]);
-        $accountId = $account->id;
-        Tenant::updateStripeConnect($tenantId, [
-            'stripe_connect_id' => $accountId,
-        ]);
+    // Connect Express uses platform Stripe keys
+    $stripe = new StripeService(defined('STRIPE_SECRET_KEY') ? STRIPE_SECRET_KEY : null);
+    if (!$stripe->isConfigured()) {
+        flashMessage('error', 'Stripe Connect is not configured. Contact support.');
+        redirect('/admin/stripe-connect');
     }
 
-    // Create onboarding link
-    $accountLink = StripeService::createAccountLink(
+    $accountId = $tenant['stripe_connect_id'] ?? null;
+    if (!$accountId) {
+        $account = $stripe->createConnectAccount($admin['email'], [
+            'tenant_id' => $tenantId,
+            'tenant_slug' => $tenant['slug'] ?? '',
+        ]);
+        $accountId = $account['id'] ?? null;
+        if (!$accountId) {
+            throw new \Exception('Stripe did not return a Connect account id.');
+        }
+        if (method_exists(Tenant::class, 'updateStripeConnect')) {
+            Tenant::updateStripeConnect($tenantId, [
+                'stripe_connect_id' => $accountId,
+            ]);
+        } else {
+            Tenant::update($tenantId, ['stripe_connect_id' => $accountId]);
+        }
+    }
+
+    $baseUrl = 'https://' . ($tenant['slug'] ?? '') . '.' . PLATFORM_DOMAIN;
+    $accountLink = $stripe->createAccountLink(
         $accountId,
-        APP_URL . '/admin/stripe-connect/forbind',
-        APP_URL . '/admin/stripe-connect/callback'
+        $baseUrl . '/admin/stripe-connect/forbind',
+        $baseUrl . '/admin/stripe-connect/callback'
     );
 
-    header('Location: ' . $accountLink->url);
+    $url = $accountLink['url'] ?? null;
+    if (!$url) {
+        throw new \Exception('Stripe Account Link missing URL.');
+    }
+
+    header('Location: ' . $url);
     exit;
 } catch (\Exception $e) {
-    error_log("Stripe Connect error: " . $e->getMessage());
-    flashMessage('error', 'Kunne ikke oprette forbindelse til Stripe.');
+    error_log('Stripe Connect error: ' . $e->getMessage());
+    flashMessage('error', 'Could not connect to Stripe. Please try again.');
     redirect('/admin/stripe-connect');
 }

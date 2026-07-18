@@ -7,7 +7,7 @@
             <div class="hidden lg:block">
                 <h1 class="text-3xl font-bold text-gray-900 mb-4">Start your 7-day free trial</h1>
                 <p class="text-gray-600 text-lg mb-10 leading-relaxed">
-                    Get instant access to all of Kompaza's features. Credit card required. Cancel anytime.
+                    Get instant access to Kompaza. Start with a 7-day free trial — no credit card required.
                 </p>
 
                 <div class="space-y-6">
@@ -67,7 +67,7 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 lg:p-10">
                     <div class="lg:hidden mb-8">
                         <h1 class="text-2xl font-bold text-gray-900 mb-2">Create your account</h1>
-                        <p class="text-gray-500 text-sm">7-day free trial. Credit card required.</p>
+                        <p class="text-gray-500 text-sm">7-day free trial. No credit card required.</p>
                     </div>
                     <h2 class="hidden lg:block text-xl font-bold text-gray-900 mb-6">Create your account</h2>
 
@@ -161,8 +161,8 @@
 
                         <p class="text-xs text-gray-400 text-center leading-relaxed">
                             By creating an account, you agree to our
-                            <a href="#" class="text-indigo-600 hover:text-indigo-700">Terms of Service</a> and
-                            <a href="#" class="text-indigo-600 hover:text-indigo-700">Privacy Policy</a>.
+                            <a href="/terms" class="text-indigo-600 hover:text-indigo-700">Terms of Service</a> and
+                            <a href="/privacy" class="text-indigo-600 hover:text-indigo-700">Privacy Policy</a>.
                         </p>
                     </form>
 

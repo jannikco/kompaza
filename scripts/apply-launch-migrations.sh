@@ -27,6 +27,9 @@ MIGRATIONS=(
   database/migrations/026_prompt_library.sql
   database/migrations/027_community.sql
   database/migrations/028_live_sessions.sql
+  database/migrations/029_membership_events_email_sent.sql
+  database/migrations/030_platform_billing_tables.sql
+  database/migrations/031_onboarding_json.sql
 )
 
 echo "Applying launch migrations to database '$DB'..."

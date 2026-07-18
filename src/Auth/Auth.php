@@ -128,11 +128,28 @@ class Auth {
             http_response_code(403);
             die('Access denied');
         }
+        // Bind tenant admins to the current host tenant (superadmins may manage any tenant).
+        if (self::isTenantAdmin() && !self::isSuperAdmin()) {
+            $tenantId = function_exists('currentTenantId') ? currentTenantId() : null;
+            $userTenantId = self::$currentUser['tenant_id'] ?? null;
+            if ($tenantId && $userTenantId && (int)$userTenantId !== (int)$tenantId) {
+                http_response_code(403);
+                die('Access denied');
+            }
+        }
     }
 
     public static function requireCustomer() {
         self::requireAuth();
         if (!self::isCustomer()) {
+            setcookie('kz_redirect', $_SERVER['REQUEST_URI'], time() + 300, '/', '', true, true);
+            redirect('/login');
+        }
+        // Customers may only access their own tenant host.
+        $tenantId = function_exists('currentTenantId') ? currentTenantId() : null;
+        $userTenantId = self::$currentUser['tenant_id'] ?? null;
+        if ($tenantId && $userTenantId && (int)$userTenantId !== (int)$tenantId) {
+            self::logout();
             setcookie('kz_redirect', $_SERVER['REQUEST_URI'], time() + 300, '/', '', true, true);
             redirect('/login');
         }
