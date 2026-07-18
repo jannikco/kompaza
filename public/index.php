@@ -601,6 +601,25 @@ if ($routingMode === 'tenant') {
             $controller = 'shop/course-buy';
             $dynamicParams['slug'] = $matches[1];
         }
+        // JH-style track sales buy (guest checkout → Stripe)
+        elseif ($method === 'POST' && preg_match('#^/(office-os|creator-os|founder-os)/(buy|buy-plan)$#', $request, $matches)) {
+            $controller = 'shop/track-buy';
+            $dynamicParams['product'] = $matches[1];
+        }
+        // Library book buy (guest checkout → Stripe or free download)
+        elseif ($method === 'POST' && preg_match('#^/(bibliotek|library)/([a-z0-9\-]+)/buy$#', $request, $matches)) {
+            $controller = 'shop/library-buy';
+            $dynamicParams['slug'] = $matches[2];
+        }
+        // Also accept /ebog/{slug}/buy
+        elseif ($method === 'POST' && preg_match('#^/ebog/([a-z0-9\-]+)/buy$#', $request, $matches)) {
+            $controller = 'shop/library-buy';
+            $dynamicParams['slug'] = $matches[1];
+        }
+        // Stripe Checkout success for track/library
+        elseif ($method === 'GET' && $request === '/purchase/success') {
+            $controller = 'shop/purchase-success';
+        }
         // Course: subscribe
         elseif ($method === 'POST' && preg_match('#^/course/([a-z0-9\-]+)/subscribe$#', $request, $matches)) {
             $controller = 'shop/course-subscribe';

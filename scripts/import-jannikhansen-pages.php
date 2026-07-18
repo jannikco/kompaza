@@ -149,8 +149,15 @@ function transformJhHtml(string $html, int $tenantId): string
     }
 
     // Point commerce-ish CTAs toward native Kompaza routes where useful
-    $html = str_replace('href="/courses"', 'href="/kurser"', $html);
-    $html = str_replace('href="/modules"', 'href="/kurser"', $html);
+    $html = str_replace('href="/courses"', 'href="/courses"', $html);
+    $html = str_replace('href="/modules"', 'href="/courses"', $html);
+
+    // Library book detail links → native ebook pages
+    $html = preg_replace('#href="(/bibliotek|/library)/([a-z0-9\-]+)"#', 'href="/ebog/$2"', $html);
+    $html = preg_replace("#href='(/bibliotek|/library)/([a-z0-9\-]+)'#", "href='/ebog/$2'", $html);
+
+    // Free book paths → lead magnets when available
+    $html = preg_replace('#href="(/gratis|/free)/([a-z0-9\-]+)"#', 'href="/lp/$2"', $html);
 
     // Strip tracking beacons that will 404
     $html = preg_replace('#<img[^>]+/email/o\.gif[^>]*>#i', '', $html);

@@ -240,6 +240,52 @@ class StripeService {
     }
 
     /**
+     * Create a one-time Stripe Checkout Session (platform or tenant secret key).
+     * Used for course/ebook purchases without Connect destination charges.
+     *
+     * @param string      $name         Line item name
+     * @param int         $amountCents  Amount in smallest currency unit
+     * @param string      $currency     ISO currency
+     * @param string      $successUrl   Success redirect (may include {CHECKOUT_SESSION_ID})
+     * @param string      $cancelUrl    Cancel redirect
+     * @param array       $metadata     Session metadata
+     * @param string|null $customerEmail Prefill email
+     */
+    public function createOneTimeCheckoutSession(
+        string $name,
+        int $amountCents,
+        string $currency,
+        string $successUrl,
+        string $cancelUrl,
+        array $metadata = [],
+        ?string $customerEmail = null
+    ): array {
+        $params = [
+            'mode' => 'payment',
+            'line_items[0][price_data][currency]' => strtolower($currency),
+            'line_items[0][price_data][unit_amount]' => $amountCents,
+            'line_items[0][price_data][product_data][name]' => $name,
+            'line_items[0][quantity]' => 1,
+            'success_url' => $successUrl,
+            'cancel_url' => $cancelUrl,
+        ];
+        if ($customerEmail) {
+            $params['customer_email'] = $customerEmail;
+        }
+        foreach ($metadata as $key => $value) {
+            $params["metadata[{$key}]"] = $value;
+        }
+        return $this->makeRequest('POST', '/checkout/sessions', $params);
+    }
+
+    /**
+     * Retrieve a Checkout Session by ID.
+     */
+    public function retrieveCheckoutSession(string $sessionId): array {
+        return $this->makeRequest('GET', '/checkout/sessions/' . urlencode($sessionId));
+    }
+
+    /**
      * Create a Stripe Checkout Session for membership subscription.
      */
     public function createMembershipCheckoutSession(
