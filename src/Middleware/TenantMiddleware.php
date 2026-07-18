@@ -28,16 +28,30 @@ class TenantMiddleware {
             die('This account has been cancelled.');
         }
 
-        // Check trial expiration
-        if ($tenant['subscription_status'] === 'trialing' && $tenant['trial_ends_at']) {
-            if (strtotime($tenant['trial_ends_at']) < time()) {
-                // Trial expired — allow admin access but block public site
-                $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-                if (!str_starts_with($request, '/admin') && $request !== '/login') {
-                    http_response_code(402);
-                    die('This site\'s trial has expired. The site owner needs to upgrade their plan.');
-                }
+        // Trial expiration: only lock the public storefront when the tenant is still
+        // on trial (status=trial). Manually/paid-activated tenants (status=active)
+        // must not be blocked by a stale subscription_status=trialing flag.
+        $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/';
+        $isAdminOrAuth = str_starts_with($request, '/admin')
+            || in_array($request, ['/login', '/login/submit', '/registrer', '/forgot-password', '/reset-password'], true)
+            || str_starts_with($request, '/api/');
+
+        if (($tenant['status'] ?? '') === 'trial' && !empty($tenant['trial_ends_at'])) {
+            if (strtotime($tenant['trial_ends_at']) < time() && !$isAdminOrAuth) {
+                http_response_code(402);
+                die('This site\'s trial has expired. The site owner needs to upgrade their plan.');
             }
+        }
+
+        // Past-due platform subscription: keep admin open so they can update billing;
+        // block public storefront until resolved.
+        if (($tenant['subscription_status'] ?? '') === 'past_due' && !$isAdminOrAuth) {
+            http_response_code(402);
+            if (defined('VIEWS_PATH') && file_exists(VIEWS_PATH . '/errors/subscription-lapsed.php')) {
+                view('errors/subscription-lapsed', ['tenant' => $tenant]);
+                exit;
+            }
+            die('This site\'s subscription is past due. The site owner needs to update billing.');
         }
 
         return $tenant;
