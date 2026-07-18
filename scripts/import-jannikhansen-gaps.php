@@ -126,50 +126,60 @@ foreach ($sequences as $key => $steps) {
     echo "  $name — " . count($steps) . " steps (id=$seqId)\n";
 }
 
-// ---- Map module videos onto first lesson of each course module ----
-echo "--- Map S3 videos onto lessons ---\n";
-$tracks = ['office-os', 'creator-os', 'founder-os'];
+// ---- Import legacy video modules (OS tracks are text; videos live on legacy courses) ----
+echo "--- Import legacy S3 video courses ---\n";
+$mods = $jhPdo->query("SELECT id,slug,title,description,s3_object_key,duration_seconds FROM modules WHERE s3_object_key IS NOT NULL AND s3_object_key!='' ORDER BY id")->fetchAll();
+$groups = [];
+foreach ($mods as $m) {
+    if (preg_match('#legacy/videos/course_(\d+)/#', $m['s3_object_key'], $mm)) {
+        $g = 'course_' . $mm[1];
+    } else {
+        $g = 'other';
+    }
+    $groups[$g][] = $m;
+}
+$mapNames = [
+    'course_1' => ['slug' => 'eu-ai-act-video', 'title' => 'EU AI Act (video)'],
+    'course_6' => ['slug' => 'claude-cowork-video', 'title' => 'Claude Cowork Masterclass (video)'],
+    'course_26' => ['slug' => 'claude-i-office-video', 'title' => 'Claude i Office (video)'],
+    'other' => ['slug' => 'extra-videos', 'title' => 'Additional Videos'],
+];
 $videoMapped = 0;
-foreach ($tracks as $slug) {
-    $course = $pdo->prepare("SELECT id FROM courses WHERE tenant_id=? AND slug=?");
-    $course->execute([$tid, $slug]);
-    $courseId = $course->fetchColumn();
-    if (!$courseId) continue;
-
-    // JH modules for product ordered
-    $mods = $jhPdo->prepare("
-        SELECT m.slug, m.title, m.s3_object_key, m.duration_seconds
-        FROM product_modules pm
-        JOIN modules m ON m.slug = pm.module_slug
-        WHERE pm.product_slug = ? AND m.is_active = 1
-        ORDER BY m.position ASC, m.id ASC
-    ");
-    $mods->execute([$slug]);
-    $jhMods = $mods->fetchAll();
-
-    $kzMods = $pdo->prepare("SELECT id, title FROM course_modules WHERE course_id=? ORDER BY sort_order ASC, id ASC");
-    $kzMods->execute([$courseId]);
-    $kzModList = $kzMods->fetchAll();
-
-    $n = min(count($jhMods), count($kzModList));
-    for ($i = 0; $i < $n; $i++) {
-        $s3 = $jhMods[$i]['s3_object_key'] ?? null;
-        if (!$s3) continue;
-        // first lesson of module
-        $les = $pdo->prepare("SELECT id FROM course_lessons WHERE module_id=? ORDER BY sort_order ASC, id ASC LIMIT 1");
-        $les->execute([$kzModList[$i]['id']]);
-        $lessonId = $les->fetchColumn();
-        if (!$lessonId) continue;
-        $pdo->prepare("
-            UPDATE course_lessons
-            SET video_s3_key=?, video_status='ready', lesson_type=IF(text_content IS NOT NULL AND text_content!='', 'video_text', 'video'),
-                video_duration_seconds=COALESCE(?, video_duration_seconds)
-            WHERE id=?
-        ")->execute([$s3, $jhMods[$i]['duration_seconds'] ?: null, $lessonId]);
+foreach ($groups as $g => $list) {
+    $meta = $mapNames[$g] ?? ['slug' => $g, 'title' => $g];
+    $ex = $pdo->prepare("SELECT id FROM courses WHERE tenant_id=? AND slug=?");
+    $ex->execute([$tid, $meta['slug']]);
+    $cid = $ex->fetchColumn();
+    if ($cid) {
+        $mids = $pdo->prepare("SELECT id FROM course_modules WHERE course_id=?");
+        $mids->execute([$cid]);
+        foreach ($mids->fetchAll(PDO::FETCH_COLUMN) as $mid) {
+            $pdo->prepare("DELETE FROM course_lessons WHERE module_id=?")->execute([$mid]);
+        }
+        $pdo->prepare("DELETE FROM course_modules WHERE course_id=?")->execute([$cid]);
+    } else {
+        $pdo->prepare("INSERT INTO courses (tenant_id,slug,title,subtitle,description,pricing_type,price_dkk,status,instructor_name,created_at) VALUES (?,?,?,?,?,\"free\",0,\"published\",\"Jannik Hansen\",NOW())")
+            ->execute([$tid, $meta['slug'], $meta['title'], 'Video lessons from jannikhansen', 'Video curriculum']);
+        $cid = (int)$pdo->lastInsertId();
+    }
+    $pdo->prepare("INSERT INTO course_modules (course_id,tenant_id,title,description,sort_order) VALUES (?,?,?,?,0)")
+        ->execute([$cid, $tid, $meta['title'], 'Imported video lessons']);
+    $moduleId = (int)$pdo->lastInsertId();
+    $i = 0;
+    foreach ($list as $m) {
+        $pdo->prepare("INSERT INTO course_lessons (module_id,course_id,tenant_id,title,lesson_type,text_content,video_s3_key,video_status,video_duration_seconds,sort_order,is_preview) VALUES (?,?,?,?,\"video\",?,?,\"ready\",?,?,?)")
+            ->execute([
+                $moduleId, $cid, $tid, $m['title'],
+                $m['description'] ? '<p>' . nl2br(htmlspecialchars($m['description'])) . '</p>' : null,
+                $m['s3_object_key'], $m['duration_seconds'], $i, $i === 0 ? 1 : 0,
+            ]);
+        $i++;
         $videoMapped++;
     }
+    $pdo->prepare("UPDATE courses SET total_lessons=? WHERE id=?")->execute([$i, $cid]);
+    echo "  {$meta['slug']}: $i video lessons\n";
 }
-echo "Mapped videos onto $videoMapped lessons\n";
+echo "Mapped $videoMapped video lessons\n";
 
 // ---- EN locale sticky helper page note ----
 echo "--- EN route redirects ---\n";
