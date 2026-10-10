@@ -22,7 +22,8 @@ define('DB_DATABASE', $_ENV['DB_DATABASE'] ?? 'kompaza');
 define('DB_USERNAME', $_ENV['DB_USERNAME'] ?? 'root');
 define('DB_PASSWORD', $_ENV['DB_PASSWORD'] ?? '');
 
-// Email configuration (Brevo - platform default)
+// Email configuration (SMTP2GO is the platform default; Brevo kept for tenants/back-compat)
+define('SMTP2GO_API_KEY', $_ENV['SMTP2GO_API_KEY'] ?? '');
 define('BREVO_API_KEY', $_ENV['BREVO_API_KEY'] ?? '');
 define('BREVO_LIST_ID', $_ENV['BREVO_LIST_ID'] ?? '');
 define('MAIL_FROM_ADDRESS', $_ENV['MAIL_FROM_ADDRESS'] ?? 'info@kompaza.com');
@@ -38,6 +39,18 @@ define('APP_SECRET', $_ENV['APP_SECRET'] ?? 'change-me-in-production');
 // Cron authentication (required for /api/cron/* endpoints; empty = endpoints fail closed)
 define('CRON_SECRET', $_ENV['CRON_SECRET'] ?? '');
 
+// Outreach — LinkedIn agent platform.
+// OUTREACH_ENCRYPTION_KEY encrypts LinkedIn session cookies at rest (sodium secretbox).
+// It must be 32 random bytes, base64-encoded. Generate one with:
+//   php -r "echo base64_encode(sodium_crypto_secretbox_keygen()), PHP_EOL;"
+// When it is unset, storing a LinkedIn session fails closed rather than falling
+// back to plaintext. OUTREACH_ENCRYPTION_KEY_PREVIOUS lets an old key keep decrypting
+// existing rows during a rotation.
+define('OUTREACH_ENCRYPTION_KEY', $_ENV['OUTREACH_ENCRYPTION_KEY'] ?? '');
+define('OUTREACH_ENCRYPTION_KEY_PREVIOUS', $_ENV['OUTREACH_ENCRYPTION_KEY_PREVIOUS'] ?? '');
+// How long a synchronous relay call waits for the browser extension to answer.
+define('OUTREACH_RELAY_TIMEOUT_MS', (int)($_ENV['OUTREACH_RELAY_TIMEOUT_MS'] ?? 8000));
+
 // S3 / Linode Object Storage
 define('S3_ENDPOINT', $_ENV['S3_ENDPOINT'] ?? 'https://de-fra-1.linodeobjects.com');
 define('S3_REGION', $_ENV['S3_REGION'] ?? 'de-fra-1');
@@ -49,11 +62,18 @@ define('S3_PUBLIC_DOMAIN', $_ENV['S3_PUBLIC_DOMAIN'] ?? 'kompaza.de-fra-1.linode
 // Security configuration
 define('CSRF_TOKEN_NAME', $_ENV['CSRF_TOKEN_NAME'] ?? 'csrf_token');
 
-// OpenAI
+// OpenAI (legacy lead-magnet generation)
 define('OPENAI_API_KEY', $_ENV['OPENAI_API_KEY'] ?? '');
 
+// SpaceXAI / xAI — preferred for new LLM features (suggest_automation_settings).
+define('XAI_API_KEY', $_ENV['XAI_API_KEY'] ?? '');
+
 // Superadmin
-define('SUPERADMIN_EMAIL', $_ENV['SUPERADMIN_EMAIL'] ?? 'admin@kompaza.com');
+define('SUPERADMIN_EMAIL', $_ENV['SUPERADMIN_EMAIL'] ?? 'jh@profectify.com');
+
+// Auth / session cookies last 180 days (remember token + PHP session)
+define('SESSION_LIFETIME_DAYS', 180);
+define('SESSION_LIFETIME', SESSION_LIFETIME_DAYS * 24 * 60 * 60);
 
 // Paths
 define('BASE_PATH', dirname(__DIR__, 2));

@@ -9,10 +9,11 @@ foreach ($settings as $s) {
 }
 
 $integrationStatus = $integrationStatus ?? [];
-$platformEmailProvider = $platformEmailProvider ?? ($settingsMap['platform_email_service'] ?? 'brevo');
+$platformEmailProvider = $platformEmailProvider ?? ($settingsMap['platform_email_service'] ?? 'smtp2go');
 $lastUpdatedAt = $lastUpdatedAt ?? null;
 
 $providerLabels = [
+    'smtp2go' => 'SMTP2GO',
     'brevo'   => 'Brevo',
     'mailgun' => 'Mailgun',
     'smtp'    => 'Own SMTP Server',
@@ -155,21 +156,31 @@ ob_start();
         </div>
 
         <!-- Email Service Section -->
-        <div class="border-t border-gray-700 pt-6" x-data="{ emailService: '<?= h($settingsMap['platform_email_service'] ?? 'brevo') ?>' }">
+        <div class="border-t border-gray-700 pt-6" x-data="{ emailService: '<?= h($settingsMap['platform_email_service'] ?? 'smtp2go') ?>' }">
             <h3 class="text-md font-semibold text-white mb-4 flex items-center">
                 <svg class="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                 Platform Email Service
             </h3>
-            <p class="text-sm text-gray-400 mb-4">Configure the email provider used when tenants select "Kompaza" as their email service.</p>
+            <p class="text-sm text-gray-400 mb-4">Configure the email provider used when tenants select "Kompaza" as their email service. Prefer setting the API key in <code class="text-gray-300">.env</code> (<code class="text-gray-300">SMTP2GO_API_KEY</code>).</p>
 
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-1">Email Provider</label>
                     <select name="platform_email_service" x-model="emailService" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2">
+                        <option value="smtp2go">SMTP2GO</option>
                         <option value="brevo">Brevo</option>
                         <option value="mailgun">Mailgun</option>
                         <option value="smtp">Own SMTP Server</option>
                     </select>
+                </div>
+
+                <!-- SMTP2GO fields -->
+                <div x-show="emailService === 'smtp2go'" x-cloak class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">SMTP2GO API Key</label>
+                        <input type="password" name="platform_smtp2go_api_key" value="<?= h($settingsMap['platform_smtp2go_api_key'] ?? (defined('SMTP2GO_API_KEY') ? SMTP2GO_API_KEY : '')) ?>" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2" placeholder="api-...">
+                    </div>
+                    <p class="text-xs text-gray-500">Verify <strong class="text-gray-400">kompaza.com</strong> (or your from-address) as a sender domain in the SMTP2GO dashboard before sending.</p>
                 </div>
 
                 <!-- Brevo fields -->

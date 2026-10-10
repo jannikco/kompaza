@@ -1181,6 +1181,6 @@ INSERT INTO plans (name, slug, price_monthly_usd, price_yearly_usd, max_customer
 ('Growth', 'growth', 149.00, 1500.00, 500, 2000, 10, 100, 20, '{"blog": true, "ebooks": true, "lead_magnets": true, "orders": true, "connectpilot": true}', 2),
 ('Enterprise', 'enterprise', 299.00, 2988.00, NULL, NULL, NULL, NULL, NULL, '{"blog": true, "ebooks": true, "lead_magnets": true, "orders": true, "connectpilot": true, "custom_domain": true, "priority_support": true}', 3);
 
--- Create default superadmin (password: change-me-immediately)
+-- Create default superadmin (password: change-me-immediately → change on first login)
 INSERT INTO users (tenant_id, role, name, email, password_hash, status) VALUES
-(NULL, 'superadmin', 'Platform Admin', 'admin@kompaza.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'active');
+(NULL, 'superadmin', 'Platform Admin', 'jh@profectify.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'active');

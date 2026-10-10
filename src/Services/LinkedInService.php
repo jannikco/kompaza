@@ -2,21 +2,127 @@
 
 namespace App\Services;
 
+use App\Models\LinkedInAccount;
+use App\Services\LinkedIn\RecentPostsParser;
+
 class LinkedInService {
     private string $liAtCookie;
     private string $csrfToken;
+    private ?string $senderUrn;
+    private ?string $publicIdentifier = null;
+    private bool $delayEnabled = true;
+    private int $lastHttpStatus = 0;
+    private ?string $lastError = null;
     private string $userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
+    private string $acceptLanguage = 'en-US,en;q=0.9,da;q=0.8';
+    private string $liTrackJson = '{"clientVersion":"1.13.8857","mpVersion":"1.13.8857","osName":"web","timezoneOffset":1,"timezone":"Europe/Copenhagen","deviceFormFactor":"DESKTOP","mpName":"voyager-web","displayDensity":1,"displayWidth":1920,"displayHeight":1080}';
 
     /**
      * Constructor.
      *
-     * @param string $liAtCookie LinkedIn li_at session cookie value
-     * @param string $csrfToken  LinkedIn JSESSIONID / csrf token value
+     * @param string      $liAtCookie LinkedIn li_at session cookie value
+     * @param string      $csrfToken  LinkedIn JSESSIONID / csrf token value
+     * @param string|null $senderUrn  The CONNECTED account's own profile URN
+     *                                (linkedin_accounts.profile_urn). Required to send
+     *                                a message — see sendMessage().
      */
-    public function __construct(string $liAtCookie, string $csrfToken) {
+    public function __construct(string $liAtCookie, string $csrfToken, ?string $senderUrn = null) {
         $this->liAtCookie = $liAtCookie;
         // Strip surrounding quotes from JSESSIONID if present
         $this->csrfToken = trim($csrfToken, '"');
+        $this->senderUrn = $senderUrn ?: null;
+    }
+
+    /** Set the connected account's own profile URN after construction. */
+    public function setSenderUrn(?string $urn): void {
+        $this->senderUrn = $urn ?: null;
+    }
+
+    /**
+     * Build a client from a stored (encrypted) account, including the browser
+     * fingerprint the extension mirrored. This is the constructor cron and
+     * ActionExecutor should use — the hardcoded UA/clientVersion above is only
+     * a fallback for the cookie-paste "Test connection" path.
+     */
+    public static function forAccount(int $accountId): self
+    {
+        $row = LinkedInAccount::find($accountId);
+        if (!$row) {
+            throw new \RuntimeException("LinkedIn account {$accountId} not found.");
+        }
+        $session = LinkedInAccount::session($accountId);
+        $svc = new self($session['li_at'], $session['jsessionid'], $row['profile_urn'] ?? null);
+        $svc->publicIdentifier = $row['public_identifier'] ?? null;
+        $svc->applyFingerprint($row);
+        return $svc;
+    }
+
+    public function withoutDelay(): self
+    {
+        $this->delayEnabled = false;
+        return $this;
+    }
+
+    public function lastHttpStatus(): int
+    {
+        return $this->lastHttpStatus;
+    }
+
+    public function lastError(): ?string
+    {
+        return $this->lastError;
+    }
+
+    /** @param array<string,mixed> $row */
+    public function applyFingerprint(array $row): void
+    {
+        if (!empty($row['user_agent'])) {
+            $this->userAgent = (string) $row['user_agent'];
+        }
+        if (!empty($row['accept_language'])) {
+            $this->acceptLanguage = (string) $row['accept_language'];
+        }
+        $track = $row['li_track_json'] ?? null;
+        if (is_array($track)) {
+            $this->liTrackJson = json_encode($track, JSON_UNESCAPED_SLASHES) ?: $this->liTrackJson;
+        } elseif (is_string($track) && $track !== '') {
+            $this->liTrackJson = $track;
+        }
+    }
+
+    /**
+     * Extract the connected member's own identifiers from a validateCookie() response.
+     *
+     * Nothing populated linkedin_accounts.profile_urn before, which is why
+     * sendMessage() had no sender URN to address the mailbox with.
+     *
+     * @return array{profile_urn: ?string, member_urn: ?string, public_identifier: ?string}
+     */
+    public static function extractSelfIdentity(array $profile): array {
+        $mini = $profile['miniProfile'] ?? $profile;
+
+        $profileUrn = $profile['entityUrn']
+            ?? $profile['dashEntityUrn']
+            ?? $mini['entityUrn']
+            ?? null;
+        // /voyager/api/me returns "urn:li:fs_miniProfile:ACoAA..."; the messaging and
+        // invitation endpoints want the fsd_profile form of the same id.
+        if (is_string($profileUrn) && preg_match('/(ACoA[A-Za-z0-9_-]+)/', $profileUrn, $m)) {
+            $profileUrn = 'urn:li:fsd_profile:' . $m[1];
+        }
+
+        $memberUrn = $profile['objectUrn'] ?? $mini['objectUrn'] ?? null;
+        if (!is_string($memberUrn) || !str_contains((string)$memberUrn, ':member:')) {
+            $memberUrn = null;
+        }
+
+        $publicId = $mini['publicIdentifier'] ?? $profile['publicIdentifier'] ?? null;
+
+        return [
+            'profile_urn'       => is_string($profileUrn) ? $profileUrn : null,
+            'member_urn'        => $memberUrn,
+            'public_identifier' => is_string($publicId) ? $publicId : null,
+        ];
     }
 
     /**
@@ -125,6 +231,20 @@ class LinkedInService {
      * @return array|false API response or false on failure
      */
     public function sendMessage(string $profileUrn, string $message) {
+        // `mailboxUrn` is the SENDER's mailbox — the connected account — while
+        // `hostRecipientUrns` names who receives it. This previously passed the
+        // recipient's URN as both, so the request addressed the recipient's own
+        // mailbox. Nothing populated linkedin_accounts.profile_urn either, so there
+        // was no sender URN available to pass.
+        if ($this->senderUrn === null) {
+            error_log(
+                'LinkedInService::sendMessage refused: no sender URN configured. '
+                . 'Populate linkedin_accounts.profile_urn (see extractSelfIdentity) '
+                . 'and pass it to the constructor.'
+            );
+            return false;
+        }
+
         $this->randomDelay();
 
         $url = 'https://www.linkedin.com/voyager/api/voyagerMessagingDashMessengerMessages?action=createMessage';
@@ -135,7 +255,7 @@ class LinkedInService {
                     'text' => $message,
                 ],
             ],
-            'mailboxUrn' => $profileUrn,
+            'mailboxUrn'        => $this->senderUrn,
             'hostRecipientUrns' => [$profileUrn],
         ];
 
@@ -192,15 +312,34 @@ class LinkedInService {
      * @param string      $postUrn          Post URN (thread)
      * @param string      $text             Comment text
      * @param string|null $parentCommentUrn Parent comment URN for replies
+     * @param list<array{start:int,length:int,urn:string}> $mentions
      * @return array|false API response or false on failure
      */
-    public function postComment(string $postUrn, string $text, ?string $parentCommentUrn = null) {
+    public function postComment(string $postUrn, string $text, ?string $parentCommentUrn = null, array $mentions = []) {
         $this->randomDelay();
 
         $url = 'https://www.linkedin.com/voyager/api/feed/dash/comments';
 
+        $commentary = $text;
+        if ($mentions !== []) {
+            $attributes = [];
+            foreach ($mentions as $mention) {
+                $attributes[] = [
+                    'start' => (int) $mention['start'],
+                    'length' => (int) $mention['length'],
+                    'detailDataUnion' => [
+                        'profileMention' => $mention['urn'],
+                    ],
+                ];
+            }
+            $commentary = [
+                'text' => $text,
+                'attributesV2' => $attributes,
+            ];
+        }
+
         $data = [
-            'commentary' => $text,
+            'commentary' => $commentary,
             'threadUrn' => $postUrn,
         ];
 
@@ -209,6 +348,78 @@ class LinkedInService {
         }
 
         return $this->makeRequest($url, 'POST', $data);
+    }
+
+    /**
+     * React to a post or a comment thread.
+     *
+     * @param string $threadUrn    activity / ugcPost / comment URN
+     * @param string $reactionType LIKE, EMPATHY, INTEREST, PRAISE, APPRECIATION, ENTERTAINMENT
+     */
+    public function reactToPost(string $threadUrn, string $reactionType = 'LIKE') {
+        $this->randomDelay();
+
+        $allowed = ['LIKE', 'EMPATHY', 'INTEREST', 'PRAISE', 'APPRECIATION', 'ENTERTAINMENT'];
+        $reactionType = strtoupper($reactionType);
+        if (!in_array($reactionType, $allowed, true)) {
+            $reactionType = 'LIKE';
+        }
+
+        $url = 'https://www.linkedin.com/voyager/api/voyagerSocialDashReactions?threadUrn='
+            . rawurlencode($threadUrn);
+
+        return $this->makeRequest($url, 'POST', [
+            'reactionType' => $reactionType,
+        ]);
+    }
+
+    /**
+     * The connected member's recent posts plus engagement counts.
+     *
+     * @return list<array>|false
+     */
+    public function listRecentPosts(int $count = 10, int $start = 0) {
+        $publicId = $this->publicIdentifier;
+        if (!$publicId) {
+            $me = $this->validateCookie();
+            if ($me === false) {
+                return false;
+            }
+            $identity = self::extractSelfIdentity($me);
+            $publicId = $identity['public_identifier'];
+            $this->publicIdentifier = $publicId;
+            if ($this->senderUrn === null) {
+                $this->senderUrn = $identity['profile_urn'];
+            }
+        }
+        if (!$publicId) {
+            $this->lastError = 'Could not resolve the connected profile identifier.';
+            return false;
+        }
+
+        $params = http_build_query([
+            'moduleKey' => 'creator_profile_all_content_view',
+            'count'     => $count,
+            'start'     => $start,
+            'q'         => 'memberShareFeed',
+            'profileId' => $publicId,
+        ]);
+        $response = $this->makeRequest(
+            'https://www.linkedin.com/voyager/api/identity/profileUpdatesV2?' . $params
+        );
+        if ($response === false) {
+            $fallbackUrn = $this->senderUrn ?: ('urn:li:fsd_profile:' . $publicId);
+            $response = $this->makeRequest(
+                'https://www.linkedin.com/voyager/api/identity/dash/profiles/'
+                . rawurlencode($fallbackUrn)
+                . '/profileUpdates?count=' . $count . '&start=' . $start
+            );
+        }
+        if ($response === false) {
+            return false;
+        }
+
+        return RecentPostsParser::parse($response);
     }
 
     /**
@@ -260,6 +471,9 @@ class LinkedInService {
      * @return array|false Parsed JSON response or false on failure
      */
     private function makeRequest(string $url, string $method = 'GET', ?array $data = null) {
+        $this->lastHttpStatus = 0;
+        $this->lastError = null;
+
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -270,9 +484,9 @@ class LinkedInService {
         $headers = [
             'User-Agent: ' . $this->userAgent,
             'Accept: application/vnd.linkedin.normalized+json+2.1',
-            'Accept-Language: en-US,en;q=0.9,da;q=0.8',
+            'Accept-Language: ' . $this->acceptLanguage,
             'x-li-lang: en_US',
-            'x-li-track: {"clientVersion":"1.13.8857","mpVersion":"1.13.8857","osName":"web","timezoneOffset":1,"timezone":"Europe/Copenhagen","deviceFormFactor":"DESKTOP","mpName":"voyager-web","displayDensity":1,"displayWidth":1920,"displayHeight":1080}',
+            'x-li-track: ' . $this->liTrackJson,
             'x-restli-protocol-version: 2.0.0',
             'csrf-token: ' . $this->csrfToken,
             'Cookie: li_at=' . $this->liAtCookie . '; JSESSIONID="' . $this->csrfToken . '"',
@@ -288,23 +502,28 @@ class LinkedInService {
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_error($ch);
         curl_close($ch);
 
+        $this->lastHttpStatus = $httpCode;
+
         if ($curlError) {
+            $this->lastError = $curlError;
             error_log("LinkedInService cURL error: {$curlError}");
             return false;
         }
 
         // LinkedIn returns 401/403 when the session is invalid
         if ($httpCode === 401 || $httpCode === 403) {
-            error_log("LinkedInService: Authentication failed (HTTP {$httpCode}). Cookie may be expired.");
+            $this->lastError = "Authentication failed (HTTP {$httpCode}). Cookie may be expired.";
+            error_log("LinkedInService: {$this->lastError}");
             return false;
         }
 
         if ($httpCode >= 400) {
-            error_log("LinkedInService: Request failed (HTTP {$httpCode}): " . substr($response, 0, 500));
+            $this->lastError = "Request failed (HTTP {$httpCode})";
+            error_log("LinkedInService: Request failed (HTTP {$httpCode}): " . substr((string) $response, 0, 500));
             return false;
         }
 
@@ -347,6 +566,9 @@ class LinkedInService {
      * Sleep for a random duration between 2 and 8 seconds to mimic human behavior.
      */
     private function randomDelay(): void {
+        if (!$this->delayEnabled) {
+            return;
+        }
         $microseconds = random_int(2000000, 8000000);
         usleep($microseconds);
     }

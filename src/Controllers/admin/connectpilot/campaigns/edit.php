@@ -25,8 +25,18 @@ $stmt = $db->prepare("SELECT id, linkedin_name, linkedin_email, status FROM link
 $stmt->execute([$tenantId]);
 $linkedinAccounts = $stmt->fetchAll();
 
-// Load campaign steps
-$stmt = $db->prepare("SELECT * FROM connectpilot_campaign_steps WHERE campaign_id = ? ORDER BY step_order ASC");
+// Load campaign steps. The table is `connectpilot_sequence_steps` (campaigns/store.php
+// has always written that one); the view speaks the older step_order/step_type/
+// step_condition names, so alias rather than touch the view.
+$stmt = $db->prepare("
+    SELECT *,
+           step_number    AS step_order,
+           action_type    AS step_type,
+           condition_type AS step_condition
+      FROM connectpilot_sequence_steps
+     WHERE campaign_id = ?
+     ORDER BY step_number ASC
+");
 $stmt->execute([$id]);
 $steps = $stmt->fetchAll();
 

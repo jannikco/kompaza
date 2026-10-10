@@ -63,12 +63,14 @@ if ($tenant) {
         ob_start();
         include VIEWS_PATH . '/emails/welcome-tenant.php';
         $html = ob_get_clean();
-        $brevo = new \App\Services\BrevoService();
-        if (method_exists($brevo, 'sendTransactionalEmail')) {
-            $brevo->sendTransactionalEmail($user['email'], 'Welcome to Kompaza — let\'s get you set up', $html);
-        } elseif (method_exists($brevo, 'send')) {
-            $brevo->send($user['email'], 'Welcome to Kompaza — let\'s get you set up', $html);
-        }
+        $emailService = \App\Services\EmailServiceFactory::create();
+        $emailService->sendTransactionalEmail(
+            $user['email'],
+            'Welcome to Kompaza — let\'s get you set up',
+            $html,
+            defined('MAIL_FROM_ADDRESS') ? MAIL_FROM_ADDRESS : null,
+            defined('MAIL_FROM_NAME') ? MAIL_FROM_NAME : null
+        );
     } catch (\Exception $e) {
         error_log('Welcome email failed: ' . $e->getMessage());
     }

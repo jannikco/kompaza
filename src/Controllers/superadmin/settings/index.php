@@ -22,12 +22,13 @@ $integrationStatus = [
     'cron_secret'          => defined('CRON_SECRET') && CRON_SECRET !== '',
     'app_debug'            => defined('APP_DEBUG') && APP_DEBUG === true,
     'app_env'              => defined('APP_ENV') ? APP_ENV : 'unknown',
+    'smtp2go_key'          => defined('SMTP2GO_API_KEY') && SMTP2GO_API_KEY !== '',
     'brevo_key'            => defined('BREVO_API_KEY') && BREVO_API_KEY !== '',
     'openai_key'           => defined('OPENAI_API_KEY') && OPENAI_API_KEY !== '',
 ];
 
 // Email provider in effect for the platform (DB setting overrides default).
-$platformEmailProvider = 'brevo';
+$platformEmailProvider = 'smtp2go';
 foreach ($settings as $s) {
     if ($s['setting_key'] === 'platform_email_service' && $s['setting_value'] !== '' && $s['setting_value'] !== null) {
         $platformEmailProvider = $s['setting_value'];

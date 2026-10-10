@@ -3,7 +3,7 @@
 <?php
 $featureKey = 'connectpilot';
 $title = 'Grow on LinkedIn with ConnectPilot';
-$subtitle = 'Connect your LinkedIn account, run post automations that reply and DM commenters, and (beta) manage outreach campaigns.';
+$subtitle = 'Connect your LinkedIn account, run post automations that like, connect, reply, DM and follow up, and (beta) manage outreach campaigns.';
 $steps = [
     'Paste your LinkedIn session cookies and test the connection',
     'Create a post automation with keywords and reply/DM templates',
@@ -152,7 +152,7 @@ include VIEWS_PATH . '/admin/components/feature-intro.php';
                     <p class="text-sm font-medium text-gray-900"><?= h($campaign['name']) ?></p>
                     <p class="text-xs text-gray-500 mt-0.5">
                         <?= number_format($campaign['leads_collected'] ?? 0) ?> leads &middot;
-                        <?= number_format($campaign['leads_contacted'] ?? 0) ?> contacted
+                        <?= number_format($campaign['connections_sent'] ?? 0) ?> contacted
                     </p>
                 </div>
                 <div class="flex items-center space-x-3">
@@ -203,6 +203,7 @@ include VIEWS_PATH . '/admin/components/feature-intro.php';
                 <div class="flex items-center space-x-3">
                     <?php
                     $statusColors = [
+                        'draft' => 'bg-gray-100 text-gray-700',
                         'active' => 'bg-green-100 text-green-700',
                         'paused' => 'bg-yellow-100 text-yellow-700',
                         'completed' => 'bg-blue-100 text-blue-700',

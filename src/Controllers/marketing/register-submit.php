@@ -4,7 +4,8 @@ use App\Database\Database;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Plan;
-use App\Services\BrevoService;
+use App\Services\EmailHelper;
+use App\Services\EmailServiceFactory;
 
 // Only POST allowed
 if (!isPost()) {
@@ -209,10 +210,17 @@ try {
 
     Database::commit();
 
-    // Send verification email via Brevo
+    // Send verification email via platform email provider (SMTP2GO by default)
     try {
-        $brevo = new BrevoService();
-        $brevo->sendVerificationEmail($email, $name, $token);
+        $built = EmailHelper::buildVerificationEmail($name, $token);
+        $emailService = EmailServiceFactory::create();
+        $emailService->sendTransactionalEmail(
+            ['email' => $email, 'name' => $name],
+            $built['subject'],
+            $built['htmlContent'],
+            $built['fromEmail'],
+            $built['fromName']
+        );
     } catch (\Exception $mailErr) {
         error_log('Verification email failed: ' . $mailErr->getMessage());
     }

@@ -5,6 +5,20 @@ namespace App\Models;
 use App\Database\Database;
 
 class Campaign {
+    /**
+     * Columns `update()` is allowed to write.
+     *
+     * The dynamic SET builder interpolates array keys straight into SQL, so one
+     * bad key is a 500 on every save — which is precisely how a caller passing
+     * `linkedin_search_url` (the real column is `search_url`) broke campaign
+     * editing. Unknown keys are now dropped instead of reaching MySQL.
+     */
+    private const COLUMNS = [
+        'name', 'description', 'linkedin_account_id', 'status', 'target_audience',
+        'search_url', 'leads_found', 'connections_sent', 'connections_accepted',
+        'messages_sent', 'replies_received', 'started_at', 'completed_at',
+    ];
+
     public static function find($id, $tenantId = null) {
         $db = Database::getConnection();
         if ($tenantId) {
@@ -42,13 +56,20 @@ class Campaign {
     }
 
     public static function update($id, $data) {
-        $db = Database::getConnection();
         $fields = [];
         $values = [];
         foreach ($data as $key => $value) {
-            $fields[] = "$key = ?";
+            if (!in_array($key, self::COLUMNS, true)) {
+                continue;
+            }
+            $fields[] = "`$key` = ?";
             $values[] = $value;
         }
+        if (empty($fields)) {
+            return false;
+        }
+
+        $db = Database::getConnection();
         $values[] = $id;
         $stmt = $db->prepare("UPDATE connectpilot_campaigns SET " . implode(', ', $fields) . " WHERE id = ?");
         return $stmt->execute($values);

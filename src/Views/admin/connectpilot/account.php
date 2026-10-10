@@ -7,6 +7,22 @@
     </a>
 </div>
 
+<?php if (!($encryptionReady ?? true)): ?>
+<div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+    <div class="flex">
+        <svg class="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5 19h14a2 2 0 001.84-2.75L13.74 4a2 2 0 00-3.48 0L3.16 16.25A2 2 0 005 19z"/></svg>
+        <div class="ml-3">
+            <p class="text-sm font-semibold text-red-800">LinkedIn automation is disabled</p>
+            <p class="mt-1 text-sm text-red-700">
+                The server encryption key is not configured, so LinkedIn sessions cannot be
+                stored securely. Sessions are never saved in plain text, so connecting an
+                account will fail until an administrator sets <code class="font-mono">OUTREACH_ENCRYPTION_KEY</code>.
+            </p>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <?php if ($linkedinAccount && $linkedinAccount['status'] === 'active'): ?>
 <!-- Connected Account Info -->
 <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-8">
@@ -77,9 +93,19 @@
         <div class="space-y-6">
             <div>
                 <label for="li_at_cookie" class="block text-sm font-medium text-gray-700 mb-2">li_at Cookie</label>
+                <?php // Never render the stored cookie back into the page. It is encrypted
+                      // at rest precisely so it cannot be read again; echoing it here would
+                      // hand it to anything that can see this HTML. ?>
                 <textarea name="li_at_cookie" id="li_at_cookie" rows="3" required
                     class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono text-sm"
-                    placeholder="Paste your li_at cookie value here..."><?= h($linkedinAccount['li_at_cookie'] ?? '') ?></textarea>
+                    placeholder="Paste your li_at cookie value here..."></textarea>
+                <?php if (!empty($linkedinAccount['session_synced_at'])): ?>
+                    <p class="mt-2 text-xs text-gray-500">
+                        A session is already stored (last updated
+                        <?= h(formatDate($linkedinAccount['session_synced_at'], 'd M Y H:i')) ?>).
+                        Paste a new cookie only if you want to replace it.
+                    </p>
+                <?php endif; ?>
             </div>
 
             <div>
@@ -87,7 +113,7 @@
                 <input type="text" name="csrf_token" id="csrf_token" required
                     class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono text-sm"
                     placeholder="ajax:1234567890123456789"
-                    value="<?= h($linkedinAccount['csrf_token'] ?? '') ?>">
+                    value="">
             </div>
         </div>
     </div>
@@ -100,19 +126,27 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label for="daily_connection_limit" class="block text-sm font-medium text-gray-700 mb-2">Connection Requests per Day</label>
-                <input type="number" name="daily_connection_limit" id="daily_connection_limit" min="1" max="100"
+                <input type="number" name="daily_connection_limit" id="daily_connection_limit" min="0" max="100"
                     class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     value="<?= (int)($linkedinAccount['daily_connection_limit'] ?? 20) ?>">
-                <p class="text-xs text-gray-500 mt-1">Recommended: 15-25 per day</p>
+                <p class="text-xs text-gray-500 mt-1">Recommended: 15-25 per day. 0 pauses connection requests.</p>
             </div>
             <div>
                 <label for="daily_message_limit" class="block text-sm font-medium text-gray-700 mb-2">Messages per Day</label>
-                <input type="number" name="daily_message_limit" id="daily_message_limit" min="1" max="200"
+                <input type="number" name="daily_message_limit" id="daily_message_limit" min="0" max="200"
                     class="w-full px-4 py-2.5 bg-white border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     value="<?= (int)($linkedinAccount['daily_message_limit'] ?? 50) ?>">
-                <p class="text-xs text-gray-500 mt-1">Recommended: 30-50 per day</p>
+                <p class="text-xs text-gray-500 mt-1">Recommended: 30-50 per day. <strong>0 is an emergency stop</strong> — no DMs go out.</p>
             </div>
         </div>
+        <label class="flex items-start gap-3 mt-6">
+            <input type="checkbox" name="emergency_stop" id="emergency_stop" value="1" class="mt-1 rounded border-gray-300 text-red-600"
+                <?= !empty($linkedinAccount['emergency_stop']) ? 'checked' : '' ?>>
+            <span>
+                <span class="block text-sm font-medium text-gray-900">Emergency stop</span>
+                <span class="block text-xs text-gray-500">Pause every LinkedIn write (DMs, comments, reactions, invites) until you turn this off.</span>
+            </span>
+        </label>
     </div>
 
     <!-- Validate + Submit -->
@@ -127,7 +161,7 @@
             <a href="/admin/connectpilot" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">
                 Cancel
             </a>
-            <button type="submit" class="px-6 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition">
+            <button type="submit" id="saveConnectBtn" class="px-6 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition">
                 Save &amp; Connect
             </button>
         </div>
@@ -138,6 +172,14 @@
 <div id="validateResult" class="mt-4 hidden"></div>
 
 <script>
+document.querySelector('form[action="/admin/connectpilot/konto/gem"]')?.addEventListener('submit', function (e) {
+    const cap = parseInt(document.getElementById('daily_message_limit').value, 10);
+    const stopped = document.getElementById('emergency_stop')?.checked;
+    if ((cap === 0 || stopped) && !confirm('This will stop all LinkedIn sending (DMs, comments, invites) until you raise the cap or turn emergency stop off. Continue?')) {
+        e.preventDefault();
+    }
+});
+
 async function validateCookie() {
     const btn = document.getElementById('validateBtn');
     const resultDiv = document.getElementById('validateResult');

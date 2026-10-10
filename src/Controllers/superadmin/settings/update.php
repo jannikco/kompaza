@@ -12,8 +12,8 @@ if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
 }
 
 // Validate platform_email_service
-$emailService = $_POST['platform_email_service'] ?? 'brevo';
-if (!in_array($emailService, ['brevo', 'mailgun', 'smtp'], true)) {
+$emailService = $_POST['platform_email_service'] ?? 'smtp2go';
+if (!in_array($emailService, ['smtp2go', 'brevo', 'mailgun', 'smtp'], true)) {
     flashMessage('error', 'Invalid email service provider.');
     redirect('/settings');
 }
@@ -24,6 +24,7 @@ $settingsToSave = [
     'default_trial_days'         => ['type' => 'number',   'desc' => 'Default trial duration (days)'],
     'maintenance_mode'           => ['type' => 'boolean',  'desc' => 'Maintenance mode'],
     'platform_email_service'     => ['type' => 'text',     'desc' => 'Platform email service provider'],
+    'platform_smtp2go_api_key'   => ['type' => 'password', 'desc' => 'Platform SMTP2GO API key'],
     'platform_brevo_api_key'     => ['type' => 'password', 'desc' => 'Platform Brevo API key'],
     'platform_brevo_list_id'     => ['type' => 'text',     'desc' => 'Platform Brevo list ID'],
     'platform_mailgun_api_key'   => ['type' => 'password', 'desc' => 'Platform Mailgun API key'],

@@ -22,8 +22,10 @@ if (!$campaign) {
 
 $name = sanitize($_POST['name'] ?? '');
 $description = sanitize($_POST['description'] ?? '');
-$linkedinSearchUrl = sanitize($_POST['linkedin_search_url'] ?? '');
+// The form field is `search_url` (see the edit view) and so is the column.
+$searchUrl = sanitize($_POST['search_url'] ?? '');
 $status = sanitize($_POST['status'] ?? 'draft');
+$linkedinAccountId = $_POST['linkedin_account_id'] ?? null;
 
 if (empty($name)) {
     flashMessage('error', 'Campaign name is required.');
@@ -33,19 +35,21 @@ if (empty($name)) {
 Campaign::update($id, [
     'name' => $name,
     'description' => $description,
-    'linkedin_search_url' => $linkedinSearchUrl,
+    'search_url' => $searchUrl,
     'status' => $status,
+    'linkedin_account_id' => $linkedinAccountId ?: null,
 ]);
 
-// Update campaign steps: delete existing and re-insert
+// Replace the sequence steps. Table and column names must match
+// connectpilot_sequence_steps, which campaigns/store.php already writes.
 $db = \App\Database\Database::getConnection();
-$stmt = $db->prepare("DELETE FROM connectpilot_campaign_steps WHERE campaign_id = ?");
+$stmt = $db->prepare("DELETE FROM connectpilot_sequence_steps WHERE campaign_id = ?");
 $stmt->execute([$id]);
 
 $steps = $_POST['steps'] ?? [];
 if (!empty($steps) && is_array($steps)) {
     $stmt = $db->prepare("
-        INSERT INTO connectpilot_campaign_steps (campaign_id, step_order, step_type, message_template, delay_days, delay_hours, step_condition, created_at)
+        INSERT INTO connectpilot_sequence_steps (campaign_id, step_number, action_type, message_template, delay_days, delay_hours, condition_type, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
     ");
     foreach ($steps as $index => $step) {

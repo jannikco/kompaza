@@ -12,7 +12,22 @@ require_once __DIR__ . '/../src/Config/config.php';
 use App\Auth\Auth;
 use App\Services\TenantResolver;
 
-// Start session for cart etc.
+// Long-lived session cookie (180 days) — cart, CSRF helpers, flash scaffolding.
+// Auth identity itself uses the remember_token cookie (also 180 days).
+$sessionLifetime = defined('SESSION_LIFETIME') ? SESSION_LIFETIME : (180 * 24 * 60 * 60);
+ini_set('session.gc_maxlifetime', (string) $sessionLifetime);
+ini_set('session.cookie_lifetime', (string) $sessionLifetime);
+if (PHP_VERSION_ID >= 70300) {
+    session_set_cookie_params([
+        'lifetime' => $sessionLifetime,
+        'path'     => '/',
+        'secure'   => true,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+} else {
+    session_set_cookie_params($sessionLifetime, '/; samesite=Lax', '', true, true);
+}
 session_start();
 
 // Load auth from cookie
@@ -697,6 +712,14 @@ if ($routingMode === 'tenant') {
         elseif ($method === 'POST' && $request === '/api/connectpilot/validate-post') {
             Auth::requireTenantAdmin();
             $controller = 'api/connectpilot/validate-post';
+        }
+        elseif ($method === 'GET' && $request === '/api/connectpilot/recent-posts') {
+            Auth::requireTenantAdmin();
+            $controller = 'api/connectpilot/recent-posts';
+        }
+        elseif ($method === 'POST' && $request === '/api/connectpilot/suggest-automation') {
+            Auth::requireTenantAdmin();
+            $controller = 'api/connectpilot/suggest-automation';
         }
         // Course API endpoints
         elseif ($method === 'POST' && $request === '/api/courses/upload-chunk') {

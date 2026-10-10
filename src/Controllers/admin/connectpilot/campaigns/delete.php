@@ -20,9 +20,11 @@ if (!$campaign) {
     redirect('/admin/connectpilot/kampagner');
 }
 
-// Delete campaign steps first
+// connectpilot_sequence_steps has ON DELETE CASCADE on campaign_id, so removing
+// the campaign clears its steps. The explicit delete stays as a belt-and-braces
+// for any row orphaned before the FK existed.
 $db = \App\Database\Database::getConnection();
-$stmt = $db->prepare("DELETE FROM connectpilot_campaign_steps WHERE campaign_id = ?");
+$stmt = $db->prepare("DELETE FROM connectpilot_sequence_steps WHERE campaign_id = ?");
 $stmt->execute([$id]);
 
 Campaign::delete($id, $tenantId);

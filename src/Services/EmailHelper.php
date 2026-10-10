@@ -71,6 +71,29 @@ class EmailHelper {
     }
 
     /**
+     * Build email verification subject and HTML for new platform signups.
+     *
+     * @return array{subject: string, htmlContent: string, fromEmail: string, fromName: string}
+     */
+    public static function buildVerificationEmail(string $name, string $token): array {
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $verifyUrl = $scheme . '://' . PLATFORM_DOMAIN . '/verify-email?token=' . urlencode($token);
+
+        ob_start();
+        $userName = $name;
+        $verificationUrl = $verifyUrl;
+        include VIEWS_PATH . '/emails/verify-email.php';
+        $htmlContent = ob_get_clean();
+
+        return [
+            'subject'     => 'Verify your email address - Kompaza',
+            'htmlContent' => $htmlContent,
+            'fromEmail'   => defined('MAIL_FROM_ADDRESS') ? MAIL_FROM_ADDRESS : 'info@kompaza.com',
+            'fromName'    => defined('MAIL_FROM_NAME') ? MAIL_FROM_NAME : 'Kompaza',
+        ];
+    }
+
+    /**
      * Build a default HTML email template for lead magnet delivery.
      */
     private static function buildLeadMagnetTemplate(string $firstName, string $title, string $downloadUrl): string {

@@ -103,7 +103,18 @@ try {
 // ---------------------------------------------------------------------------
 // Platform integration status
 // ---------------------------------------------------------------------------
-$emailDefault = (defined('BREVO_API_KEY') && BREVO_API_KEY !== '') ? 'Brevo' : 'Not configured';
+$smtp2goOk = defined('SMTP2GO_API_KEY') && SMTP2GO_API_KEY !== '';
+$brevoOk = defined('BREVO_API_KEY') && BREVO_API_KEY !== '';
+if ($smtp2goOk) {
+    $emailDefault = 'SMTP2GO';
+    $emailConfigured = true;
+} elseif ($brevoOk) {
+    $emailDefault = 'Brevo';
+    $emailConfigured = true;
+} else {
+    $emailDefault = 'Not configured';
+    $emailConfigured = false;
+}
 
 $integrations = [
     [
@@ -118,7 +129,7 @@ $integrations = [
     ],
     [
         'name'        => 'Email (default)',
-        'configured'  => defined('BREVO_API_KEY') && BREVO_API_KEY !== '',
+        'configured'  => $emailConfigured,
         'detail'      => $emailDefault,
     ],
     [

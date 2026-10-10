@@ -11,46 +11,17 @@ if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
 }
 
 $tenantId = currentTenantId();
+$input = PostAutomation::fromForm($_POST);
+$input['post_urn'] = LinkedInService::extractPostUrn($input['post_url']);
 
-$name = sanitize($_POST['name'] ?? '');
-$postUrl = sanitize($_POST['post_url'] ?? '');
-$triggerKeyword = sanitize($_POST['trigger_keyword'] ?? '');
-$linkedinAccountId = !empty($_POST['linkedin_account_id']) ? (int)$_POST['linkedin_account_id'] : null;
-$status = sanitize($_POST['status'] ?? 'active');
-$autoReplyEnabled = isset($_POST['auto_reply_enabled']) ? 1 : 0;
-$autoReplyTemplate = $_POST['auto_reply_template'] ?? '';
-$autoDmEnabled = isset($_POST['auto_dm_enabled']) ? 1 : 0;
-$dmTemplate = $_POST['dm_template'] ?? '';
-$leadMagnetId = !empty($_POST['lead_magnet_id']) ? (int)$_POST['lead_magnet_id'] : null;
-
-// Validation
-if (empty($name) || empty($postUrl) || empty($triggerKeyword) || !$linkedinAccountId) {
-    flashMessage('error', 'Name, LinkedIn account, post URL, and trigger keyword are required.');
+if ($input['name'] === '' || $input['post_url'] === '' || $input['trigger_keyword'] === '' || !$input['linkedin_account_id']) {
+    flashMessage('error', 'Name, LinkedIn account, post URL, and at least one trigger keyword are required.');
     redirect('/admin/connectpilot/automations/create');
 }
 
-// Extract post URN from URL
-$postUrn = LinkedInService::extractPostUrn($postUrl);
-
-// Strip HTML from comment reply (plain text only)
-$autoReplyTemplate = strip_tags($autoReplyTemplate);
-$dmTemplate = strip_tags($dmTemplate);
-
-$automationId = PostAutomation::create([
-    'tenant_id' => $tenantId,
-    'linkedin_account_id' => $linkedinAccountId,
-    'name' => $name,
-    'post_url' => $postUrl,
-    'post_urn' => $postUrn,
-    'trigger_keyword' => $triggerKeyword,
-    'auto_reply_enabled' => $autoReplyEnabled,
-    'auto_reply_template' => $autoReplyTemplate,
-    'auto_dm_enabled' => $autoDmEnabled,
-    'dm_template' => $dmTemplate,
-    'lead_magnet_id' => $leadMagnetId,
-    'status' => $status,
-]);
+$automationId = PostAutomation::create($input + ['tenant_id' => $tenantId]);
 
 logAudit('post_automation_created', 'post_automation', $automationId);
-flashMessage('success', 'Post automation created successfully.');
+$label = $input['status'] === 'active' ? 'Post automation created and running.' : 'Post automation saved as ' . $input['status'] . '.';
+flashMessage('success', $label);
 redirect('/admin/connectpilot/automations');

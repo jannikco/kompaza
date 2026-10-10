@@ -20,8 +20,11 @@ $totalConnectionsSent = 0;
 $totalMessagesSent = 0;
 foreach ($campaigns as $c) {
     if ($c['status'] === 'active') $activeCampaigns++;
-    $totalConnectionsSent += (int)($c['leads_contacted'] ?? 0);
-    $totalMessagesSent += (int)($c['leads_responded'] ?? 0);
+    // These are the real connectpilot_campaigns columns, maintained by
+    // Campaign::updateStats(). The previous names never existed, so the `?? 0`
+    // silently pinned both dashboard tiles to zero.
+    $totalConnectionsSent += (int)($c['connections_sent'] ?? 0);
+    $totalMessagesSent += (int)($c['messages_sent'] ?? 0);
 }
 
 $totalLeads = LinkedInLead::countByTenant($tenantId);

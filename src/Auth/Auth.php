@@ -8,6 +8,11 @@ use App\Models\User;
 class Auth {
     private static ?array $currentUser = null;
 
+    /** Remember-me / session duration in seconds (180 days). */
+    private static function lifetimeSeconds(): int {
+        return defined('SESSION_LIFETIME') ? (int) SESSION_LIFETIME : (180 * 24 * 60 * 60);
+    }
+
     public static function attempt($email, $password, $tenantId = null) {
         $user = User::findByEmail($email, $tenantId);
 
@@ -40,7 +45,7 @@ class Auth {
 
         // Create remember token + 180-day cookie
         $token = bin2hex(random_bytes(32));
-        $expires = time() + (180 * 24 * 60 * 60);
+        $expires = time() + self::lifetimeSeconds();
 
         $db = Database::getConnection();
         $stmt = $db->prepare("
@@ -49,11 +54,7 @@ class Auth {
         ");
         $stmt->execute([$user['id'], hash('sha256', $token), $expires]);
 
-        // Superadmins get a domain-wide cookie so one platform session works across every
-        // {slug}.kompaza.com — letting them manage any tenant's admin directly. Tenant
-        // admins / customers stay host-locked (no cross-tenant session bleed).
-        $cookieDomain = ($user['role'] ?? '') === 'superadmin' ? '.' . PLATFORM_DOMAIN : '';
-        setcookie('remember_token', $token, $expires, '/', $cookieDomain, true, true);
+        self::setRememberCookie($token, $expires, $user['role'] ?? '');
 
         logAudit('user_login', 'user', $user['id']);
     }
@@ -70,8 +71,8 @@ class Auth {
         }
 
         // Clear both host-locked and domain-wide (superadmin) cookie variants.
-        setcookie('remember_token', '', time() - 3600, '/', '', true, true);
-        setcookie('remember_token', '', time() - 3600, '/', '.' . PLATFORM_DOMAIN, true, true);
+        self::clearRememberCookie('');
+        self::clearRememberCookie('.' . PLATFORM_DOMAIN);
         self::$currentUser = null;
     }
 
@@ -177,25 +178,69 @@ class Auth {
         }
 
         $token = $_COOKIE['remember_token'];
+        $tokenHash = hash('sha256', $token);
         $db = Database::getConnection();
 
         $stmt = $db->prepare("
-            SELECT user_id
+            SELECT user_id, expires_at
             FROM remember_tokens
             WHERE token = ?
             AND expires_at > NOW()
         ");
-        $stmt->execute([hash('sha256', $token)]);
+        $stmt->execute([$tokenHash]);
         $tokenData = $stmt->fetch();
 
         if (!$tokenData) {
-            setcookie('remember_token', '', time() - 3600, '/', '', true, true);
+            self::clearRememberCookie('');
+            self::clearRememberCookie('.' . PLATFORM_DOMAIN);
             return;
         }
 
         $user = User::find($tokenData['user_id']);
         if ($user && $user['status'] === 'active') {
             self::$currentUser = $user;
+
+            // Sliding 180-day window: keep active users signed in while they use the product.
+            $expires = time() + self::lifetimeSeconds();
+            $upd = $db->prepare("UPDATE remember_tokens SET expires_at = FROM_UNIXTIME(?) WHERE token = ?");
+            $upd->execute([$expires, $tokenHash]);
+            self::setRememberCookie($token, $expires, $user['role'] ?? '');
+        }
+    }
+
+    /**
+     * Superadmins get a domain-wide cookie so one platform session works across every
+     * {slug}.kompaza.com. Tenant admins / customers stay host-locked.
+     */
+    private static function setRememberCookie(string $token, int $expires, string $role): void {
+        $cookieDomain = $role === 'superadmin' ? '.' . PLATFORM_DOMAIN : '';
+
+        if (PHP_VERSION_ID >= 70300) {
+            setcookie('remember_token', $token, [
+                'expires'  => $expires,
+                'path'     => '/',
+                'domain'   => $cookieDomain,
+                'secure'   => true,
+                'httponly' => true,
+                'samesite' => 'Lax',
+            ]);
+        } else {
+            setcookie('remember_token', $token, $expires, '/; samesite=Lax', $cookieDomain, true, true);
+        }
+    }
+
+    private static function clearRememberCookie(string $domain): void {
+        if (PHP_VERSION_ID >= 70300) {
+            setcookie('remember_token', '', [
+                'expires'  => time() - 3600,
+                'path'     => '/',
+                'domain'   => $domain,
+                'secure'   => true,
+                'httponly' => true,
+                'samesite' => 'Lax',
+            ]);
+        } else {
+            setcookie('remember_token', '', time() - 3600, '/', $domain, true, true);
         }
     }
 }

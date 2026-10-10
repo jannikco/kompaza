@@ -8,8 +8,11 @@ class PostComment {
     public static function create($data) {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            INSERT INTO connectpilot_post_comments (automation_id, tenant_id, comment_urn, commenter_profile_url, commenter_urn, commenter_name, commenter_headline, comment_text, keyword_matched, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+            INSERT INTO connectpilot_post_comments
+                (automation_id, tenant_id, comment_urn, commenter_profile_url, commenter_urn,
+                 commenter_name, commenter_headline, commenter_distance, comment_text,
+                 keyword_matched, matched_keyword, skipped_reason, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
         ");
         $stmt->execute([
             $data['automation_id'],
@@ -19,8 +22,11 @@ class PostComment {
             $data['commenter_urn'] ?? null,
             $data['commenter_name'] ?? null,
             $data['commenter_headline'] ?? null,
+            $data['commenter_distance'] ?? null,
             $data['comment_text'] ?? null,
             $data['keyword_matched'] ?? 0,
+            $data['matched_keyword'] ?? null,
+            $data['skipped_reason'] ?? null,
         ]);
         return $db->lastInsertId();
     }
@@ -70,5 +76,70 @@ class PostComment {
         $db = Database::getConnection();
         $stmt = $db->prepare("UPDATE connectpilot_post_comments SET dm_sent = 1, dm_sent_at = NOW(), lead_id = ? WHERE id = ?");
         return $stmt->execute([$leadId, $id]);
+    }
+
+    public static function pendingLikes($automationId) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("
+            SELECT * FROM connectpilot_post_comments
+             WHERE automation_id = ? AND like_sent = 0
+               AND (skipped_reason IS NULL OR skipped_reason <> 'self')
+             ORDER BY created_at ASC
+        ");
+        $stmt->execute([$automationId]);
+        return $stmt->fetchAll();
+    }
+
+    public static function pendingConnects($automationId) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("
+            SELECT * FROM connectpilot_post_comments
+             WHERE automation_id = ? AND keyword_matched = 1 AND connect_sent = 0 AND dm_sent = 0
+               AND (commenter_distance IS NULL OR commenter_distance NOT IN ('DISTANCE_1','SELF','FIRST_DEGREE'))
+             ORDER BY created_at ASC
+        ");
+        $stmt->execute([$automationId]);
+        return $stmt->fetchAll();
+    }
+
+    public static function pendingFollowUps($automationId) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("
+            SELECT * FROM connectpilot_post_comments
+             WHERE automation_id = ? AND follow_up_sent = 0
+               AND follow_up_due_at IS NOT NULL AND follow_up_due_at <= NOW()
+               AND dm_sent = 1
+             ORDER BY follow_up_due_at ASC
+        ");
+        $stmt->execute([$automationId]);
+        return $stmt->fetchAll();
+    }
+
+    public static function markLiked($id) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("UPDATE connectpilot_post_comments SET like_sent = 1, like_sent_at = NOW() WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
+
+    public static function markConnectSent($id) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("UPDATE connectpilot_post_comments SET connect_sent = 1, connect_sent_at = NOW() WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
+
+    public static function markFollowUpSent($id) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("UPDATE connectpilot_post_comments SET follow_up_sent = 1, follow_up_sent_at = NOW() WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
+
+    public static function scheduleFollowUp($id, int $delayMinutes) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("
+            UPDATE connectpilot_post_comments
+               SET follow_up_due_at = DATE_ADD(NOW(), INTERVAL ? MINUTE)
+             WHERE id = ?
+        ");
+        return $stmt->execute([$delayMinutes, $id]);
     }
 }

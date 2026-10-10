@@ -9,7 +9,7 @@ Multi-tenant SaaS platform combining content marketing, lead generation, order m
 - **Frontend:** Tailwind CSS (CDN), Alpine.js (CDN), Quill v2 (CDN for rich text)
 - **Dependencies:** Composer with only `vlucas/phpdotenv`
 - **Server:** nginx + PHP-FPM on app1.profectify.com
-- **Email:** Brevo API (raw cURL, no SDK)
+- **Email:** SMTP2GO API (platform default, raw cURL); Brevo/Mailgun/SMTP still supported per tenant
 - **Payments:** Stripe API (raw cURL, no SDK)
 
 ## Architecture

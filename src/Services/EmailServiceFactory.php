@@ -9,9 +9,9 @@ class EmailServiceFactory {
     /**
      * Create the appropriate email service based on tenant's email_service setting.
      *
-     * @return BrevoService|MailgunService|SmtpService
+     * @return BrevoService|MailgunService|SmtpService|Smtp2goService
      */
-    public static function create(?array $tenant = null): BrevoService|MailgunService|SmtpService {
+    public static function create(?array $tenant = null): BrevoService|MailgunService|SmtpService|Smtp2goService {
         $tenant = $tenant ?? TenantResolver::current();
         $provider = $tenant['email_service'] ?? 'kompaza';
 
@@ -43,7 +43,7 @@ class EmailServiceFactory {
 
     /**
      * Get a Brevo contact service for syncing contacts/lists.
-     * Returns null if the tenant uses Mailgun or SMTP (no contact sync available).
+     * Returns null if the tenant uses Mailgun, SMTP, or SMTP2GO (no contact sync available).
      */
     public static function getContactService(?array $tenant = null): ?BrevoService {
         $tenant = $tenant ?? TenantResolver::current();
@@ -51,7 +51,7 @@ class EmailServiceFactory {
 
         switch ($provider) {
             case 'kompaza':
-                $platformProvider = Setting::get('platform_email_service', null, 'brevo');
+                $platformProvider = Setting::get('platform_email_service', null, 'smtp2go');
                 if ($platformProvider !== 'brevo') {
                     return null;
                 }
@@ -75,8 +75,8 @@ class EmailServiceFactory {
      * Create the platform-level email service based on superadmin settings.
      * Falls back to .env constants if no DB settings exist.
      */
-    private static function createPlatformService(): BrevoService|MailgunService|SmtpService {
-        $provider = Setting::get('platform_email_service', null, 'brevo');
+    private static function createPlatformService(): BrevoService|MailgunService|SmtpService|Smtp2goService {
+        $provider = Setting::get('platform_email_service', null, 'smtp2go');
 
         switch ($provider) {
             case 'mailgun':
@@ -95,9 +95,14 @@ class EmailServiceFactory {
                 );
 
             case 'brevo':
-            default:
                 $apiKey = Setting::get('platform_brevo_api_key') ?: (defined('BREVO_API_KEY') ? BREVO_API_KEY : null);
                 return new BrevoService($apiKey);
+
+            case 'smtp2go':
+            default:
+                $apiKey = Setting::get('platform_smtp2go_api_key')
+                    ?: (defined('SMTP2GO_API_KEY') ? SMTP2GO_API_KEY : null);
+                return new Smtp2goService($apiKey ?: null);
         }
     }
 }

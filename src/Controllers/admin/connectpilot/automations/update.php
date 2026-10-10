@@ -21,37 +21,15 @@ if (!$automation) {
     redirect('/admin/connectpilot/automations');
 }
 
-$name = sanitize($_POST['name'] ?? '');
-$postUrl = sanitize($_POST['post_url'] ?? '');
-$triggerKeyword = sanitize($_POST['trigger_keyword'] ?? '');
-$linkedinAccountId = !empty($_POST['linkedin_account_id']) ? (int)$_POST['linkedin_account_id'] : null;
-$status = sanitize($_POST['status'] ?? 'active');
-$autoReplyEnabled = isset($_POST['auto_reply_enabled']) ? 1 : 0;
-$autoReplyTemplate = strip_tags($_POST['auto_reply_template'] ?? '');
-$autoDmEnabled = isset($_POST['auto_dm_enabled']) ? 1 : 0;
-$dmTemplate = strip_tags($_POST['dm_template'] ?? '');
-$leadMagnetId = !empty($_POST['lead_magnet_id']) ? (int)$_POST['lead_magnet_id'] : null;
+$input = PostAutomation::fromForm($_POST);
+$input['post_urn'] = LinkedInService::extractPostUrn($input['post_url']);
 
-if (empty($name) || empty($postUrl) || empty($triggerKeyword) || !$linkedinAccountId) {
-    flashMessage('error', 'Name, LinkedIn account, post URL, and trigger keyword are required.');
+if ($input['name'] === '' || $input['post_url'] === '' || $input['trigger_keyword'] === '' || !$input['linkedin_account_id']) {
+    flashMessage('error', 'Name, LinkedIn account, post URL, and at least one trigger keyword are required.');
     redirect('/admin/connectpilot/automations/edit?id=' . $id);
 }
 
-$postUrn = LinkedInService::extractPostUrn($postUrl);
-
-PostAutomation::update($id, [
-    'name' => $name,
-    'linkedin_account_id' => $linkedinAccountId,
-    'post_url' => $postUrl,
-    'post_urn' => $postUrn,
-    'trigger_keyword' => $triggerKeyword,
-    'auto_reply_enabled' => $autoReplyEnabled,
-    'auto_reply_template' => $autoReplyTemplate,
-    'auto_dm_enabled' => $autoDmEnabled,
-    'dm_template' => $dmTemplate,
-    'lead_magnet_id' => $leadMagnetId,
-    'status' => $status,
-]);
+PostAutomation::update($id, $input);
 
 logAudit('post_automation_updated', 'post_automation', $id);
 flashMessage('success', 'Post automation updated successfully.');
